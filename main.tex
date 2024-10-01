@@ -1,0 +1,199 @@
+\documentclass[10pt]{beamer}
+
+\usetheme{metropolis}
+\metroset{numbering=fraction}
+\metroset{block=fill}
+
+\usepackage{headings/kmath}
+\input{headings/packages}
+\input{headings/macros}
+
+\setlength\fboxsep{5pt}
+\setlength\fboxrule{1.5pt}
+
+
+\begin{document}
+
+\begin{frame}[plain,noframenumbering]
+  \begin{center}
+    {\large\textbf{Branch-and-Bound Algorithms \\ for $\boldsymbol{\ell}_{\boldsymbol{0}}$-Regularized Problems}}
+  \end{center}
+  \begin{center}
+    Théo Guyard \\
+    {\small{Inria Rennes - Insa Rennes}} \\
+    {\small{27 Novembre 2024}}
+    \rule{\textwidth}{1pt}
+    {
+      \small
+      \begin{equation*}
+          \begin{array}{L@{}L@{\quad}L@{\hfill}}
+              \textbf{Composition du Jury} \\
+              Jér\^{o}me Malick & DR CNRS, Université de Grenoble & Rapporteur \\
+              Nicolas Gillis & Full Professor, Université de Mons & Rapporteur \\
+              Joseph Salmon & Professeur, Université de Montpellier & Examinateur \\
+              Amélie Lambert & Ma\^{i}tresse de Conférences, CNAM & Examinatrice \\
+              Clément Elvira & Ma\^{i}tre de Conférences, CentraleSupélec & Examinateur \\
+              Cédric Herzet & Ma\^{i}tre de Conférences, ENSAI & Directeur \\
+          \end{array}
+      \end{equation*}
+    }
+  \end{center}
+\end{frame}
+
+\begin{frame}{Intro}
+  Intro pour mener au problème
+\end{frame}
+
+\begin{frame}{Intro}
+  Intro pour mener au problème
+\end{frame}
+
+\begin{frame}{Problématiques}
+  \begin{itemize}
+    \item Problème à résoudre
+    \item Diffcultés avant: résolution d'instances relachés: graphique pour montrer que ça marche pas
+    \item Nouvelle approche: optim discrète
+    \item Algorithms SOTA: BnB
+    
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{BnB}
+  \begin{itemize}
+    \item Description du BnB
+    \item Création des régions
+    \item Test de pruning
+    \item Difficultés: pas génériques, tjr manque de rapidité
+    \item Deux axes de recherche
+    \item Spotligh results
+  \end{itemize}
+\end{frame}
+
+\section{Axe 1: Généralisation}
+
+\begin{frame}{Relaxation Convexe}
+  \begin{itemize}
+    \item Problème au noeud reformulation
+    \item Identification de non-convexité
+    \item Bi-conjuguée
+    \item Graphique
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Charaterizatino}
+  \begin{itemize}
+    \item Spotlight result: caractérisation de la bi-conjuguée
+    \item Aussi prox+sous-diff: algos génériques d'optim
+  \end{itemize}
+\end{frame}
+
+\section{Axe 2: Réduction du nombre de noeuds}
+
+\begin{frame}{Noeuds de Complexité}
+  \begin{itemize}
+    \item Nombre de régions explorées
+    \item Coût de résolution des relaxations
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Bornes Duales}
+  \begin{itemize}
+    \item Problème Dual
+    \item Bornes duales valides: pas bseoin de résoudre à optimalité
+    \item Graphique
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Charaterizatino}
+  \begin{itemize}
+    \item Spotlight result: caractérisation de la conjuguée
+    \item Aussi prox+sous-diff: algos génériques d'optim
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Lien dual}
+  \begin{itemize}
+    \item Spotligh result: Lien objectif dual entre deux régions
+    \item Elaguage pas cher: terme commun
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Effet sur le BnB}
+  \begin{itemize}
+    \item Graphique
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Lien dual avec bornes}
+  \begin{itemize}
+    \item Spotligh result: Lien objectif dual entre deux régions
+    \item Peeling
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Effet sur le BnB}
+  \begin{itemize}
+    \item Graphique
+  \end{itemize}
+\end{frame}
+
+\section{Axe 3: Accélération du traitement des noeuds}
+
+\begin{frame}{Convex}
+  \begin{itemize}
+    \item Problèlme convexe
+    \item Algos typiques de résolution
+    \item Méthodes d'accélération
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Tests de screening}
+  \begin{itemize}
+    \item Dual
+    \item Test de screening
+    \item safe region
+    \item Test de safe screening
+    \item Spotlight: test de relaxing
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Identification complète}
+  \begin{itemize}
+    \item Spotlight: strong critical et stict convexe
+    \item Safe region with sifficiently small radius
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Mixed-order}
+  \begin{itemize}
+    \item Framework
+    \item Reformulation
+    \item Accélération
+  \end{itemize}
+\end{frame}
+
+\section{Applications}
+
+\begin{frame}{blabla}
+  blabla
+\end{frame}
+
+\section{Conclusions et Perspectives}
+
+\begin{frame}
+  \begin{itemize}
+    \item Résumé des problématiques
+    \item Résumé des contributions
+    \item 
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{What's next ?}
+  What's next ?
+\end{frame}
+
+\begin{frame}[standout]
+  Thanks for your attention
+\end{frame}
+
+\end{document}
