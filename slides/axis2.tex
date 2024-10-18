@@ -1,0 +1,350 @@
+\section{Axis 2 -- How to improve the branching process ?}
+
+\begin{frame}{Axis 2 -- A typical tree exploration scheme}
+    \begin{tikzpicture}[remember picture,overlay]
+      \begin{scope}[xshift=0.5\textwidth]
+        \node at (1,2) (node0) {};
+        \draw[ultra thick,->] ($(node0.north)+(0.5,0.6)$) -- ($(node0.north)+(0.25,0.25)$);
+        \draw[
+            ultra thick,
+            top color = white,
+            bottom color = gray!60,
+        ] (node0) circle (12pt) node {$\nodeSymb_n$};
+        %
+        \node at ($(node0)+(-1,-1)$) (node1) {};
+        \draw[
+            ultra thick,
+            top color = white,
+            bottom color = gray!60,
+        ] (node1) circle (12pt) node {$\nodeSymb_{n+1}$};
+        \draw[ultra thick,->] ($(node0.south west)+(-0.27,0)$) -- ($(node1.north)+(0.25,0.25)$);
+        %
+        \node at ($(node1)+(-1,-1)$) (node3) {};
+        \draw[
+            ultra thick,
+            top color = white,
+            bottom color = gray!60,
+        ] (node3) circle (12pt) node {$\nodeSymb_{n+3}$};
+        \draw[ultra thick,->] ($(node1.south west)+(-0.27,0)$) -- ($(node3.north)+(0.25,0.25)$);
+        %
+        \node at ($(node3)+(-1.5,-1.5)$) (nodemntwo) {};
+        \draw[
+            ultra thick,
+            top color = white,
+            bottom color = gray!60,
+        ] (nodemntwo) circle (12pt) node {$\nodeSymb_{N-2}$};
+        \draw[dashed,ultra thick,->] ($(node3.south west)+(-0.27,0)$) -- ($(nodemntwo.north)+(0.25,0.25)$);
+        %
+        \node at ($(nodemntwo)+(-1,-1)$) (nodemnone) {};
+        \draw[
+            ultra thick,
+            top color = white,
+            bottom color = mLightRed!50,
+        ] (nodemnone) circle (12pt) node {$\nodeSymb_{N-1}$};
+        \draw[ultra thick,->] ($(nodemntwo.south west)+(-0.27,0)$) -- ($(nodemnone.north)+(0.25,0.25)$);
+        \node[mLightRed,font=\scriptsize] at ($(nodemnone)+(0,-0.6)$) {Pruned};
+        %
+        \node at ($(nodemntwo)+(1,-1)$) (nodemn) {};
+        \draw[
+            ultra thick,
+            top color = white,
+            bottom color = mLightRed!50,
+        ] (nodemn) circle (12pt) node {$\nodeSymb_{N}$};
+        \draw[ultra thick,->] ($(nodemntwo.south east)+(0.27,0)$) -- ($(nodemn.north)+(-0.25,0.25)$);
+        \node[mLightRed,font=\scriptsize] at ($(nodemn)+(0,-0.6)$) {Pruned};
+        %
+        \node at ($(node3)+(1,-1)$) (node6) {};
+        \draw[
+            ultra thick,
+            top color = white,
+            bottom color = mLightRed!50,
+        ] (node6) circle (12pt) node {$\nodeSymb_{n+6}$};
+        \draw[ultra thick,->] ($(node3.south east)+(0.27,0)$) -- ($(node6.north)+(-0.25,0.25)$);
+        \node[mLightRed,font=\scriptsize] at ($(node6)+(0,-0.6)$) {Pruned};
+        %
+        \node at ($(node1)+(1,-1)$) (node4) {};
+        \draw[
+            ultra thick,
+            top color = white,
+            bottom color = mLightRed!50,
+        ] (node4) circle (12pt) node {$\nodeSymb_{n+4}$};
+        \draw[ultra thick,->] ($(node1.south east)+(0.27,0)$) -- ($(node4.north)+(-0.25,0.25)$);
+        \node[mLightRed,font=\scriptsize] at ($(node4)+(0,-0.6)$) {Pruned};
+        %
+        \node at ($(node0)+(1,-1)$) (node2) {};
+        \draw[
+            dashed,
+            ultra thick,
+            top color = white,
+            bottom color = gray!60,
+        ] (node2) circle (12pt) node {$\nodeSymb_{n+2}$};
+        \draw[dashed, ultra thick,->] ($(node0.south east)+(0.27,0)$) -- ($(node2.north)+(-0.25,0.25)$);
+        %
+        %
+        %
+        \node (obs1) at (-3,3) {\textbf{Left child}};
+        \node (text1) at ($(obs1.south)+(0,-0.25)$) {Nodes processed without pruning};
+        \node (consequence1) at ($(text1.south)+(0,-0.75)$) {Useless computational load};
+        \draw[ultra thick,->] (text1) -- (consequence1);
+        %
+        \node (obs2) at (3,-2) {\textbf{Right child}};
+        \node (text2) at ($(obs2.south)+(0,-0.25)$) {Nodes pruned with loose bounds};
+        \node (consequence2) at ($(text2.south)+(0,-0.75)$) {Unnecessarily tight relaxation};
+        \draw[ultra thick,->] (text2) -- (consequence2);
+      \end{scope}
+    \end{tikzpicture}
+\end{frame}
+  
+\begin{frame}{Axis 2 -- Dual lower bounds}
+  \begin{tikzpicture}[remember picture,overlay]
+    \begin{scope}[xshift=0.5\textwidth]
+      \node[text width=1\linewidth, align=left] (task) at (0,3) {\textbf{Task --} Given a region $\nodeSymb = (\setzero,\setone,\setnone)$, compute a lower bound on \vspace*{-7pt}$$\vspace*{-7pt}\textstyle\node{\pobj} = \inf_{\pv \in \node{\pset}} \lfunc(\dic\pv) + \reg\norm{\pv}{0} + \pfunc(\pv)$$ that is \sout{tight and} \textcolor{mLightBrown}{tractable}.}; 
+      %
+      \node[align=center,text width=\textwidth] (problem) at ($(task)+(0,-1.75)$) {
+        \begin{blockcolor}{black}{Step 1: Problem reformulation}
+          \hspace*{2.5cm}
+          $\node{\pobj} = \min_{\pv \in \kR^{\pdim}} \lfunc(\dic\pv) + \node{\rfunc}(\pv)$
+        \end{blockcolor}
+      };
+      %
+      \node at ($(problem)+(-2.5,-1)$) {\rotatebox{90}{$\leq$}};
+      \node at ($(problem)+(-1.5,-1)$) {\small{convexify}};
+      %
+      \node[align=center,text width=\textwidth] (cvx-relaxation) at ($(problem)+(0,-1.75)$) {
+        \begin{blockcolor}{black}{Step 2: Convex relaxation}
+          \hspace*{2.43cm}
+          $\node{\pobj}_{\mathrm{lb}} = \min_{\pv \in \kR^{\pdim}} \lfunc(\dic\pv) + \node{\relaxrfunc}(\pv)$
+        \end{blockcolor}
+      };
+      %
+      \node at ($(cvx-relaxation)+(-2.5,-1)$) {\rotatebox{90}{$=$}};
+      \node at ($(cvx-relaxation)+(-1.75,-1)$) {\small{dualize}};
+      %
+      \node[align=center,text width=\textwidth] (dual-relaxation) at ($(cvx-relaxation)+(0,-1.75)$) {
+        \begin{blockcolor}{black}{Step 3: Dual relaxation}
+          \hspace*{2.28cm}
+          $\node{\pobj}_{\conj{\mathrm{lb}}} = \textcolor{mLightBrown}{\max_{\dv \in \kR^{\ddim}}} -\textcolor{mLightBrown}{\conj{\lfunc}}(-\dv) - \textcolor{mLightBrown}{\conj{(\node{\relaxrfunc})}}(\transp{\dic}\dv)$
+        \end{blockcolor}
+      };
+      %
+      \node at ($(dual-relaxation)+(0,-1.25)$) {Any \textcolor{mLightBrown}{objective evaluation} gives a valid lower-bound.};
+    \end{scope}
+  \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Axis 2 -- Conjugate characterization}
+  \begin{tikzpicture}[remember picture,overlay]
+    \node at (0.5\textwidth,3.5) (result) {\textbf{Intermediate result}};
+    \node[text width=0.9\linewidth,align=center,inner sep=2pt] at ($(result.south)+(0,-0.4)$) (result-text) {Dual lower bounds admit a generic closed-form expression.};
+    \draw[ultra thick] ($(result-text.center)+(5,0.4)$) rectangle ($(result-text.center)+(-5,-0.4)$);
+    %
+    \node[text width=\linewidth,align=left] (theorem) at (0.5\textwidth,-0.5) {\textbf{Theorem --} For any region $\nodeSymb=(\setzero,\setone,\setnone)$ and any $\dv \in \kR^{\ddim}$, the quantity
+    \begin{equation*}
+      \node{\dfunc}(\dv) = -\conj{\lfunc}(-\dv) - \conj{(\node{\rfunc})}(\transp{\dic}\dv)
+    \end{equation*}
+    where $\conj{(\node{\rfunc})}(\transp{\dic}\dv) = \sum_{\idxentry}\conj{(\separable{\node{\rfunc}}{\idxentry})}(\transp{\dici{\idxentry}}\dv)$ with
+    \begin{equation*}
+      \conj{(\separable{\node{\rfunc}}{\idxentry})}(\transp{\dici{\idxentry}}\dv) = 
+      \begin{cases}
+        0 & \text{if } \idxentry \in \setzero \\
+        \separable{\conj{\pfunc}}{\idxentry}(\transp{\dici{\idxentry}}\dv) - \reg & \text{if } \idxentry \in \setone \\
+        \pospart{\separable{\conj{\pfunc}}{\idxentry}(\transp{\dici{\idxentry}}\dv) - \reg} & \text{if } \idxentry \in \setnone
+      \end{cases}
+    \end{equation*}
+    is a lower-bound on $\node{\pobj}$.};
+    %
+    \node[text width=\linewidth,align=left] (properties) at ($(theorem.south)+(0,-0.5)$) {\textbf{Remark --} has been used in the literature, \AddTodo{Improve}};
+  \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Axis 2 -- Dual link}
+  \begin{tikzpicture}[remember picture,overlay]
+    \begin{scope}[xshift=0.5\textwidth]
+      \node[mLightBrown] at (0,3.5) (result) {\textbf{Spotlight result}};
+      \node[text width=0.9\linewidth,align=center,inner sep=5pt,mLightBrown,draw,ultra thick] at ($(result.south)+(0,-0.3)$) (result-text) {Successor nodes in the BnB tree share a similar dual relaxation.};
+      %
+      \node (parent) at (0,1.75) {};
+      \node (child0) at (-2,0.5) {};
+      \node (child1) at (2,0.5) {};
+      \draw[
+        ultra thick,
+        top color = white,
+        bottom color = gray!60,
+      ] (parent) circle (10pt) node {$\nodeSymb$};
+      \draw[
+        dashed,
+        ultra thick,
+        top color = white,
+        bottom color = gray!60,
+      ] (child0) circle (10pt) node {$\nodeSymb_{\idxentry,0}$};
+      \draw[ultra thick,->,dashed] ($(parent.south)+(-0.3,-0.15)$) -- ($(child0.north)+(0.3,0.15)$) node[midway,fill=mLightWhite,draw,ultra thick,dashed,font=\scriptsize] {$\pvi{\idxentry} = 0$};
+      \draw[
+        dashed,
+        ultra thick,
+        top color = white,
+        bottom color = gray!60,
+      ] (child1) circle (10pt) node {$\nodeSymb_{\idxentry,1}$};
+      \draw[ultra thick,->,dashed] ($(parent.south)+(0.3,-0.15)$) -- ($(child1.north)+(-0.3,0.15)$) node[midway,fill=mLightWhite,draw,ultra thick,dashed,font=\scriptsize] {$\pvi{\idxentry} \neq 0$};
+      %
+      \node[text width=\linewidth,align=left] (theorem) at (0,-1.5) {\textbf{Theorem --} Let $\nodeSymb_{\idxentry,b}$ be a direct successor of $\nodeSymb$ in the BnB tree, then
+      \begin{equation*}
+        \dfunc^{\nodeSymb_{\idxentry,b}}(\dv) = \node{\dfunc}(\dv) + \Delta_{\idxentry,b}(\transp{\dici{\idxentry}}\dv)
+      \end{equation*}
+      for all $\dv \in \kR^{\ddim}$.};
+      %
+      \draw[ultra thick,<-,mLightBrown] ($(theorem)+(-0.5,-0.3)$) -- ($(theorem)+(-1.5,-1.5)$) node[below,mLightBrown] {Independent of $\nodeSymb$};
+      \draw[ultra thick,<-,mLightBrown] ($(theorem)+(1.5,-0.3)$) -- ($(theorem)+(2.5,-1.5)$) node[below,mLightBrown] {Compute in $\bigO(1)$};
+    \end{scope}
+  \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Axis 2 -- Testing successor nodes}
+  \begin{tikzpicture}[remember picture,overlay]
+    \begin{scope}[xshift=0.5\linewidth]
+      %
+      \node (node) at (0,2.75) {};
+      \node at ($(node)+(0,0.75)$) {\textbf{Simultaneous pruning tests}};
+      \draw[
+        ultra thick,
+        top color = white,
+        bottom color = gray!60,
+      ] (node) circle (10pt) node {$\nodeSymb$};
+      %
+      \node[anchor=west,xshift=10pt,font=\small] at (node.east) {relax. resolution $\rightarrow \node{\dfunc}(\dv)$};
+      %
+      \node (childi0) at ($(node)+(-4,-1.5)$) {};
+      \draw[
+        dashed,
+        ultra thick,
+        top color = white,
+        bottom color = mLightRed!50,
+      ] (childi0) circle (10pt) node {$\nodeSymb_{i,0}$};
+      \draw[ultra thick,->] ($(node)+(-0.3,-0.2)$) -- ($(childi0)+(0.3,0.25)$) node[midway,fill=mLightWhite,draw,ultra thick,font=\scriptsize,inner sep=2pt] {$\pvi{i} = 0$};
+      \node[font=\small,mLightRed] at ($(childi0.south)+(0,-0.7)$) {$\dfunc^{\nodeSymb_{i,0}}(\dv) > \pobj_{\mathrm{ub}}$};
+      \draw[very thick,->,mLightBrown,font=\scriptsize] ($(node.west)+(-0.5,0)$) .. controls ($(childi0.north)+(1,1.25)$) .. ($(childi0.north)+(0.25,0.5)$) node[midway,above,xshift=5,yshift=2,rotate=10] {$+ \ \Delta_{i,0}(\transp{\dici{\idxentry}}\dv)$};
+      %
+      \node (childi1) at ($(node)+(-1.5,-1.5)$) {};
+      \draw[
+        dashed,
+        ultra thick,
+        top color = white,
+        bottom color = gray!60,
+      ] (childi1) circle (10pt) node {$\nodeSymb_{i,1}$};
+      \draw[ultra thick,->] ($(node)+(-0.15,-0.3)$) -- ($(childi1)+(0.15,0.35)$) node[midway,fill=mLightWhite,draw,ultra thick,font=\scriptsize,inner sep=1.75pt] {$\pvi{i} \neq 0$};
+      \node[font=\small] at ($(childi1.south)+(0,-0.7)$) {$\dfunc^{\nodeSymb_{i,1}}(\dv) \leq \pobj_{\mathrm{ub}}$};
+      %
+      \node (childj0) at ($(node)+(1.5,-1.5)$) {};
+      \draw[
+        dashed,
+        ultra thick,
+        top color = white,
+        bottom color = gray!60,
+      ] (childj0) circle (10pt) node {$\nodeSymb_{j,0}$};
+      \draw[ultra thick,->] ($(node)+(0.15,-0.3)$) -- ($(childj0)+(-0.15,0.35)$) node[midway,fill=mLightWhite,draw,ultra thick,font=\scriptsize,inner sep=1.6pt] {$\pvi{j} = 0$};
+      \node[font=\small] at ($(childj0.south)+(0,-0.7)$) {$\dfunc^{\nodeSymb_{j,0}}(\dv) \leq \pobj_{\mathrm{ub}}$};
+      %
+      \node (childj1) at ($(node)+(4,-1.5)$) {};
+      \draw[
+        dashed,
+        ultra thick,
+        top color = white,
+        bottom color = mLightRed!50,
+      ] (childj1) circle (10pt) node {$\nodeSymb_{j,1}$};
+      \draw[ultra thick,->] ($(node)+(0.3,-0.2)$) -- ($(childj1)+(-0.3,0.25)$) node[midway,fill=mLightWhite,draw,ultra thick,font=\scriptsize,inner sep=1.5pt] {$\pvi{j} \neq 0$};
+      \node[font=\small,mLightRed] at ($(childj1.south)+(0,-0.7)$) {$\dfunc^{\nodeSymb_{j,1}}(\dv) > \pobj_{\mathrm{ub}}$};
+    \end{scope}
+    \begin{scope}[xshift=0.5\linewidth,yshift=-0.46\textheight]
+      \node (node) at (0,3) {};
+      \node at ($(node)+(0,0.75)$) {\textbf{Tree expansion}};
+      \draw[
+        ultra thick,
+        top color = white,
+        bottom color = gray!60,
+      ] (node) circle (10pt) node {$\nodeSymb$};
+      \node (childi0) at ($(node)+(-1.25,-1.25)$) {};
+      \draw[
+        ultra thick,
+        top color = white,
+        bottom color = mLightRed!50,
+      ] (childi0) circle (10pt) node {$\nodeSymb_{i,0}$};
+      \draw[ultra thick,->] ($(node)+(-0.3,-0.2)$) -- ($(childi0)+(0.2,0.35)$) node[midway,fill=mLightWhite,draw,ultra thick,font=\scriptsize,inner sep=2pt] {$\pvi{i} = 0$};
+      \node[mLightRed,font=\scriptsize] at ($(childi0)+(0,-0.5)$) {Pruned};
+      %
+      \node (childi1) at ($(node)+(1.25,-1.25)$) {};
+      \draw[
+        ultra thick,
+        top color = white,
+        bottom color = gray!60,
+      ] (childi1) circle (10pt) node {$\nodeSymb_{i,1}$};
+      \draw[ultra thick,->] ($(node)+(0.3,-0.2)$) -- ($(childi1)+(-0.2,0.35)$) node[midway,fill=mLightWhite,draw,ultra thick,font=\scriptsize,inner sep=1.75pt] {$\pvi{i} \neq 0$};
+      \node[mLightRed,font=\scriptsize,right] at ($(childi1)+(0.4,0)$) {Not processed};
+      %
+      \node (childj0) at ($(childi1)+(-1.25,-1.25)$) {};
+      \draw[
+        ultra thick,
+        top color = white,
+        bottom color = gray!60,
+      ] (childj0) circle (10pt) node {$\nodeSymb_{j,0}$};
+      \draw[ultra thick,->] ($(childi1)+(-0.3,-0.2)$) -- ($(childj0)+(0.2,0.35)$) node[midway,fill=mLightWhite,draw,ultra thick,font=\scriptsize,inner sep=2pt] {$\pvi{j} = 0$};
+      %
+      \node (childj1) at ($(childi1)+(1.25,-1.25)$) {};
+      \draw[
+        ultra thick,
+        top color = white,
+        bottom color = mLightRed!50,
+      ] (childj1) circle (10pt) node {$\nodeSymb_{j,1}$};
+      \draw[ultra thick,->] ($(childi1)+(0.3,-0.2)$) -- ($(childj1)+(-0.2,0.35)$) node[midway,fill=mLightWhite,draw,ultra thick,font=\scriptsize,inner sep=1.75pt] {$\pvi{j} \neq 0$};
+      \node[mLightRed,font=\scriptsize] at ($(childj1)+(0,-0.5)$) {Pruned};
+      %
+      \draw[ultra thick,->] ($(childj0)+(-0.3,-0.2)$) -- ($(childj0)+(-0.5,-0.4)$);
+      \draw[ultra thick,->] ($(childj0)+(0.3,-0.2)$) -- ($(childj0)+(0.5,-0.4)$);
+    \end{scope}
+  \end{tikzpicture}
+\end{frame}
+
+\begin{frame}
+  \begin{tikzpicture}[remember picture,overlay]
+    \begin{scope}[xshift=0.5\textwidth]
+      \node at (0,3.5) {\Large{\textbf{Let's recap}}};
+      %
+      %
+      %
+      \begin{scope}[opacity=0.4]
+        \node[mLightBrown] at (-3.75,2) (axis1) {\textbf{Axis 1}};
+        \node[text width=0.35\linewidth,align=center,mLightBrown] at ($(axis1)+(0,-0.75)$) (axis1-text) {How to generalize the BnB method ?};
+        \draw[ultra thick,mLightBrown] ($(axis1-text.center)+(-1.7,0.5)$) rectangle ($(axis1-text.center)+(1.7,-0.5)$);
+        %
+        \node at (0,2) (spotlight1) {\textbf{Spotlight result}};
+        \node[text width=0.35\linewidth,align=center] at ($(spotlight1)+(0,-0.75)$) (spotlight1-text) {Bi-conjugate characterization};
+        \draw[ultra thick] ($(spotlight1-text.center)+(-1.7,0.5)$) rectangle ($(spotlight1-text.center)+(1.7,-0.5)$);
+        %
+        \node at (3.75,2) (contribution1) {\textbf{Contribution}};
+        \node[text width=0.35\linewidth,align=center] at ($(contribution1)+(0,-0.75)$) (contribution1-text) {Generic Branch-and-Bound algorithm};
+        \draw[ultra thick] ($(contribution1-text.center)+(-1.7,0.5)$) rectangle ($(contribution1-text.center)+(1.7,-0.5)$);
+      \end{scope}
+      %
+      %
+      %
+      \node[mLightBrown] at (-3.75,0) (axis2) {\textbf{Axis 2}};
+      \node[text width=0.35\linewidth,align=center,inner sep=2pt,mLightBrown] at ($(axis2)+(0,-0.75)$) (axis2-text) {How to improve the branching process ?};
+      \draw[ultra thick,mLightBrown] ($(axis2-text.center)+(-1.7,0.5)$) rectangle ($(axis2-text.center)+(1.7,-0.5)$);
+      %
+      \node at (0,0) (spotlight2) {\textbf{Spotlight result}};
+      \node[text width=0.35\linewidth,align=center] at ($(spotlight2)+(0,-0.75)$) (spotlight2-text) {Simultaneous pruning tests};
+      \draw[ultra thick] ($(spotlight2-text.center)+(-1.7,0.5)$) rectangle ($(spotlight2-text.center)+(1.7,-0.5)$);
+      %
+      \node at (3.75,0) (contribution2) {\textbf{Contribution}};
+      \node[text width=0.35\linewidth,align=center] at ($(contribution2)+(0,-0.75)$) (contribution2-text) {More efficient tree exploration};
+      \draw[ultra thick] ($(contribution2-text.center)+(-1.7,0.5)$) rectangle ($(contribution2-text.center)+(1.7,-0.5)$);
+      %
+      %
+      %
+      \begin{scope}[opacity=0.4]
+        \node[mLightBrown] at (-3.75,-2) (axis3) {\textbf{Axis 3}};
+        \node[text width=0.35\linewidth,align=center,inner sep=2pt,mLightBrown] at ($(axis3)+(0,-0.75)$) (axis3-text) {How to improve the bounding process ?};
+        \draw[ultra thick,mLightBrown] ($(axis3-text.center)+(-1.7,0.5)$) rectangle ($(axis3-text.center)+(1.7,-0.5)$);
+      \end{scope}
+    \end{scope}
+  \end{tikzpicture}
+\end{frame}
+

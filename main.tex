@@ -8,9 +8,16 @@
 \input{headings/packages}
 \input{headings/macros}
 
-\setlength\fboxsep{5pt}
-\setlength\fboxrule{1.5pt}
+\newenvironment<>{blockcolor}[2]{%
+  \setbeamercolor{block title}{fg=#1,bg=#1!15}%
+  \setbeamercolor{block body}{fg=#1,bg=#1!15}%
+  \begin{block}#3{\centering#2}
+}{%
+  \end{block}
+}
 
+\definecolor{mLightWhite}{HTML}{FAFAFA}
+\definecolor{mLightRed}{HTML}{CC6677}
 
 \begin{document}
 
@@ -29,171 +36,141 @@
           \begin{array}{L@{}L@{\quad}L@{\hfill}}
               \textbf{Composition du Jury} \\
               Jér\^{o}me Malick & DR CNRS, Université de Grenoble & Rapporteur \\
-              Nicolas Gillis & Full Professor, Université de Mons & Rapporteur \\
+              Nicolas Gillis & Professeur, Université de Mons & Rapporteur \\
               Joseph Salmon & Professeur, Université de Montpellier & Examinateur \\
               Amélie Lambert & Ma\^{i}tresse de Conférences, CNAM & Examinatrice \\
               Clément Elvira & Ma\^{i}tre de Conférences, CentraleSupélec & Examinateur \\
-              Cédric Herzet & Ma\^{i}tre de Conférences, ENSAI & Directeur \\
+              Cédric Herzet & Ma\^{i}tre de Conférences, ENSAI & Dir. de thèse \\
           \end{array}
       \end{equation*}
     }
   \end{center}
 \end{frame}
 
-\begin{frame}{Intro}
-  Intro pour mener au problème
+\input{slides/intro}
+\input{slides/bnb}
+\input{slides/axis1}
+\input{slides/axis2}
+\input{slides/axis3}
+\input{slides/numerics}
+
+\section{What's next ?}
+
+\begin{frame}{Contributions}
+  \begin{tikzpicture}[remember picture,overlay]
+    \begin{scope}[xshift=0.5\textwidth]
+      \node[align=center,text width=0.5\textwidth] (problem) at (0,3.25) {
+      \begin{blockcolor}{black}{$\boldsymbol{\ell}_0$-regularized problem}
+          \centering
+          $\min_{\pv \in \kR^{\pdim}} \lfunc(\dic\pv) + \reg\norm{\pv}{0} + \pfunc(\pv)$
+      \end{blockcolor}
+      };
+      %
+      \node (question) at ($(problem)+(0,-1.25)$) {\textbf{Main question}};
+      \node[draw,ultra thick,inner sep=5pt] at ($(question)+(0,-0.5)$) {How to improve the versatile and scalability of BnB methods ?};
+      %
+      \node (axis1) at ($(question)+(-3.75,-1.5)$) {\textbf{Axis 1}};
+      \node[text width=0.3\linewidth,align=center] at ($(axis1.south)+(0,-0.5)$) (axis1-text) {How to generalize the BnB method ?};
+      \draw[ultra thick] ($(axis1-text.center)+(-1.7,0.5)$) rectangle ($(axis1-text.center)+(1.7,-0.5)$);
+      %
+      \node (axis2) at ($(question)+(0,-1.5)$) {\textbf{Axis 2}};
+      \node[text width=0.3\linewidth,align=center,inner sep=2pt] at ($(axis2.south)+(0,-0.5)$) (axis2-text) {How to improve the branching process ?};
+      \draw[ultra thick] ($(axis2-text.center)+(-1.7,0.5)$) rectangle ($(axis2-text.center)+(1.7,-0.5)$);
+      %
+      \node (axis3) at ($(question)+(3.75,-1.5)$) {\textbf{Axis 3}};
+      \node[text width=0.3\linewidth,align=center,inner sep=2pt] at ($(axis3.south)+(0,-0.5)$) (axis3-text) {How to improve the bounding process ?};
+      \draw[ultra thick] ($(axis3-text.center)+(-1.7,0.5)$) rectangle ($(axis3-text.center)+(1.7,-0.5)$);
+      %
+      \node[text width=0.33\linewidth,align=left,anchor=north] at ($(axis1)+(0.05,-1.5)$) {$\rightarrow$ Journal paper (WIP)};
+      \node[text width=0.3\linewidth,align=left,anchor=north] at ($(axis2)+(0.3,-1.5)$) {$\rightarrow$ ICASSP, 2022 \\ $\rightarrow$ EUSIPCO, 2023 \\ $\rightarrow$ ICML, 2024};
+      \node[text width=0.35\linewidth,align=left,anchor=north] at ($(axis3)+(0.05,-1.5)$) {$\rightarrow$ ICASSP, 2022 \\ $\rightarrow$ Journal paper (WIP)};
+      %
+      \node at ($(axis2)+(-0.45,-3.75)$) {\includegraphics[width=20pt]{img/github-logo.png}};
+      \node at ($(axis2)+(0.45,-3.75)$) {\textbf{El0ps}};
+    \end{scope}
+  \end{tikzpicture}
 \end{frame}
 
-\begin{frame}{Intro}
-  Intro pour mener au problème
-\end{frame}
+\begin{frame}{Perspectives}
+  \begin{tikzpicture}[remember picture,overlay]
+    \begin{scope}[xshift=0.5\linewidth]
+      \node[draw,ultra thick,text width=0.3\linewidth,align=center] (persp1) at (-4,2.75) {Towards stronger relaxations};
+      \node at ($(persp1)+(0,0.7)$) {\textbf{Perspective 1}};
+      %
+      \node[text width=0.3\linewidth,align=center] (problem) at ($(persp1)+(0,-1)$) {$\min_{\pv \in \kR^{\pdim}} \lfunc(\dic\pv) + \node{\rfunc}(\pv)$};
+      %
+      \node[text width=0.3\linewidth,align=center] (relax) at ($(problem)+(0,-1.75)$) {$\min_{\pv \in \kR^{\pdim}} \lfunc(\dic\pv) + \textcolor{mLightBrown}{\node{\relaxrfunc}}(\pv)$};
+      \draw[ultra thick,->] (problem) -- (relax) node[midway,fill=mLightWhite,draw,ultra thick] {Convex relax.};
+      %
+      \node[text width=0.32\linewidth,align=center] (stronger) at ($(relax)+(0,-1.75)$) {$\min_{\pv \in \kR^{\pdim}} \lfunc(\dic\pv) + \textcolor{mLightBrown}{\node{\relaxrfunc}_{\lfunc,\dic}}(\pv)$};
+      \draw[ultra thick,->] (relax) -- (stronger) node[midway,fill=mLightWhite,draw,ultra thick] {Concave relax.};
+      %
+      \begin{scope}[xshift=-0.37\linewidth,yshift=-0.45\textheight]
+        \draw[ultra thick,->] (-1.5,0) -- (1.5,0);
+        \draw[ultra thick,->] (0,-0.2) -- (0,1.5);
+        %
+        \draw[domain=-1.5:-0.05,smooth,variable=\x,mLightBrown,very thick] plot ({\x}, {0.75 + 0.4*\x*\x});
+        \draw[domain=0.05:1.5,smooth,variable=\x,mLightBrown,very thick] plot ({\x}, {0.75 + 0.4*\x*\x});
+        %
+        \draw[very thick,mLightBrown,dashed] (-1.4,1.5) -- (0,0) -- (1.4,1.5);
+        %
+        \draw[domain=0:0.8,smooth,variable=\x,mLightBrown,very thick,dashed] plot ({\x}, {2.2*\x - 1.25*\x*\x});
+        \draw[domain=0.8:1.5,smooth,variable=\x,mLightBrown,very thick,dashed] plot ({\x}, {0.70 + 0.4*\x*\x});
+        %
+        \draw[domain=-0.8:0,smooth,variable=\x,mLightBrown,very thick,dashed] plot ({\x}, {-2.2*\x - 1.25*\x*\x});
+        \draw[domain=-1.5:-0.8,smooth,variable=\x,mLightBrown,very thick,dashed] plot ({\x}, {0.70 + 0.4*\x*\x});
+        %
+        \fill[mLightBrown] (0,0) circle (0.075);
+        \draw[mLightBrown,very thick] (0,0.75) circle (0.075);
+      \end{scope}
 
-\begin{frame}{Problématiques}
-  \begin{itemize}
-    \item Problème à résoudre
-    \item Diffcultés avant: résolution d'instances relachés: graphique pour montrer que ça marche pas
-    \item Nouvelle approche: optim discrète
-    \item Algorithms SOTA: BnB
-    
-  \end{itemize}
-\end{frame}
-
-\begin{frame}{BnB}
-  \begin{itemize}
-    \item Description du BnB
-    \item Création des régions
-    \item Test de pruning
-    \item Difficultés: pas génériques, tjr manque de rapidité
-    \item Deux axes de recherche
-    \item Spotligh results
-  \end{itemize}
-\end{frame}
-
-\section{Axe 1: Généralisation}
-
-\begin{frame}{Relaxation Convexe}
-  \begin{itemize}
-    \item Problème au noeud reformulation
-    \item Identification de non-convexité
-    \item Bi-conjuguée
-    \item Graphique
-  \end{itemize}
-\end{frame}
-
-\begin{frame}{Charaterizatino}
-  \begin{itemize}
-    \item Spotlight result: caractérisation de la bi-conjuguée
-    \item Aussi prox+sous-diff: algos génériques d'optim
-  \end{itemize}
-\end{frame}
-
-\section{Axe 2: Réduction du nombre de noeuds}
-
-\begin{frame}{Noeuds de Complexité}
-  \begin{itemize}
-    \item Nombre de régions explorées
-    \item Coût de résolution des relaxations
-  \end{itemize}
-\end{frame}
-
-\begin{frame}{Bornes Duales}
-  \begin{itemize}
-    \item Problème Dual
-    \item Bornes duales valides: pas bseoin de résoudre à optimalité
-    \item Graphique
-  \end{itemize}
-\end{frame}
-
-\begin{frame}{Charaterizatino}
-  \begin{itemize}
-    \item Spotlight result: caractérisation de la conjuguée
-    \item Aussi prox+sous-diff: algos génériques d'optim
-  \end{itemize}
-\end{frame}
-
-\begin{frame}{Lien dual}
-  \begin{itemize}
-    \item Spotligh result: Lien objectif dual entre deux régions
-    \item Elaguage pas cher: terme commun
-  \end{itemize}
-\end{frame}
-
-\begin{frame}{Effet sur le BnB}
-  \begin{itemize}
-    \item Graphique
-  \end{itemize}
-\end{frame}
-
-\begin{frame}{Lien dual avec bornes}
-  \begin{itemize}
-    \item Spotligh result: Lien objectif dual entre deux régions
-    \item Peeling
-  \end{itemize}
-\end{frame}
-
-\begin{frame}{Effet sur le BnB}
-  \begin{itemize}
-    \item Graphique
-  \end{itemize}
-\end{frame}
-
-\section{Axe 3: Accélération du traitement des noeuds}
-
-\begin{frame}{Convex}
-  \begin{itemize}
-    \item Problèlme convexe
-    \item Algos typiques de résolution
-    \item Méthodes d'accélération
-  \end{itemize}
-\end{frame}
-
-\begin{frame}{Tests de screening}
-  \begin{itemize}
-    \item Dual
-    \item Test de screening
-    \item safe region
-    \item Test de safe screening
-    \item Spotlight: test de relaxing
-  \end{itemize}
-\end{frame}
-
-\begin{frame}{Identification complète}
-  \begin{itemize}
-    \item Spotlight: strong critical et stict convexe
-    \item Safe region with sifficiently small radius
-  \end{itemize}
-\end{frame}
-
-\begin{frame}{Mixed-order}
-  \begin{itemize}
-    \item Framework
-    \item Reformulation
-    \item Accélération
-  \end{itemize}
-\end{frame}
-
-\section{Applications}
-
-\begin{frame}{blabla}
-  blabla
-\end{frame}
-
-\section{Conclusions et Perspectives}
-
-\begin{frame}
-  \begin{itemize}
-    \item Résumé des problématiques
-    \item Résumé des contributions
-    \item 
-  \end{itemize}
-\end{frame}
-
-\begin{frame}{What's next ?}
-  What's next ?
+      %
+      %
+      %
+      \node[draw,ultra thick,text width=0.3\linewidth,align=center] (persp2) at (0,2.75) {Generalizing outer-approx. methods};
+      \node at ($(persp2)+(0,0.7)$) {\textbf{Perspective 2}};
+      %
+      \node[text width=0.3\linewidth,align=center] (mip) at ($(persp2)+(-1,-1.25)$) {MIP};
+      \node[text width=0.3\linewidth,align=center] (bnb) at ($(persp2)+(1,-1.25)$) {BnB};
+      \draw[ultra thick,->] ($(mip)+(0,0.5)$) -- (mip);
+      \draw[ultra thick,->] ($(bnb)+(0,0.5)$) -- (bnb);
+      %
+      \node[text width=0.2\textwidth,align=center,font=\small] (mip-text) at ($(mip)+(0,-0.75)$) {
+        \textcolor{mLightGreen}{\ding{51} Versatile} \\
+        \textcolor{mLightRed}{\ding{55} Scalable}
+      };
+      \node[text width=0.2\textwidth,align=center,font=\small] (bnb-text) at ($(bnb)+(0,-0.75)$) {
+        \textcolor{mLightRed}{\ding{55} Versatile} \\
+        \textcolor{mLightGreen}{\ding{51} Scalable}
+      };
+      %
+      \node[text width=0.2\textwidth,align=center,font=\small] (bnb-contrib) at ($(bnb-text)+(0,-1.25)$) {Contrib. \\ El0ps};
+      \draw[ultra thick,->] (bnb-text) -- (bnb-contrib);
+      \node[text width=0.2\textwidth,align=center,font=\small] (oa) at ($(mip-text)+(0,-1.25)$) {Outer-approx. \\ methods};
+      \draw[ultra thick,->] (mip-text) -- (oa);
+      %
+      \node[text width=0.3\textwidth,align=center,font=\small] (restricted) at ($(oa)+(1,-1.25)$) {Still restricted to some problem instances};
+      \draw[ultra thick,->] (oa) -- (restricted);
+      \draw[ultra thick,->] (restricted) -- (bnb-contrib);
+      %
+      \node[text width=0.35\textwidth,align=center,font=\small] (perspective) at ($(restricted)+(0,-1.5)$) {\textcolor{mLightBrown}{Perspective transform} \\ $\textcolor{mLightBrown}{\phi^{\pi}}(\bvi{},\pvi{}) = \begin{cases}
+        \bvi{}\phi(\tfrac{\pvi{}}{\bvi{}}) &\bvi{} > 0 \\
+        +\infty &\bvi{} \leq 0
+      \end{cases}$};
+      %
+      %
+      %
+      \node[draw,ultra thick,text width=0.3\linewidth,align=center] (persp3) at (4,2.75) {Exploitation of smoothing tests};
+      \node at ($(persp3)+(0,0.7)$) {\textbf{Perspective 3}};
+      %
+      \node[text width=0.3\linewidth,align=center] (problem) at ($(persp3)+(0,-1.25)$) {Convex sparse optim. \\ $\min_{\pv \in \kR^{\pdim}} \lfunc(\dic\pv) + \relaxrfunc(\pv)$};
+    \end{scope}
+  \end{tikzpicture}
 \end{frame}
 
 \begin{frame}[standout]
-  Thanks for your attention
+  Question time ! ~\\~\\
+  \includegraphics[width=40pt]{img/nerd-face.png}
 \end{frame}
 
 \end{document}

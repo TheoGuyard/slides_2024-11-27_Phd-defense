@@ -1,0 +1,166 @@
+\section{Axis 1 -- How to generalize the BnB method ?}
+
+\begin{frame}{Axis 1 -- Relaxation construction}
+  \begin{tikzpicture}[remember picture,overlay]
+    \begin{scope}[xshift=0.5\textwidth]
+      \node[text width=1\linewidth, align=left] (task) at (0,3) {\textbf{Task --} Given a region $\nodeSymb = (\setzero,\setone,\setnone)$, compute a lower bound on \vspace*{-7pt}$$\vspace*{-7pt}\textstyle\node{\pobj} = \inf_{\pv \in \node{\pset}} \lfunc(\dic\pv) + \reg\norm{\pv}{0} + \pfunc(\pv)$$ that is \textcolor{mLightBrown}{tight} and \textcolor{mLightBrown}{tractable}.}; 
+      %
+      \node[align=center,text width=\textwidth] (problem) at ($(task)+(0,-2.25)$) {
+        \begin{blockcolor}{black}{Step 1: Problem reformulation}
+          \centering
+          $\node{\pobj} = \textcolor{mLightBrown}{\min}_{\pv \in \textcolor{mLightBrown}{\kR^{\pdim}}} \lfunc(\dic\pv) + \textcolor{mLightBrown}{\node{\rfunc}}(\pv)
+          \ \ \text{with} \ \
+          \node{\separable{\rfunc}{\idxentry}}(\pvi{}) =
+          \begin{cases}
+            \icvx(\pvi{} = 0) & \text{if} \ \idxentry \in \setzero \\
+            \separable{\pfunc}{\idxentry}(\pvi{}) + \reg & \text{if} \ \idxentry \in \setone \\
+            \textcolor{mLightBrown}{\separable{\pfunc}{\idxentry}(\pvi{}) + \reg\norm{\pvi{}}{0}} & \text{if} \ \idxentry \in \setnone
+          \end{cases}
+          $
+        \end{blockcolor}
+      };
+      %
+      \node[align=center,text width=\textwidth] (relaxation) at ($(problem)+(0,-3)$) {
+        \begin{blockcolor}{black}{Step 2: Convex relaxation}
+          \centering
+          $\node{\pobj}_{\mathrm{lb}} = \min_{\pv \in \kR^{\pdim}} \lfunc(\dic\pv) + \textcolor{mLightBrown}{\node{\relaxrfunc}}(\pv)
+          \ \ \text{with} \ \
+          \node{\separable{\relaxrfunc}{\idxentry}}(\pvi{}) =
+          \begin{cases}
+            \icvx(\pvi{} = 0) & \text{if} \ \idxentry \in \setzero \\
+            \separable{\pfunc}{\idxentry}(\pvi{}) + \reg & \text{if} \ \idxentry \in \setone \\
+            \textcolor{mLightBrown}{\text{bi-conjugate}} & \text{if} \ \idxentry \in \setnone
+          \end{cases}
+          $
+        \end{blockcolor}
+      };
+    \end{scope}
+  \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Axis 1 -- Conjugate characterization}
+  \begin{tikzpicture}[remember picture,overlay]
+    \node[mLightBrown] at (0.5\textwidth,3.5) (result) {\textbf{Spotlight result}};
+    \node[draw,ultra thick,text width=0.8\linewidth,align=center,mLightBrown,inner sep=5pt] at ($(result.south)+(0,-0.3)$) (result-text) {The bi-conjugate admits a generic closed-form expression.};
+    %
+    \node[text width=\linewidth,align=left] (theorem) at (0.5\textwidth,0.5) {\textbf{Theorem --} The bi-conjugate of $\separable{\rfunc}{\idxentry}(\pvi{}) = \separable{\pfunc}{\idxentry}(\pvi{}) + \reg\norm{\pvi{}}{0}$ is given by
+      \begin{equation*}
+        \biconj{\separable{\rfunc}{\idxentry}}(\pvi{}) = 
+        \begin{cases}
+          \textcolor{mLightBrown}{\separable{\rslope}{\idxentry}}\abs{\pvi{}} &\text{if } \abs{\pvi{}} \leq \textcolor{mLightBrown}{\separable{\rlimit}{\idxentry}} \\
+          \separable{\pfunc}{\idxentry}(\pvi{}) + \reg &\text{otherwise}
+        \end{cases}
+      \end{equation*}
+      where $(\textcolor{mLightBrown}{\separable{\rslope}{\idxentry}},\textcolor{mLightBrown}{\separable{\rlimit}{\idxentry}})$ are some ``easy-to-compute'' quantities.};
+      %
+      \node (solutions) at ($(theorem.south)+(-4,-1)$) {\textbf{Solution methods}};
+      \node [text width=0.4\linewidth, align=center,font=\scriptsize] at ($(solutions)+(0,-0.75)$) {Proximal gradient \\ Coordinate descent \\ Splitting methods};
+      \draw[ultra thick,->] ($(solutions.north)+(0,0.5)$) -- ($(solutions.north)+(0,0.1)$);
+      %
+      \node (generalization) at ($(theorem.south)+(0,-1)$) {\textbf{Generalization}};
+      \node [text width=0.4\linewidth, align=center,font=\scriptsize] at ($(generalization)+(0,-0.75)$) {M. Pilanci \textit{et al.} (2015) \\ R. Ben Mhenni \textit{et al.} (2021) \\ H. Hazimeh \textit{et al.} (2021)};
+      \draw[ultra thick,->] ($(generalization.north)+(0,0.5)$) -- ($(generalization.north)+(0,0.1)$);
+      %
+      \node (guarantees) at ($(theorem.south)+(4,-1)$) {\textbf{Theoretical guarantees}};
+      \node [text width=0.4\linewidth, align=center,font=\scriptsize] at ($(guarantees)+(0,-0.75)$) {Tightest relaxation expressed as \\ $\min_{\pv \in \kR^{\pdim}} \lfunc(\dic\pv) + \node{\relaxrfunc}(\pv)$ \\ with $\node{\relaxrfunc}$ proper, closed, convex};
+      \draw[ultra thick,->] ($(guarantees.north)+(0,0.5)$) -- ($(guarantees.north)+(0,0.1)$);
+  \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Axis 1 -- Graphical interpretation}
+  \begin{tikzpicture}[remember picture,overlay]
+    \begin{scope}[xshift=0.5\textwidth]
+      \node (gfunc) at (-3,2) {$\separable{\rfunc}{\idxentry}(\pvi{}) = \reg\norm{\pvi{\idxentry}}{0} + \separable{\pfunc}{\idxentry}(\pvi{})$};
+      \node (gbiconj) at (3,2) {$\biconj{\separable{\rfunc}{\idxentry}}(\pvi{}) = 
+      \begin{cases}
+        \separable{\rslope}{\idxentry}\abs{\pvi{}} &\text{if } \abs{\pvi{}} \leq \separable{\rlimit}{\idxentry} \\
+        \separable{\pfunc}{\idxentry}(\pvi{}) + \reg &\text{otherwise}
+      \end{cases}$};
+      \draw[ultra thick,->] ($(gfunc.east)+(0.2,0)$) -- ($(gbiconj.west)+(-0.2,0)$);
+    \end{scope}
+    \begin{scope}[xshift=0.125\textwidth,yshift=-0.3\textheight]
+      \node[above] at (0,1.75) {\small$\separable{\pfunc}{\idxentry}(\pvi{}) = \icvx(\abs{\pvi{}} \leq \bigM)$};
+      \draw[ultra thick,->] (-1.5,0) -- (1.5,0);
+      \draw[ultra thick,->] (0,-0.2) -- (0,1.5);
+      %
+      \draw[thick,dashed] (1,0.5) -- (1,0) node[below] {\small$\separable{\rlimit}{\idxentry}$};
+      \draw[thick,dashed] (0,0) -- (1.5,0.75) node[right,rotate=40,xshift=-4] {\small$\separable{\rslope}{\idxentry}$};
+      %
+      \draw[very thick,mLightBrown] (-1,1.5) -- (-1,0.5) -- (-0.05,0.5);
+      \draw[very thick,mLightBrown] (0.05,0.5) -- (1,0.5) -- (1,1.5);
+      %
+      \draw[very thick,mLightBrown,dashed] (-1.025,1.5) -- (-1.025,0.5) -- (0,0) -- (1.025,0.5) -- (1.025,1.5);
+      %
+      \fill[mLightBrown] (0,0) circle (0.075);
+      \draw[mLightBrown,very thick] (0,0.5) circle (0.075);
+    \end{scope}
+    \begin{scope}[xshift=0.5\textwidth,yshift=-0.3\textheight]
+      \node[above] at (0,1.75) {\small$\separable{\pfunc}{\idxentry}(\pvi{}) = \pvi{}^2$};
+      \draw[ultra thick,->] (-1.5,0) -- (1.5,0);
+      \draw[ultra thick,->] (0,-0.2) -- (0,1.5);
+      %
+      \draw[thick,dashed] (1,1) -- (1,0) node[below] {\small$\separable{\rlimit}{\idxentry}$};
+      \draw[thick,dashed] (0,0) -- (1.75,1.75) node[right,rotate=40,xshift=-4] {\small$\separable{\rslope}{\idxentry}$};
+      %
+      \draw[domain=-1.5:-0.05,smooth,variable=\x,mLightBrown,very thick] plot ({\x}, {0.5 + 0.5*\x*\x});
+      \draw[domain=0.05:1.5,smooth,variable=\x,mLightBrown,very thick] plot ({\x}, {0.5 + 0.5*\x*\x});
+      %
+      \draw[domain=-1.5:-1,smooth,variable=\x,mLightBrown,very thick,dashed] plot ({\x}, {0.47 + 0.5*\x*\x});
+      \draw[very thick,mLightBrown,dashed] (-1,0.97) -- (0,0) -- (1,0.97);
+      \draw[domain=1:1.5,smooth,variable=\x,mLightBrown,very thick,dashed] plot ({\x}, {0.47 + 0.5*\x*\x});
+      %
+      \fill[mLightBrown] (0,0) circle (0.075);
+      \draw[mLightBrown,very thick] (0,0.5) circle (0.075);
+    \end{scope}
+    \begin{scope}[xshift=0.875\textwidth,yshift=-0.3\textheight]
+      \node[above] at (0,1.75) {\small$\separable{\pfunc}{\idxentry}(\pvi{}) = \abs{\pvi{}} + \icvx(\abs{\pvi{}} \leq \bigM)$};
+      \draw[ultra thick,->] (-1.5,0) -- (1.5,0);
+      \draw[ultra thick,->] (0,-0.2) -- (0,1.5);
+      %
+      \draw[thick,dashed] (1,0.75) -- (1,0) node[below] {\small$\separable{\rlimit}{\idxentry}$};
+      \draw[thick,dashed] (0,0) -- (1.33,1) node[right,rotate=40,xshift=-4] {\small$\separable{\rslope}{\idxentry}$};
+      %
+      \draw[very thick,mLightBrown] (-1,1.5) -- (-1,0.75) -- (-0.05,0.5);
+      \draw[very thick,mLightBrown] (0.05,0.5) -- (1,0.75) -- (1,1.5);
+      %
+      \draw[very thick,mLightBrown,dashed] (-1.025,1.5) -- (-1.025,0.75) -- (0,0) -- (1.025,0.75) -- (1.025,1.5);
+      %
+      \fill[mLightBrown] (0,0) circle (0.075);
+      \draw[mLightBrown,very thick] (0,0.5) circle (0.075);
+    \end{scope}
+  \end{tikzpicture}
+\end{frame}
+
+\begin{frame}
+  \begin{tikzpicture}[remember picture,overlay]
+    \begin{scope}[xshift=0.5\textwidth]
+      \node at (0,3.5) {\Large{\textbf{Let's recap}}};
+      %
+      %
+      %
+      \node[mLightBrown] at (-3.75,2) (axis1) {\textbf{Axis 1}};
+      \node[text width=0.35\linewidth,align=center,mLightBrown] at ($(axis1)+(0,-0.75)$) (axis1-text) {How to generalize the BnB method ?};
+      \draw[ultra thick,mLightBrown] ($(axis1-text.center)+(-1.7,0.5)$) rectangle ($(axis1-text.center)+(1.7,-0.5)$);
+      %
+      \node at (0,2) (spotlight1) {\textbf{Spotlight result}};
+      \node[text width=0.35\linewidth,align=center] at ($(spotlight1)+(0,-0.75)$) (spotlight1-text) {Bi-conjugate characterization};
+      \draw[ultra thick] ($(spotlight1-text.center)+(-1.7,0.5)$) rectangle ($(spotlight1-text.center)+(1.7,-0.5)$);
+      %
+      \node at (3.75,2) (contribution1) {\textbf{Contribution}};
+      \node[text width=0.35\linewidth,align=center] at ($(contribution1)+(0,-0.75)$) (contribution1-text) {Generic Branch-and-Bound algorithm};
+      \draw[ultra thick] ($(contribution1-text.center)+(-1.7,0.5)$) rectangle ($(contribution1-text.center)+(1.7,-0.5)$);
+      %
+      %
+      %
+      \begin{scope}[opacity=0.4]
+        \node[mLightBrown] at (-3.75,0) (axis2) {\textbf{Axis 2}};
+        \node[text width=0.35\linewidth,align=center,inner sep=2pt,mLightBrown] at ($(axis2)+(0,-0.75)$) (axis2-text) {How to improve the branching process ?};
+        \draw[ultra thick,mLightBrown] ($(axis2-text.center)+(-1.7,0.5)$) rectangle ($(axis2-text.center)+(1.7,-0.5)$);
+        %
+        \node[mLightBrown] at (-3.75,-2) (axis3) {\textbf{Axis 3}};
+        \node[text width=0.35\linewidth,align=center,inner sep=2pt,mLightBrown] at ($(axis3)+(0,-0.75)$) (axis3-text) {How to improve the bounding process ?};
+        \draw[ultra thick,mLightBrown] ($(axis3-text.center)+(-1.7,0.5)$) rectangle ($(axis3-text.center)+(1.7,-0.5)$);
+      \end{scope}
+    \end{scope}
+  \end{tikzpicture}
+\end{frame}

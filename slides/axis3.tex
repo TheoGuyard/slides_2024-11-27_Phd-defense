@@ -1,0 +1,385 @@
+\section{Axis 3 -- How to improve the bounding process ?}
+
+\begin{frame}{Axis 3 -- Let's switch a bit our focus}
+  \begin{tikzpicture}[remember picture,overlay]
+    \begin{scope}[xshift=0.24\textwidth]
+      \node at (0,2.5) (node0) {};
+      \draw[
+          ultra thick,
+          top color = white,
+          bottom color = gray!60,
+      ] (node0) circle (10pt) node {$\nodeSymb_0$};
+      %
+      %
+      %
+      \node at ($(node0)+(-1.25,-1.5)$) (node1) {};
+      % \node[mLightRed,font=\scriptsize] at ($(node1.west)+(-1.1,0)$) {Not processed};
+      \draw[
+          dashed,
+          ultra thick,
+          top color = white,
+          bottom color = gray!60,
+      ] (node1) circle (10pt) node {$\nodeSymb_1$};
+      \draw[dashed,ultra thick,->] ($(node0.south west)+(-0.2,0)$) -- ($(node1.north)+(0.2,0.2)$) node[midway,fill=mLightWhite,draw,font=\scriptsize,inner sep=2] {$\pvi{1} = 0$};
+      %
+      %
+      %
+      \node at ($(node1)+(1.25,-1.5)$) (node4) {};
+      \draw[
+          ultra thick,
+          top color = white,
+          bottom color = gray!60,
+      ] (node4) circle (10pt) node {$\nodeSymb_4$};
+      \draw[dashed,ultra thick,->] ($(node1.south east)+(0.2,0)$) -- ($(node4.north)+(-0.2,0.2)$) node[midway,fill=mLightWhite,draw,font=\scriptsize,inner sep=2] {$\pvi{2} \neq 0$};
+      %
+      %
+      %
+      \node at ($(node0)+(1.25,-1.5)$) (node2) {};
+      \draw[
+          dashed,
+          ultra thick,
+          top color = white,
+          bottom color = mLightRed!50,
+      ] (node2) circle (10pt) node {$\nodeSymb_2$};
+      \draw[dashed,ultra thick,->] ($(node0.south east)+(0.2,0)$) -- ($(node2.north)+(-0.2,0.2)$) node[midway,fill=mLightWhite,draw,font=\scriptsize,inner sep=2] {$\pvi{1} \neq 0$};
+      % \node[mLightRed,font=\scriptsize] at ($(node2)+(0,-0.6)$) {Pruned};
+      %
+      %
+      %
+      \node at ($(node1)+(-1.25,-1.5)$) (node3) {};
+      \draw[
+          dashed,
+          ultra thick,
+          top color = white,
+          bottom color = mLightRed!50,
+      ] (node3) circle (10pt) node {$\nodeSymb_3$};
+      \draw[dashed,ultra thick,->] ($(node1.south west)+(-0.2,0)$) -- ($(node3.north)+(0.2,0.2)$) node[midway,fill=mLightWhite,draw,font=\scriptsize,inner sep=2] {$\pvi{2} = 0$};
+      % \node[mLightRed,font=\scriptsize] at ($(node3)+(0,-0.6)$) {Pruned};
+      %
+      %
+      %
+      \node at ($(node4)+(-1.25,-1.5)$) (node5) {};
+      \draw[
+          ultra thick,
+          top color = white,
+          bottom color = gray!60,
+      ] (node5) circle (10pt) node {$\nodeSymb_5$};
+      \draw[ultra thick,->] ($(node4.south west)+(-0.2,0)$) -- ($(node5.north)+(0.2,0.2)$) node[midway,fill=mLightWhite,draw,font=\scriptsize,inner sep=2] {$\pvi{3} = 0$};
+      %
+      %
+      %
+      \node at ($(node4)+(1.25,-1.5)$) (node6) {};
+      \draw[
+          ultra thick,
+          top color = white,
+          bottom color = mLightRed!50,
+      ] (node6) circle (10pt) node {$\nodeSymb_6$};
+      \draw[ultra thick,->] ($(node4.south east)+(0.2,0)$) -- ($(node6.north)+(-0.2,0.2)$) node[midway,fill=mLightWhite,draw,font=\scriptsize,inner sep=2] {$\pvi{3} \neq 0$};
+      \node[mLightRed,font=\scriptsize] at ($(node6)+(0,-0.6)$) {Pruned};
+    \end{scope}
+    \begin{scope}[xshift=0.75\textwidth]
+      \node[align=center,text width=0.45\textwidth] (region) at (0,3.25) {
+      \begin{blockcolor}{black}{Region processed}
+          \centering
+          $\nodeSymb=(\setzero,\setone,\setnone)$
+      \end{blockcolor}
+      };
+      %
+      \node[align=center,text width=0.45\textwidth] (relaxation) at ($(region)+(0,-1.75)$) {
+      \begin{blockcolor}{black}{Convex relaxation}
+          \centering
+          $\node{\pobj}_{\mathrm{lb}} = \min_{\pv \in \kR^{\pdim}} \lfunc(\dic\pv) + \node{\relaxrfunc}(\pv)$
+      \end{blockcolor}
+      };
+      %
+      \draw[ultra thick,->] ($(region.south)+(0,0.1)$) --  ($(relaxation.north)+(0,-0.3)$);
+      %
+      \node[align=center,text width=0.45\textwidth] (problem) at ($(relaxation)+(0,-1.75)$) {
+      \begin{blockcolor}{mLightBrown}{Convex sparse optimization}
+          \centering
+          $\opt{\pv} \in \argmin_{\pv \in \kR^{\pdim}} \lfunc(\dic\pv) + \relaxrfunc(\pv)$
+      \end{blockcolor}
+      };
+      %
+      \draw[ultra thick,->] ($(relaxation.south)+(0,0.1)$) --  ($(problem.north)+(0,-0.3)$);
+      %
+      \node (fo) at ($(problem.south)+(-1.6,-0.5)$) {\textbf{Optim. methods}};
+      \node[text width=\linewidth, align=center,font=\small] at ($(fo.south)+(0,-0.6)$) {Proximal gradient \\ Coordinate descent \\ Splitting methods};
+      %
+      \node (accel) at ($(problem.south)+(1.6,-0.5)$) {\textbf{Accel. strategies}};
+      \node[text width=\linewidth, align=center,font=\small] at ($(accel.south)+(0,-0.6)$) {Working sets \\ Homotopy \\ \textcolor{mLightBrown}{Screening tests}};
+    \end{scope}
+  \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Axis 3 -- Sparse structure identification/exploitation}
+  \begin{tikzpicture}[remember picture,overlay]
+    \begin{scope}[xshift=0.5\textwidth]
+        \node[align=center,text width=0.45\textwidth] (problem) at (0,3.25) {
+        \begin{blockcolor}{black}{Convex sparse optimization}
+            \centering
+            $\opt{\pv} \in \argmin_{\pv \in \kR^{\pdim}} \lfunc(\dic\pv) + \relaxrfunc(\pv)$
+        \end{blockcolor}
+        };
+        %
+        \node[text width=1.05\linewidth,align=left] (question) at ($(problem.south)+(0,-0.5)$) {\textbf{Question --} How to \textcolor{mLightBrown}{identify/exploit} the sparse structure of the solutions ?};
+        %
+        \node (zeros) at ($(question.south)+(-2.5,-0.5)$) {Identify zeros in $\opt{\pv}$};
+        \node (scr) at ($(zeros)+(0,-1)$) {Screening tests};
+        \draw[ultra thick,->] (zeros) -- (scr);
+        \node at ($(scr)+(0,-0.5)$) {\small{L. El Ghaoui \textit{et al.} (2011)}};
+        %
+        \node (nonzeros) at ($(question.south)+(2.5,-0.5)$) {Identify non-zeros in $\opt{\pv}$};
+        \node[mLightBrown] (smt) at ($(nonzeros)+(0,-1)$) {Smoothing tests};
+        \draw[ultra thick,->] (nonzeros) -- (smt);
+        %
+        \draw[ultra thick,dashed,<->] (scr) -- (smt);
+        %
+        \node[text width=1.05\linewidth,align=left] at ($(question.south)+(0,-4.25)$) {\textbf{Hypotheses --} Generic framework with \begin{itemize}\item[$\bullet$] $\lfunc$ and $\rfunc$ proper, closed, convex with $\0 \in \interior\dom(\lfunc \circ \dic + \rfunc)$ \item[$\bullet$] $\rfunc$ is separable ($\rfunc(\pv) = \sum_{\idxentry}\separable{\rfunc}{\idxentry}(\pvi{\idxentry})$) \item[$\bullet$] $\rfunc$ is \textcolor{mLightBrown}{sparsity inducing} ($\rfunc$ non-smooth at $\pv=\0$) \item[$\rightarrow$] Beyond the BnB framework\end{itemize}};
+    \end{scope}
+  \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Axis 3 -- Identification from dual solutions}
+  \begin{tikzpicture}[remember picture,overlay]
+    \begin{scope}[xshift=0.5\textwidth]
+      \node[align=center,text width=0.6\textwidth] (problem) at (-2,3.25) {
+        \begin{blockcolor}{black}{Convex sparse optimization}
+            \centering
+            $\opt{\pv} \in \argmin_{\pv \in \kR^{\pdim}} \lfunc(\dic\pv) + \relaxrfunc(\pv)$
+        \end{blockcolor}
+      };
+      % 
+      % \node at ($(problem)+(0,-1)$) {\rotatebox{90}{$\leftrightarrow$}};
+      %
+      \node[align=center,text width=0.6\textwidth] (dual) at ($(problem)+(0,-1.75)$) {
+        \begin{blockcolor}{black}{Dual problem}
+            \centering
+            $\opt{\dv} \in \argmax_{\dv \in \kR^{\ddim}} -\conj{\lfunc}(-\dv) - \conj{\relaxrfunc}(\transp{\dic}\dv)$
+        \end{blockcolor}
+      };
+      %
+      \draw[ultra thick,<->] ($(problem)+(0,-0.7)$) -- ($(dual)+(0,0.55)$);
+      %
+      \node[align=center,text width=0.3\textwidth] (optcond) at (3.5,2.4) {
+        \begin{blockcolor}{mLightBrown}{Opt. conditions}
+            \centering
+            $\transp{\dici{\idxentry}}\opt{\dv} \in \subdiff\separable{\relaxrfunc}{\idxentry}(\opt{\pvi{\idxentry}})$
+        \end{blockcolor}
+      };
+      %
+      \node (dual-tests) at (0,0.25) {\textbf{Intermediate result}};
+      \node[text width=0.9\linewidth,align=center,inner sep=2pt] at ($(dual-tests.south)+(0,-0.4)$) (result-text) {Zeros and non-zeros in any solution $\opt{\pv}$ can be identified from $\opt{\dv}$.};
+      \draw[ultra thick] ($(result-text.center)+(5,0.4)$) rectangle ($(result-text.center)+(-5,-0.4)$);
+      %
+      \node[text width=0.93\linewidth,align=left] (theorem) at ($(result-text)+(0,-2)$) {
+        \textbf{Theorem --} One has
+        \begin{alignat*}{4}
+          \transp{\dici{\idxentry}}\opt{\dv} &\in \interior(\subdiff\separable{\relaxrfunc}{\idxentry}(0)) &&\implies \opt{\pvi{\idxentry}} = 0 \\
+          \transp{\dici{\idxentry}}\opt{\dv} &\notin \subdiff\separable{\relaxrfunc}{\idxentry}(0) &&\implies \opt{\pvi{\idxentry}} \neq 0
+        \end{alignat*}
+        for any solution $\opt{\pv}$.
+      };
+    \end{scope}
+  \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Axis 3 -- Graphical interpretation}
+  \begin{tikzpicture}[remember picture,overlay]
+    \begin{scope}[xshift=0.5\linewidth]
+      \node[text width=0.4\linewidth,align=center,font=\scriptsize] at (-4,3.5) {
+        \begin{alignat*}{4}
+          \transp{\dici{\idxentry}}\opt{\dv} &\in \interior(\subdiff\separable{\relaxrfunc}{\idxentry}(0)) &&\implies \opt{\pvi{\idxentry}} = 0 \\
+          \transp{\dici{\idxentry}}\opt{\dv} &\notin \subdiff\separable{\relaxrfunc}{\idxentry}(0) &&\implies \opt{\pvi{\idxentry}} \neq 0
+        \end{alignat*}
+      };
+      %
+      \coordinate (origin) at (0,0.25);
+
+      \node (rmaxorigin) at ($(origin)+(45:2.7cm)$) {};
+      \node (rminorigin) at ($(origin)+(45:-2.7cm)$) {};
+      \draw[fill] (rmaxorigin) circle (1pt) node[xshift=0.25cm,yshift=0.25cm] {$\opt{\dv}$};
+
+      \node (hmaxorigin) at ($(origin)+(45:1.4cm)$) {};
+      \draw[thick,dashed] ($(hmaxorigin)+(315:2.75cm)$) -- ($(hmaxorigin)+(135:2.75cm)$);
+      \node (hminorigin) at ($(origin)+(225:1.4cm)$) {};
+      \draw[thick,dashed] ($(hminorigin)+(315:2.75cm)$) -- ($(hminorigin)+(135:2.75cm)$);
+
+      \filldraw[draw=none,fill=mLightGreen!75,fill opacity=0.25] ($(hmaxorigin)+(315:2.75cm)$) -- ($(hmaxorigin)+(135:2.75cm)$) -- ($(hminorigin)+(135:2.75cm)$) -- ($(hminorigin)+(315:2.75cm)$) -- cycle;
+      \filldraw[draw=none,fill=mLightRed!75,fill opacity=0.25] ($(hmaxorigin)+(315:2.75cm)$) -- ($(hmaxorigin)+(45:2.75cm)$) -- ($(hmaxorigin)+(135:2.75cm)$) -- cycle;
+      \filldraw[draw=none,fill=mLightRed!75,fill opacity=0.25] ($(hminorigin)+(315:2.75cm)$) -- ($(hminorigin)+(225:2.75cm)$) -- ($(hminorigin)+(135:2.75cm)$) -- cycle;
+
+      \foreach \i/\a in {1/20,2/45,3/102,4/150,5/165,6/188,7/253,8/282,9/305,10/340}{
+          \draw[thick] (origin) -- ($(origin)+(\a:1.75)$) node[xshift=8*cos(\a),yshift=8*sin(\a)] {$\dici{\i}$};
+          \draw[fill] ($(origin)+(\a:1.75)$) circle (1.5pt);
+      }
+
+      \draw[ultra thick,->,mLightGreen!75] ($(origin)+(2,-2)$) .. controls ($(origin)+(2.5,-2.5)$) .. ($(origin)+(2.5,-3.25)$) node[below,font=\small,mLightGreen!75] {$\kset{\dici{} \in \kR^2}{\transp{\dici{}}\opt{\dv} \in \interior(\subdiff\separable{\relaxrfunc}{\idxentry}(0))}$};
+      \node[mLightGreen!75,font=\small] at ($(origin)+(2.5,-4)$) {$\opt{\pvi{\idxentry}} = 0$ for $\idxentry \in \{3,4,5,8,9,10\}$};
+
+      \draw[ultra thick,->,mLightRed!75] ($(origin)+(-3,-2.25)$) .. controls ($(origin)+(-4,-2.25)$) .. ($(origin)+(-4,-3.25)$) node[below,font=\small,mLightRed!75] {$\kset{\dici{} \in \kR^2}{\transp{\dici{}}\opt{\dv} \notin \subdiff\separable{\relaxrfunc}{\idxentry}(0)}$};
+      \node[mLightRed!75,font=\small] at ($(origin)+(-4,-4)$) {$\opt{\pvi{\idxentry}} \neq 0$ for $\idxentry \in \{1,2,7\}$};
+
+      \draw[ultra thick,<-] ($(origin)+(-2,-0.45)$) .. controls ($(origin)+(-2.5,-1)$) .. ($(origin)+(-3,-1)$) node [left,font=\small] {$\opt{\pvi{6}} = 0$ or $\opt{\pvi{6}} \neq 0$ ?};
+      
+      \draw[ultra thick,->] ($(origin)+(-3,0)$) -- ($(origin)+(3,0)$);
+      \draw[ultra thick,->] ($(origin)+(0,-3)$) -- ($(origin)+(0,3)$);
+    \end{scope}
+  \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Axis 3 -- Identification from safe regions}
+  \begin{tikzpicture}[remember picture,overlay]
+    \begin{scope}[xshift=0.5\textwidth]
+      \node[align=center,text width=0.6\textwidth] (dual) at (0,3.25) {
+        \begin{blockcolor}{black}{Dual problem}
+            \centering
+            $\opt{\dv} \in \argmax_{\dv \in \kR^{\ddim}} -\conj{\lfunc}(-\dv) - \conj{\relaxrfunc}(\transp{\dic}\dv)$
+        \end{blockcolor}
+      };
+      %
+      \node[align=center,text width=0.6\textwidth] (region) at ($(dual)+(0,-1.75)$) {
+        \begin{blockcolor}{black}{Safe region}
+            \centering
+            $\saferegion \subseteq \kR^{\ddim}$ such that $\opt{\dv} \in \saferegion$
+        \end{blockcolor}
+      };
+      %
+      \draw[->,ultra thick] (dual) -- ($(region)+(0,0.5)$);
+      %
+      \node[text width=0.2\textwidth,align=center,font=\small] at ($(region.east)+(0.9,-0.1)$) {Tractable to construct!};
+      %
+      \node[mLightBrown] (safe-tests) at (0,0.25) {\textbf{Spotlight result}};
+      \node[text width=1.1\linewidth,align=center,inner sep=2pt,mLightBrown] at ($(safe-tests.south)+(0,-0.4)$) (result-text) {Zeros and non-zeros in any solution $\opt{\pv}$ can be identified from safe regions.};
+      \draw[ultra thick,mLightBrown] ($(result-text.center)+(5.75,0.4)$) rectangle ($(result-text.center)+(-5.75,-0.4)$);
+      %
+      \node[text width=\linewidth,align=left] (theorem) at ($(result-text)+(0,-2.25)$) {
+        \textbf{Theorem --} Let $\transp{\dici{}}\saferegion = \{\transp{\dici{}}\dv \mid \dv \in \saferegion\}$. One has
+        \begin{alignat*}{4}
+          \transp{\dici{\idxentry}}\saferegion &\subseteq \interior(\subdiff\separable{\relaxrfunc}{\idxentry}(0)) &&\implies \opt{\pvi{\idxentry}} = 0 \\
+          \transp{\dici{\idxentry}}\saferegion &\subseteq \complset{\subdiff\separable{\relaxrfunc}{\idxentry}(0)} &&\implies \opt{\pvi{\idxentry}} \neq 0
+        \end{alignat*}
+        for any solution $\opt{\pv}$.
+      };
+    \end{scope}
+  \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Axis 3 -- Graphical interpretation}
+  \begin{tikzpicture}[remember picture,overlay]
+    \begin{scope}[xshift=0.5\linewidth]
+      \node[text width=0.4\linewidth,align=center,font=\scriptsize] at (-4,3.5) {
+        \begin{alignat*}{4}
+          \transp{\dici{\idxentry}}\saferegion &\subseteq \interior(\subdiff\separable{\relaxrfunc}{\idxentry}(0)) &&\implies \opt{\pvi{\idxentry}} = 0 \\
+          \transp{\dici{\idxentry}}\saferegion &\subseteq \complset{\subdiff\separable{\relaxrfunc}{\idxentry}(0)} &&\implies \opt{\pvi{\idxentry}} \neq 0
+        \end{alignat*}
+      };
+      %
+      \coordinate (origin) at (-0.5,0);
+
+      \node (rmaxorigin) at ($(origin)+(45:2.7cm)$) {};
+      \node (rminorigin) at ($(origin)+(45:-2.7cm)$) {};
+      \draw[fill=gray!30, very thick] ($(rmaxorigin)+(0.2,0.2)$) circle (0.45);
+      \node at ($(rmaxorigin)+(0.7,-0.4)$) {$\saferegion$};
+
+      % \draw[fill,opacity=0.5] ($(rmaxorigin)+(0.1,0.1)$) circle (1pt) node[xshift=0.25cm,yshift=0.25cm,opacity=0.5] {$\opt{\dv}$};
+
+      \node (hmaxorigin) at ($(origin)+(45:1.4cm)$) {};
+      % \draw[thick,dashed,opacity=0.3] ($(hmaxorigin)+(315:2.5cm)$) -- ($(hmaxorigin)+(135:2.5cm)$);
+      \node (hminorigin) at ($(origin)+(225:1.4cm)$) {};
+      % \draw[thick,dashed,opacity=0.3] ($(hminorigin)+(315:2.5cm)$) -- ($(hminorigin)+(135:2.5cm)$);
+
+      \node (hmaxnegorigin) at ($(origin)+(45:1.15cm)$) {};
+      \draw[thick,dashed] ($(hmaxnegorigin)+(315:2.5cm)$) -- ($(hmaxnegorigin)+(135:2.5cm)$);
+      \node (hmaxposorigin) at ($(origin)+(45:1.65cm)$) {};
+      \draw[thick,dashed] ($(hmaxposorigin)+(315:2.5cm)$) -- ($(hmaxposorigin)+(135:2.5cm)$);
+
+      \node (hminnegorigin) at ($(origin)+(225:1.15cm)$) {};
+      \draw[thick,dashed] ($(hminnegorigin)+(315:2.5cm)$) -- ($(hminnegorigin)+(135:2.5cm)$);
+      \node (hminposorigin) at ($(origin)+(225:1.65cm)$) {};
+      \draw[thick,dashed] ($(hminposorigin)+(315:2.5cm)$) -- ($(hminposorigin)+(135:2.5cm)$);
+
+      \filldraw[draw=none,fill=mLightGreen!75,fill opacity=0.25] ($(hmaxnegorigin)+(315:2.5cm)$) -- ($(hmaxnegorigin)+(135:2.5cm)$) -- ($(hminnegorigin)+(135:2.5cm)$) -- ($(hminnegorigin)+(315:2.5cm)$) -- cycle;
+      \filldraw[draw=none,fill=mLightRed!75,fill opacity=0.25] ($(hmaxposorigin)+(315:2.5cm)$) -- ($(hmaxposorigin)+(45:2.5cm)$) -- ($(hmaxposorigin)+(135:2.5cm)$) -- cycle;
+      \filldraw[draw=none,fill=mLightRed!75,fill opacity=0.25] ($(hminposorigin)+(315:2.5cm)$) -- ($(hminposorigin)+(225:2.5cm)$) -- ($(hminposorigin)+(135:2.5cm)$) -- cycle;
+
+      \foreach \i/\a in {1/20,2/45,3/102,4/150,5/165,6/188,7/253,8/282,9/305,10/340}{
+          \draw[thick] (origin) -- ($(origin)+(\a:1.75)$) node[xshift=8*cos(\a),yshift=8*sin(\a)] {$\dici{\i}$};
+          \draw[fill] ($(origin)+(\a:1.75)$) circle (1.5pt);
+      }
+
+      \draw[ultra thick,->,mLightGreen!75] ($(origin)+(2,-2)$) .. controls ($(origin)+(2.5,-2.5)$) .. ($(origin)+(2.5,-3.25)$) node[below,font=\small,mLightGreen!75] {$\kset{\dici{} \in \kR^2}{\transp{\dici{}}\saferegion \subseteq \interior(\subdiff\separable{\relaxrfunc}{\idxentry}(0))}$};
+      \node[mLightGreen!75,font=\small] at ($(origin)+(2.5,-4)$) {$\opt{\pvi{\idxentry}} = 0$ for $\idxentry \in \{3,4,5,8,9,10\}$};
+
+      \draw[ultra thick,->,mLightRed!75] ($(origin)+(-3,-2.25)$) .. controls ($(origin)+(-3.5,-2.25)$) .. ($(origin)+(-3.5,-3.25)$) node[below,font=\small,mLightRed!75] {$\kset{\dici{} \in \kR^2}{\transp{\dici{}}\saferegion \subseteq \complset(\subdiff\separable{\relaxrfunc}{\idxentry}(0)})$};
+      \node[mLightRed!75,font=\small] at ($(origin)+(-3.5,-4)$) {$\opt{\pvi{\idxentry}} \neq 0$ for $\idxentry \in \{2\}$};
+      
+      \draw[ultra thick,->] ($(origin)+(-3,0)$) -- ($(origin)+(3,0)$);
+      \draw[ultra thick,->] ($(origin)+(0,-3)$) -- ($(origin)+(0,3)$);
+
+      %
+
+      \node[text width=0.3\linewidth,align=center,font=\small] (uncl) at (4.5,1.5) {Unclassified indices \\ $\idxentry \in \{1,6,7\}$};
+      \node[font=\small] (perf) at ($(uncl)+(0,-3)$) {Perfect identification};
+      \draw[ultra thick,->,mLightBrown] (uncl) -- (perf) node[midway,font=\small,fill=mLightWhite,draw,ultra thick] {$0 < \diam(\saferegion) < \delta$};
+    \end{scope}
+  \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Mixed-order}
+  \begin{itemize}
+    \item Framework
+    \item Reformulation
+    \item Accélération
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \begin{tikzpicture}[remember picture,overlay]
+    \begin{scope}[xshift=0.5\textwidth]
+      \node at (0,3.5) {\Large{\textbf{Let's recap}}};
+      %
+      %
+      %
+      \begin{scope}[opacity=0.4]
+        \node[mLightBrown] at (-3.75,2) (axis1) {\textbf{Axis 1}};
+        \node[text width=0.35\linewidth,align=center,mLightBrown] at ($(axis1)+(0,-0.75)$) (axis1-text) {How to generalize the BnB method ?};
+        \draw[ultra thick,mLightBrown] ($(axis1-text.center)+(-1.7,0.5)$) rectangle ($(axis1-text.center)+(1.7,-0.5)$);
+        %
+        \node at (0,2) (spotlight1) {\textbf{Spotlight result}};
+        \node[text width=0.35\linewidth,align=center] at ($(spotlight1)+(0,-0.75)$) (spotlight1-text) {Bi-conjugate characterization};
+        \draw[ultra thick] ($(spotlight1-text.center)+(-1.7,0.5)$) rectangle ($(spotlight1-text.center)+(1.7,-0.5)$);
+        %
+        \node at (3.75,2) (contribution1) {\textbf{Contribution}};
+        \node[text width=0.35\linewidth,align=center] at ($(contribution1)+(0,-0.75)$) (contribution1-text) {Generic Branch-and-Bound algorithm};
+        \draw[ultra thick] ($(contribution1-text.center)+(-1.7,0.5)$) rectangle ($(contribution1-text.center)+(1.7,-0.5)$);
+        %
+        \node[mLightBrown] at (-3.75,0) (axis2) {\textbf{Axis 2}};
+        \node[text width=0.35\linewidth,align=center,inner sep=2pt,mLightBrown] at ($(axis2)+(0,-0.75)$) (axis2-text) {How to improve the branching process ?};
+        \draw[ultra thick,mLightBrown] ($(axis2-text.center)+(-1.7,0.5)$) rectangle ($(axis2-text.center)+(1.7,-0.5)$);
+        %
+        \node at (0,0) (spotlight2) {\textbf{Spotlight result}};
+        \node[text width=0.35\linewidth,align=center] at ($(spotlight2)+(0,-0.75)$) (spotlight2-text) {Simultaneous pruning tests};
+        \draw[ultra thick] ($(spotlight2-text.center)+(-1.7,0.5)$) rectangle ($(spotlight2-text.center)+(1.7,-0.5)$);
+        %
+        \node at (3.75,0) (contribution2) {\textbf{Contribution}};
+        \node[text width=0.35\linewidth,align=center] at ($(contribution2)+(0,-0.75)$) (contribution2-text) {More efficient tree exploration};
+        \draw[ultra thick] ($(contribution2-text.center)+(-1.7,0.5)$) rectangle ($(contribution2-text.center)+(1.7,-0.5)$);
+      \end{scope}
+      %
+      %
+      %
+      \node[mLightBrown] at (-3.75,-2) (axis3) {\textbf{Axis 3}};
+      \node[text width=0.35\linewidth,align=center,inner sep=2pt,mLightBrown] at ($(axis3)+(0,-0.75)$) (axis3-text) {How to improve the bounding process ?};
+      \draw[ultra thick,mLightBrown] ($(axis3-text.center)+(-1.7,0.5)$) rectangle ($(axis3-text.center)+(1.7,-0.5)$);
+      %
+      \node at (0,-2) (spotlight3) {\textbf{Spotlight result}};
+      \node[text width=0.35\linewidth,align=center] at ($(spotlight3)+(0,-0.75)$) (spotlight3-text) {Screening and smoothing tests};
+      \draw[ultra thick] ($(spotlight3-text.center)+(-1.7,0.5)$) rectangle ($(spotlight3-text.center)+(1.7,-0.5)$);
+      %
+      \node at (3.75,-2) (contribution3) {\textbf{Contribution}};
+      \node[text width=0.35\linewidth,align=center] at ($(contribution3)+(0,-0.75)$) (contribution3-text) {More efficient relaxation resolution};
+      \draw[ultra thick] ($(contribution3-text.center)+(-1.7,0.5)$) rectangle ($(contribution3-text.center)+(1.7,-0.5)$);
+    \end{scope}
+  \end{tikzpicture}
+\end{frame}
