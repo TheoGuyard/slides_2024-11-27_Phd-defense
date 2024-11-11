@@ -24,3 +24,14 @@
 \newcolumntype{L}{>$l<$}
 \arraycolsep=1.4pt
 \setlength{\tabcolsep}{3pt}
+
+% Pgfplot
+\pgfplotsset{
+    legend image code/.code={
+        \draw[mark repeat=2,mark phase=2] plot coordinates {
+            (0cm,0cm)
+            (0.25cm,0cm)
+            (0.25cm,0cm)
+        };
+    }
+}

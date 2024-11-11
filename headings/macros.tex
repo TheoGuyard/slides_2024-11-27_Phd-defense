@@ -29,10 +29,12 @@
 \newcommand{\rfunc}{g}
 \newcommand{\dfunc}{D}
 \newcommand{\relaxrfunc}{\tilde{g}}
+\newcommand{\relaxpfunc}{\tilde{h}}
 \newcommand{\bigM}{M}
 \newcommand{\regtwo}{\alpha}
 \newcommand{\rslope}{\tau}
 \newcommand{\rlimit}{\mu}
+\newcommand{\noise}{\boldsymbol{\epsilon}}
 
 % Indices
 \newcommand{\idxentry}{i}
@@ -55,10 +57,13 @@
 % Math operators
 \DeclareMathOperator{\argmax}{argmax}
 \DeclareMathOperator{\argmin}{argmin}
+\DeclareMathOperator{\biconjugate}{biconj}
 \DeclareMathOperator{\complset}{cmpl}
+\DeclareMathOperator{\convex}{cvx}
 \DeclareMathOperator{\diam}{diam}
 \DeclareMathOperator{\dom}{dom}
 \DeclareMathOperator{\interior}{int}
+\DeclareMathOperator{\prox}{prox}
 
 
 % Math misc
@@ -70,7 +75,7 @@
 \newcommand{\conj}[1]{#1^{*}}
 \newcommand{\icvx}{\eta}
 \newcommand{\intervint}[2]{[#1,#2]}
-\newcommand{\iter}[2]{#1^{(#2)}}
+\newcommand{\iter}[2]{#1^{#2}}
 \newcommand{\norm}[2]{\|#1\|_#2}
 \newcommand{\opt}[1]{#1^{\star}}
 \newcommand{\pospart}[1]{[#1]_+}

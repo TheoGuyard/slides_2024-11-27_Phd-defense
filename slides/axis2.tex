@@ -1,350 +1,622 @@
-\section{Axis 2 -- How to improve the branching process ?}
+\section{Axis 2 -- How to solve relaxations efficiently ?}
 
-\begin{frame}{Axis 2 -- A typical tree exploration scheme}
-    \begin{tikzpicture}[remember picture,overlay]
-      \begin{scope}[xshift=0.5\textwidth]
-        \node at (1,2) (node0) {};
-        \draw[ultra thick,->] ($(node0.north)+(0.5,0.6)$) -- ($(node0.north)+(0.25,0.25)$);
-        \draw[
-            ultra thick,
-            top color = white,
-            bottom color = gray!60,
-        ] (node0) circle (12pt) node {$\nodeSymb_n$};
-        %
-        \node at ($(node0)+(-1,-1)$) (node1) {};
-        \draw[
-            ultra thick,
-            top color = white,
-            bottom color = gray!60,
-        ] (node1) circle (12pt) node {$\nodeSymb_{n+1}$};
-        \draw[ultra thick,->] ($(node0.south west)+(-0.27,0)$) -- ($(node1.north)+(0.25,0.25)$);
-        %
-        \node at ($(node1)+(-1,-1)$) (node3) {};
-        \draw[
-            ultra thick,
-            top color = white,
-            bottom color = gray!60,
-        ] (node3) circle (12pt) node {$\nodeSymb_{n+3}$};
-        \draw[ultra thick,->] ($(node1.south west)+(-0.27,0)$) -- ($(node3.north)+(0.25,0.25)$);
-        %
-        \node at ($(node3)+(-1.5,-1.5)$) (nodemntwo) {};
-        \draw[
-            ultra thick,
-            top color = white,
-            bottom color = gray!60,
-        ] (nodemntwo) circle (12pt) node {$\nodeSymb_{N-2}$};
-        \draw[dashed,ultra thick,->] ($(node3.south west)+(-0.27,0)$) -- ($(nodemntwo.north)+(0.25,0.25)$);
-        %
-        \node at ($(nodemntwo)+(-1,-1)$) (nodemnone) {};
-        \draw[
-            ultra thick,
-            top color = white,
-            bottom color = mLightRed!50,
-        ] (nodemnone) circle (12pt) node {$\nodeSymb_{N-1}$};
-        \draw[ultra thick,->] ($(nodemntwo.south west)+(-0.27,0)$) -- ($(nodemnone.north)+(0.25,0.25)$);
-        \node[mLightRed,font=\scriptsize] at ($(nodemnone)+(0,-0.6)$) {Pruned};
-        %
-        \node at ($(nodemntwo)+(1,-1)$) (nodemn) {};
-        \draw[
-            ultra thick,
-            top color = white,
-            bottom color = mLightRed!50,
-        ] (nodemn) circle (12pt) node {$\nodeSymb_{N}$};
-        \draw[ultra thick,->] ($(nodemntwo.south east)+(0.27,0)$) -- ($(nodemn.north)+(-0.25,0.25)$);
-        \node[mLightRed,font=\scriptsize] at ($(nodemn)+(0,-0.6)$) {Pruned};
-        %
-        \node at ($(node3)+(1,-1)$) (node6) {};
-        \draw[
-            ultra thick,
-            top color = white,
-            bottom color = mLightRed!50,
-        ] (node6) circle (12pt) node {$\nodeSymb_{n+6}$};
-        \draw[ultra thick,->] ($(node3.south east)+(0.27,0)$) -- ($(node6.north)+(-0.25,0.25)$);
-        \node[mLightRed,font=\scriptsize] at ($(node6)+(0,-0.6)$) {Pruned};
-        %
-        \node at ($(node1)+(1,-1)$) (node4) {};
-        \draw[
-            ultra thick,
-            top color = white,
-            bottom color = mLightRed!50,
-        ] (node4) circle (12pt) node {$\nodeSymb_{n+4}$};
-        \draw[ultra thick,->] ($(node1.south east)+(0.27,0)$) -- ($(node4.north)+(-0.25,0.25)$);
-        \node[mLightRed,font=\scriptsize] at ($(node4)+(0,-0.6)$) {Pruned};
-        %
-        \node at ($(node0)+(1,-1)$) (node2) {};
-        \draw[
-            dashed,
-            ultra thick,
-            top color = white,
-            bottom color = gray!60,
-        ] (node2) circle (12pt) node {$\nodeSymb_{n+2}$};
-        \draw[dashed, ultra thick,->] ($(node0.south east)+(0.27,0)$) -- ($(node2.north)+(-0.25,0.25)$);
-        %
-        %
-        %
-        \node (obs1) at (-3,3) {\textbf{Left child}};
-        \node (text1) at ($(obs1.south)+(0,-0.25)$) {Nodes processed without pruning};
-        \node (consequence1) at ($(text1.south)+(0,-0.75)$) {Useless computational load};
-        \draw[ultra thick,->] (text1) -- (consequence1);
-        %
-        \node (obs2) at (3,-2) {\textbf{Right child}};
-        \node (text2) at ($(obs2.south)+(0,-0.25)$) {Nodes pruned with loose bounds};
-        \node (consequence2) at ($(text2.south)+(0,-0.75)$) {Unnecessarily tight relaxation};
-        \draw[ultra thick,->] (text2) -- (consequence2);
-      \end{scope}
-    \end{tikzpicture}
-\end{frame}
-  
-\begin{frame}{Axis 2 -- Dual lower bounds}
-  \begin{tikzpicture}[remember picture,overlay]
-    \begin{scope}[xshift=0.5\textwidth]
-      \node[text width=1\linewidth, align=left] (task) at (0,3) {\textbf{Task --} Given a region $\nodeSymb = (\setzero,\setone,\setnone)$, compute a lower bound on \vspace*{-7pt}$$\vspace*{-7pt}\textstyle\node{\pobj} = \inf_{\pv \in \node{\pset}} \lfunc(\dic\pv) + \reg\norm{\pv}{0} + \pfunc(\pv)$$ that is \sout{tight and} \textcolor{mLightBrown}{tractable}.}; 
-      %
-      \node[align=center,text width=\textwidth] (problem) at ($(task)+(0,-1.75)$) {
-        \begin{blockcolor}{black}{Step 1: Problem reformulation}
-          \hspace*{2.5cm}
-          $\node{\pobj} = \min_{\pv \in \kR^{\pdim}} \lfunc(\dic\pv) + \node{\rfunc}(\pv)$
-        \end{blockcolor}
-      };
-      %
-      \node at ($(problem)+(-2.5,-1)$) {\rotatebox{90}{$\leq$}};
-      \node at ($(problem)+(-1.5,-1)$) {\small{convexify}};
-      %
-      \node[align=center,text width=\textwidth] (cvx-relaxation) at ($(problem)+(0,-1.75)$) {
-        \begin{blockcolor}{black}{Step 2: Convex relaxation}
-          \hspace*{2.43cm}
-          $\node{\pobj}_{\mathrm{lb}} = \min_{\pv \in \kR^{\pdim}} \lfunc(\dic\pv) + \node{\relaxrfunc}(\pv)$
-        \end{blockcolor}
-      };
-      %
-      \node at ($(cvx-relaxation)+(-2.5,-1)$) {\rotatebox{90}{$=$}};
-      \node at ($(cvx-relaxation)+(-1.75,-1)$) {\small{dualize}};
-      %
-      \node[align=center,text width=\textwidth] (dual-relaxation) at ($(cvx-relaxation)+(0,-1.75)$) {
-        \begin{blockcolor}{black}{Step 3: Dual relaxation}
-          \hspace*{2.28cm}
-          $\node{\pobj}_{\conj{\mathrm{lb}}} = \textcolor{mLightBrown}{\max_{\dv \in \kR^{\ddim}}} -\textcolor{mLightBrown}{\conj{\lfunc}}(-\dv) - \textcolor{mLightBrown}{\conj{(\node{\relaxrfunc})}}(\transp{\dic}\dv)$
-        \end{blockcolor}
-      };
-      %
-      \node at ($(dual-relaxation)+(0,-1.25)$) {Any \textcolor{mLightBrown}{objective evaluation} gives a valid lower-bound.};
-    \end{scope}
-  \end{tikzpicture}
-\end{frame}
-
-\begin{frame}{Axis 2 -- Conjugate characterization}
-  \begin{tikzpicture}[remember picture,overlay]
-    \node at (0.5\textwidth,3.5) (result) {\textbf{Intermediate result}};
-    \node[text width=0.9\linewidth,align=center,inner sep=2pt] at ($(result.south)+(0,-0.4)$) (result-text) {Dual lower bounds admit a generic closed-form expression.};
-    \draw[ultra thick] ($(result-text.center)+(5,0.4)$) rectangle ($(result-text.center)+(-5,-0.4)$);
-    %
-    \node[text width=\linewidth,align=left] (theorem) at (0.5\textwidth,-0.5) {\textbf{Theorem --} For any region $\nodeSymb=(\setzero,\setone,\setnone)$ and any $\dv \in \kR^{\ddim}$, the quantity
-    \begin{equation*}
-      \node{\dfunc}(\dv) = -\conj{\lfunc}(-\dv) - \conj{(\node{\rfunc})}(\transp{\dic}\dv)
-    \end{equation*}
-    where $\conj{(\node{\rfunc})}(\transp{\dic}\dv) = \sum_{\idxentry}\conj{(\separable{\node{\rfunc}}{\idxentry})}(\transp{\dici{\idxentry}}\dv)$ with
-    \begin{equation*}
-      \conj{(\separable{\node{\rfunc}}{\idxentry})}(\transp{\dici{\idxentry}}\dv) = 
-      \begin{cases}
-        0 & \text{if } \idxentry \in \setzero \\
-        \separable{\conj{\pfunc}}{\idxentry}(\transp{\dici{\idxentry}}\dv) - \reg & \text{if } \idxentry \in \setone \\
-        \pospart{\separable{\conj{\pfunc}}{\idxentry}(\transp{\dici{\idxentry}}\dv) - \reg} & \text{if } \idxentry \in \setnone
-      \end{cases}
-    \end{equation*}
-    is a lower-bound on $\node{\pobj}$.};
-    %
-    \node[text width=\linewidth,align=left] (properties) at ($(theorem.south)+(0,-0.5)$) {\textbf{Remark --} has been used in the literature, \AddTodo{Improve}};
-  \end{tikzpicture}
-\end{frame}
-
-\begin{frame}{Axis 2 -- Dual link}
-  \begin{tikzpicture}[remember picture,overlay]
-    \begin{scope}[xshift=0.5\textwidth]
-      \node[mLightBrown] at (0,3.5) (result) {\textbf{Spotlight result}};
-      \node[text width=0.9\linewidth,align=center,inner sep=5pt,mLightBrown,draw,ultra thick] at ($(result.south)+(0,-0.3)$) (result-text) {Successor nodes in the BnB tree share a similar dual relaxation.};
-      %
-      \node (parent) at (0,1.75) {};
-      \node (child0) at (-2,0.5) {};
-      \node (child1) at (2,0.5) {};
-      \draw[
-        ultra thick,
-        top color = white,
-        bottom color = gray!60,
-      ] (parent) circle (10pt) node {$\nodeSymb$};
-      \draw[
-        dashed,
-        ultra thick,
-        top color = white,
-        bottom color = gray!60,
-      ] (child0) circle (10pt) node {$\nodeSymb_{\idxentry,0}$};
-      \draw[ultra thick,->,dashed] ($(parent.south)+(-0.3,-0.15)$) -- ($(child0.north)+(0.3,0.15)$) node[midway,fill=mLightWhite,draw,ultra thick,dashed,font=\scriptsize] {$\pvi{\idxentry} = 0$};
-      \draw[
-        dashed,
-        ultra thick,
-        top color = white,
-        bottom color = gray!60,
-      ] (child1) circle (10pt) node {$\nodeSymb_{\idxentry,1}$};
-      \draw[ultra thick,->,dashed] ($(parent.south)+(0.3,-0.15)$) -- ($(child1.north)+(-0.3,0.15)$) node[midway,fill=mLightWhite,draw,ultra thick,dashed,font=\scriptsize] {$\pvi{\idxentry} \neq 0$};
-      %
-      \node[text width=\linewidth,align=left] (theorem) at (0,-1.5) {\textbf{Theorem --} Let $\nodeSymb_{\idxentry,b}$ be a direct successor of $\nodeSymb$ in the BnB tree, then
-      \begin{equation*}
-        \dfunc^{\nodeSymb_{\idxentry,b}}(\dv) = \node{\dfunc}(\dv) + \Delta_{\idxentry,b}(\transp{\dici{\idxentry}}\dv)
-      \end{equation*}
-      for all $\dv \in \kR^{\ddim}$.};
-      %
-      \draw[ultra thick,<-,mLightBrown] ($(theorem)+(-0.5,-0.3)$) -- ($(theorem)+(-1.5,-1.5)$) node[below,mLightBrown] {Independent of $\nodeSymb$};
-      \draw[ultra thick,<-,mLightBrown] ($(theorem)+(1.5,-0.3)$) -- ($(theorem)+(2.5,-1.5)$) node[below,mLightBrown] {Compute in $\bigO(1)$};
-    \end{scope}
-  \end{tikzpicture}
-\end{frame}
-
-\begin{frame}{Axis 2 -- Testing successor nodes}
+\begin{frame}{Axis 2 -- Convex optimization}
   \begin{tikzpicture}[remember picture,overlay]
     \begin{scope}[xshift=0.5\linewidth]
+      \onslide<1-> {
+        \node[text width=0.4\linewidth, align=center] (relax) at (0,3.25) {
+          \begin{blockcolor}{mDarkTeal}{Relaxation for region $\nodeSymb$}
+            \centering
+            $\min_{\pv \in \nodeSymb} \lfunc(\dic\pv) + \rfunc_{\text{cvx}}(\pv)$
+          \end{blockcolor}
+        };
+      }
       %
-      \node (node) at (0,2.75) {};
-      \node at ($(node)+(0,0.75)$) {\textbf{Simultaneous pruning tests}};
-      \draw[
-        ultra thick,
-        top color = white,
-        bottom color = gray!60,
-      ] (node) circle (10pt) node {$\nodeSymb$};
       %
-      \node[anchor=west,xshift=10pt,font=\small] at (node.east) {relax. resolution $\rightarrow \node{\dfunc}(\dv)$};
       %
-      \node (childi0) at ($(node)+(-4,-1.5)$) {};
-      \draw[
-        dashed,
-        ultra thick,
-        top color = white,
-        bottom color = mLightRed!50,
-      ] (childi0) circle (10pt) node {$\nodeSymb_{i,0}$};
-      \draw[ultra thick,->] ($(node)+(-0.3,-0.2)$) -- ($(childi0)+(0.3,0.25)$) node[midway,fill=mLightWhite,draw,ultra thick,font=\scriptsize,inner sep=2pt] {$\pvi{i} = 0$};
-      \node[font=\small,mLightRed] at ($(childi0.south)+(0,-0.7)$) {$\dfunc^{\nodeSymb_{i,0}}(\dv) > \pobj_{\mathrm{ub}}$};
-      \draw[very thick,->,mLightBrown,font=\scriptsize] ($(node.west)+(-0.5,0)$) .. controls ($(childi0.north)+(1,1.25)$) .. ($(childi0.north)+(0.25,0.5)$) node[midway,above,xshift=5,yshift=2,rotate=10] {$+ \ \Delta_{i,0}(\transp{\dici{\idxentry}}\dv)$};
+      \onslide<2-> {
+        \node[text width=0.4\linewidth, align=center] (problem) at ($(relax)+(0,-2.5)$) {
+          \begin{blockcolor}{mDarkTeal}{Convex problem}
+              \centering
+              $\min_{\textcolor{mLightBrown}{\pv \in \kR^{\pdim}}} \lfunc(\dic\pv) + \textcolor{mLightBrown}{\relaxrfunc}(\pv)$
+          \end{blockcolor}
+        };
+        %
+        \draw[ultra thick,<->] ($(relax.south)+(0,0.1)$) -- ($(problem.north)+(0,-0.3)$) node[midway,draw,ultra thick,fill=mLightWhite] {reformulation};
+      }
       %
-      \node (childi1) at ($(node)+(-1.5,-1.5)$) {};
-      \draw[
-        dashed,
-        ultra thick,
-        top color = white,
-        bottom color = gray!60,
-      ] (childi1) circle (10pt) node {$\nodeSymb_{i,1}$};
-      \draw[ultra thick,->] ($(node)+(-0.15,-0.3)$) -- ($(childi1)+(0.15,0.35)$) node[midway,fill=mLightWhite,draw,ultra thick,font=\scriptsize,inner sep=1.75pt] {$\pvi{i} \neq 0$};
-      \node[font=\small] at ($(childi1.south)+(0,-0.7)$) {$\dfunc^{\nodeSymb_{i,1}}(\dv) \leq \pobj_{\mathrm{ub}}$};
       %
-      \node (childj0) at ($(node)+(1.5,-1.5)$) {};
-      \draw[
-        dashed,
-        ultra thick,
-        top color = white,
-        bottom color = gray!60,
-      ] (childj0) circle (10pt) node {$\nodeSymb_{j,0}$};
-      \draw[ultra thick,->] ($(node)+(0.15,-0.3)$) -- ($(childj0)+(-0.15,0.35)$) node[midway,fill=mLightWhite,draw,ultra thick,font=\scriptsize,inner sep=1.6pt] {$\pvi{j} = 0$};
-      \node[font=\small] at ($(childj0.south)+(0,-0.7)$) {$\dfunc^{\nodeSymb_{j,0}}(\dv) \leq \pobj_{\mathrm{ub}}$};
       %
-      \node (childj1) at ($(node)+(4,-1.5)$) {};
-      \draw[
-        dashed,
-        ultra thick,
-        top color = white,
-        bottom color = mLightRed!50,
-      ] (childj1) circle (10pt) node {$\nodeSymb_{j,1}$};
-      \draw[ultra thick,->] ($(node)+(0.3,-0.2)$) -- ($(childj1)+(-0.3,0.25)$) node[midway,fill=mLightWhite,draw,ultra thick,font=\scriptsize,inner sep=1.5pt] {$\pvi{j} \neq 0$};
-      \node[font=\small,mLightRed] at ($(childj1.south)+(0,-0.7)$) {$\dfunc^{\nodeSymb_{j,1}}(\dv) > \pobj_{\mathrm{ub}}$};
+      \onslide<3-> {
+          \node[text width=0.8\linewidth,align=left,anchor=west,font=\small] at ($(problem.east)+(0,-0.1)$) {$\relaxrfunc$ proper, closed, convex \\ $\relaxrfunc$ separable \\ $\relaxrfunc$ non-smooth at $\pv=\0$};
+      }
+      %
+      %
+      %
+      \onslide<4-> {
+        \node[text width=0.4\linewidth,align=center] (beyond) at ($(problem)+(-4.25,0.8)$) {\textbf{Applications beyond \\ the BnB scope}};
+        \draw[ultra thick,->] ($(beyond.south)+(0,0)$) .. controls ($(beyond.south)+(0,-0.4)$) .. ($(problem.west)+(0,-0.1)$);
+      }
+      %
+      %
+      %
+      \onslide<5-> {
+        \node[text width=0.4\linewidth,align=center,anchor=north] (method) at ($(problem)+(-3,-1.25)$) {\textbf{First-order methods} \\ Proximal gradient \\ Coordinate descent \\ ...};
+        %
+        \node (x0) at ($(method.south)+(-2,-0.8)$) {$\iter{\pv}{0}$};
+        \node[draw,ultra thick] (xk) at ($(method.south)+(0,-0.8)$) {$\iter{\pv}{k} \rightarrow \iter{\pv}{k+1}$};
+        \node[yshift=6,font=\small] at (xk.north) {iteration};
+        \node (xopt) at ($(method.south)+(2,-0.8)$) {};
+        %
+        \draw[ultra thick] (x0) -- (xk);
+        \draw[ultra thick] (xk) -- ($(xk)!0.65!(xopt)$) -- ($(xk)!0.65!(xopt)+(0,-0.65)$) -- ($(x0)!0.35!(xk)+(0,-0.65)$) -- ($(x0)!0.35!(xk)$);
+        \draw[ultra thick,->] ($(xk)!0.65!(xopt)+(0,-0.65)$) -- ($(xk)+(-0.2,-0.65)$);
+        \node[right,yshift=1] at (xopt) {$\opt{\pv}$};
+        \draw[ultra thick,->] (xk) -- (xopt);
+      }
+      %
+      %
+      %
+      \onslide<6-> {
+        \node[text width=0.5\linewidth,align=center,anchor=north] (cost) at ($(problem)+(3,-1.25)$) {\textbf{Solving cost}};
+        \node[text width=0.5\linewidth,align=center] (cost-formula) at ($(cost)+(0,-1)$) {cost per iteration \\ $\times$ \\ number of iterations};
+      }
+      %
+      %
+      %
+      \onslide<7-> {
+        \node[mLightBrown] at ($(cost-formula.south)+(-1.75,-0.75)$) {dimension of $\pv$};
+        \draw[ultra thick,<-,mLightBrown] ($(cost-formula.south)+(-1.75,-0.4)$) .. controls ($(cost-formula.south)+(-1.75,1.2)$) .. ($(cost-formula.south)+(-1.5,1.2)$);
+      }
+      %
+      %
+      %
+      \onslide<8-> {
+        \node[mLightBrown] at ($(cost-formula.south)+(1.75,-0.75)$) {regularity of $\lfunc/\relaxrfunc$};
+        \draw[ultra thick,<-,mLightBrown] ($(cost-formula.south)+(1.75,-0.4)$) .. controls ($(cost-formula.south)+(1.75,0.2)$) .. ($(cost-formula.south)+(1.6,0.2)$);
+      }
     \end{scope}
-    \begin{scope}[xshift=0.5\linewidth,yshift=-0.46\textheight]
-      \node (node) at (0,3) {};
-      \node at ($(node)+(0,0.75)$) {\textbf{Tree expansion}};
-      \draw[
-        ultra thick,
-        top color = white,
-        bottom color = gray!60,
-      ] (node) circle (10pt) node {$\nodeSymb$};
-      \node (childi0) at ($(node)+(-1.25,-1.25)$) {};
-      \draw[
-        ultra thick,
-        top color = white,
-        bottom color = mLightRed!50,
-      ] (childi0) circle (10pt) node {$\nodeSymb_{i,0}$};
-      \draw[ultra thick,->] ($(node)+(-0.3,-0.2)$) -- ($(childi0)+(0.2,0.35)$) node[midway,fill=mLightWhite,draw,ultra thick,font=\scriptsize,inner sep=2pt] {$\pvi{i} = 0$};
-      \node[mLightRed,font=\scriptsize] at ($(childi0)+(0,-0.5)$) {Pruned};
+  \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Axis 2 -- Sparse structure exploitation}
+  \begin{tikzpicture}[remember picture,overlay]
+    \begin{scope}[xshift=0.5\linewidth]
+      \onslide<1-> {
+        \node[text width=0.35\linewidth, align=center] (problem) at (0,3.25) {
+          \begin{blockcolor}{mDarkTeal}{Convex problem}
+            \centering
+            $\min_{\pv \in \kR^{\pdim}} \lfunc(\dic\pv) + \relaxrfunc(\pv)$
+          \end{blockcolor}
+        };
+        %
+        \node at ($(problem)+(0,-1.5)
+        $) (question) {\textbf{Task}};
+        \node[draw,ultra thick,text width=0.45\linewidth, align=center] at ($(question.south)+(0,-0.25)$) (question1-text) {Reduce the solving cost};
+      }
       %
-      \node (childi1) at ($(node)+(1.25,-1.25)$) {};
-      \draw[
-        ultra thick,
-        top color = white,
-        bottom color = gray!60,
-      ] (childi1) circle (10pt) node {$\nodeSymb_{i,1}$};
-      \draw[ultra thick,->] ($(node)+(0.3,-0.2)$) -- ($(childi1)+(-0.2,0.35)$) node[midway,fill=mLightWhite,draw,ultra thick,font=\scriptsize,inner sep=1.75pt] {$\pvi{i} \neq 0$};
-      \node[mLightRed,font=\scriptsize,right] at ($(childi1)+(0.4,0)$) {Not processed};
       %
-      \node (childj0) at ($(childi1)+(-1.25,-1.25)$) {};
-      \draw[
-        ultra thick,
-        top color = white,
-        bottom color = gray!60,
-      ] (childj0) circle (10pt) node {$\nodeSymb_{j,0}$};
-      \draw[ultra thick,->] ($(childi1)+(-0.3,-0.2)$) -- ($(childj0)+(0.2,0.35)$) node[midway,fill=mLightWhite,draw,ultra thick,font=\scriptsize,inner sep=2pt] {$\pvi{j} = 0$};
       %
-      \node (childj1) at ($(childi1)+(1.25,-1.25)$) {};
-      \draw[
-        ultra thick,
-        top color = white,
-        bottom color = mLightRed!50,
-      ] (childj1) circle (10pt) node {$\nodeSymb_{j,1}$};
-      \draw[ultra thick,->] ($(childi1)+(0.3,-0.2)$) -- ($(childj1)+(-0.2,0.35)$) node[midway,fill=mLightWhite,draw,ultra thick,font=\scriptsize,inner sep=1.75pt] {$\pvi{j} \neq 0$};
-      \node[mLightRed,font=\scriptsize] at ($(childj1)+(0,-0.5)$) {Pruned};
+      \onslide<2-> {
+        \node[text width=0.4\linewidth,align=center] (opt1) at ($(question)+(-3.5,-2)$) {\textbf{Option 1} \\ Reduce the dimension of $\pv$};
+        \draw[->,ultra thick] ($(question1-text.west)+(0.05,0)$) .. controls ($(opt1)+(0,1)$) .. (opt1);
+      }
       %
-      \draw[ultra thick,->] ($(childj0)+(-0.3,-0.2)$) -- ($(childj0)+(-0.5,-0.4)$);
-      \draw[ultra thick,->] ($(childj0)+(0.3,-0.2)$) -- ($(childj0)+(0.5,-0.4)$);
+      %
+      %
+      \onslide<3-> {
+        \node[font=\small] at ($(problem)+(4,0.3)
+        $) (property) {$\relaxrfunc$ non-smooth at $\pv=\0$};
+        \node[font=\small] at ($(property)+(0,-0.8)
+        $) (property-text) {sparse solution $\opt{\pv}$};
+        \draw[ultra thick,->] (property) -- (property-text);
+      }
+      %
+      %
+      %
+      \onslide<4-> {
+        \node[text width=\linewidth,align=center,anchor=north] (scr) at ($(opt1)+(0,-1)$) {\textbf{Screening tests} \\ Identify zeros in $\opt{\pv}$ \\ \small{L. El Ghaoui \textit{et al.} (2011)}};
+        \draw[ultra thick,->] (opt1) -- (scr);
+      }
+      %
+      %
+      %
+      \onslide<5-> {
+        \node[text width=0.4\linewidth,align=center] (opt2) at ($(question)+(3.5,-2)$) {\textbf{Option 2} \\ Improve the regularity of $\lfunc/\relaxrfunc$};
+        \draw[->,ultra thick] ($(question1-text.east)+(-0.05,0)$) .. controls ($(opt2)+(0,1)$) .. (opt2);
+      }
+      %
+      %
+      %
+      \onslide<6-> {
+        \node[text width=\linewidth,align=center,anchor=north,mLightBrown] (smt) at ($(opt2)+(0,-1)$) {\textbf{Smoothing tests} \\ Identify non-zeros in $\opt{\pv}$};
+        \draw[ultra thick,->] (opt2) -- (smt);
+      }
+      %
+      %
+      %
+      \onslide<7-> {
+        \draw[<->,ultra thick,dashed] ($(scr.north)+(2,-0.25)$) -- ($(smt.north)+(-2,-0.25)$);
+      }
+    \end{scope}
+  \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Axis 2 -- Screening and smoothing tests}
+  \begin{tikzpicture}[remember picture,overlay]
+    \begin{scope}[xshift=0.5\textwidth]
+      \onslide<1-> {
+        \node[text width=0.35\linewidth, align=center] (problem) at (-3.25,3.25) {
+          \begin{blockcolor}{mDarkTeal}{Convex problem}
+            \centering
+            $\min_{\pv \in \kR^{\pdim}} \lfunc(\dic\pv) + \relaxrfunc(\pv)$
+          \end{blockcolor}
+        };
+      }
+      %
+      %
+      %
+      \onslide<2-> {
+        \node[align=center,text width=0.35\textwidth] (dual) at (3.25,3.25) {
+          \begin{blockcolor}{mDarkTeal}{Dual problem}
+              \centering
+              $\max_{\dv \in \kR^{\ddim}} \dfunc(\dv)$
+          \end{blockcolor}
+        };
+      }
+      %
+      %
+      %
+      \onslide<3-> {
+        \node[align=center,text width=0.3\textwidth] (optcond) at (0,1.5) {
+          \begin{blockcolor}{mDarkTeal}{Opt. conditions}
+              \centering
+              $\transp{\dic}\opt{\dv} \in \subdiff\relaxrfunc(\opt{\pv})$
+          \end{blockcolor}
+        };
+        %
+        \draw[ultra thick,->] (problem) .. controls ($(problem)+(0,-1.75)$) .. (optcond) node[midway,fill=mLightWhite,draw,ultra thick,font=\small] {solution $\opt{\pv}$};
+        %
+        \draw[ultra thick,->] (dual) .. controls ($(dual)+(0,-1.75)$) .. (optcond) node[midway,fill=mLightWhite,draw,ultra thick,font=\small] {solution $\opt{\dv}$};
+      }
+      %
+      %
+      %
+      \onslide<4-> {
+        \node[font=\scriptsize] at ($(optcond.south)+(0,-0.15)$) {remind $\relaxrfunc(\pv)=\sum_{\idxentry=1}^{\pdim}\separable{\relaxrfunc}{\idxentry}(\pvi{\idxentry})$};
+      }
+      %
+      %
+      %
+      \onslide<5-> {
+        \node (safe) at ($(dual)+(-0.15,-2.9)$) {\textbf{Safe region}};
+        \node at ($(safe.south)+(0,-0.15)$) (result-text) {$\saferegion \subseteq \kR^{\ddim}$ with $\opt{\dv} \in \saferegion$};
+        %
+        \draw[dashed,ultra thick,<->] (safe) -- ($(safe)+(0,0.8)$);
+      }
+      %
+      %
+      %
+      \onslide<6-> {
+        \node[mLightBrown] (spotlight) at (0,-0.75) {\textbf{Spotlight result}};
+        \node[draw,ultra thick,mLightBrown] at ($(spotlight.south)+(0,-0.25)$) (result-text) {Zeros and non-zeros in $\opt{\pv}$ can be identified from a safe region $\saferegion$.};
+        %
+        \node[text width=0.93\linewidth,align=left] (theorem) at (0,-2.75) {
+          \textbf{Theorem --} Let $\saferegion$ be a safe region, one has
+          \begin{alignat*}{6}
+            \text{Screening test:} &&\quad \forall \dv \in \saferegion, \ \transp{\dici{\idxentry}}\dv &\in \interior(\subdiff\separable{\relaxrfunc}{\idxentry}(0)) &&\implies \opt{\pvi{\idxentry}} = 0 \\
+            \text{Smoothing test:} &&\quad \forall \dv \in \saferegion, \  \transp{\dici{\idxentry}}\dv &\notin \subdiff\separable{\relaxrfunc}{\idxentry}(0) &&\implies \opt{\pvi{\idxentry}} \neq 0
+          \end{alignat*}
+        };
+      }
+      %
+      %
+      %
+      \onslide<7-> {
+        \draw[ultra thick,mLightBrown] ($(theorem)+(-1.7,-0.8)$) -- ($(theorem)+(-1.7,-1)$) -- ($(theorem)+(2.4,-1)$) -- ($(theorem)+(2.4,-0.8)$);
+        \node[mLightBrown,font=\small] at (0.4,-4) (easy) {easy to evaluate if $\saferegion$ has a simple shape};
+      }
+    \end{scope}
+  \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Axis 2 -- Dynamic identification}
+  \begin{tikzpicture}[remember picture,overlay]
+    \begin{scope}[xshift=0.5\linewidth]
+      \onslide<1-> {
+        \node[text width=0.35\linewidth, align=center] (problem) at (0,3.25) {
+          \begin{blockcolor}{mDarkTeal}{Convex problem}
+              \centering
+              $\min_{\pv \in \kR^{\pdim}} \lfunc(\dic\pv) + \relaxrfunc(\pv)$
+          \end{blockcolor}
+        };
+        %
+        \node (x0) at (-2.75,1.5) {$\iter{\pv}{0}$};
+        \node[draw,ultra thick] (xk) at (0,1.5) {$\iter{\pv}{k} \rightarrow \iter{\pv}{k+1}$};
+        \node[yshift=6,font=\small] at (xk.north) {iteration};
+        \node (xopt) at (2.75,1.5) {};
+        %
+        \draw[ultra thick] (x0) -- (xk);
+        \draw[ultra thick] (xk) -- ($(xk)!0.55!(xopt)$) -- ($(xk)!0.55!(xopt)+(0,-0.65)$) -- ($(x0)!0.45!(xk)+(0,-0.65)$) -- ($(x0)!0.45!(xk)$);
+        \draw[ultra thick,->] ($(xk)!0.55!(xopt)+(0,-0.65)$) -- ($(xk)+(-0.2,-0.65)$);
+        \node[right] at (xopt) {$\opt{\pv}$};
+        \draw[ultra thick,->] (xk) -- (xopt);
+      }
+      %
+      %
+      %
+      \onslide<2-> {
+        \fill[mLightWhite] ($(xk)!0.55!(xopt)+(0,-0.6)$) rectangle ($(x0)!0.45!(xk)+(0,-0.7)$);
+        \fill[mLightWhite] ($(xk)+(-0.5,-0.5)$) rectangle ($(xk)+(0.5,-0.8)$);
+        %
+        \draw[ultra thick] (xk) -- ($(xk)!0.55!(xopt)$) -- ($(xk)!0.55!(xopt)+(0,-2)$) -- ($(x0)!0.45!(xk)+(0,-2)$) -- ($(x0)!0.45!(xk)$);
+        %
+        \draw[ultra thick,->] ($(xk)!0.55!(xopt)$) -- ($(xk)!0.55!(xopt)+(0,-0.5)$);
+        \draw[ultra thick,->] ($(xk)!0.55!(xopt)$) -- ($(xk)!0.55!(xopt)+(0,-1.75)$);
+        %
+        \draw[ultra thick,->] ($(x0)!0.45!(xk)+(0,-2)$) -- ($(x0)!0.45!(xk)+(0,-0.25)$);
+        \draw[ultra thick,->] ($(x0)!0.45!(xk)+(0,-2)$) -- ($(x0)!0.45!(xk)+(0,-1.5)$);
+        %
+        \draw[ultra thick,->] ($(xk)!0.55!(xopt)+(0,-2)$) -- ($(xk)+(-0.2,-2)$);
+      }
+      %
+      %
+      %
+      \onslide<3-> {
+        \node[draw,ultra thick,fill=mLightWhite,font=\small,text width=0.2\linewidth,align=center] (safe) at ($(xk)!0.55!(xopt)+(0,-1)$) {new safe region};
+      }
+      %
+      %
+      %
+      \onslide<4-> {
+        \node[draw,ultra thick,fill=mLightWhite,font=\small,text width=0.2\linewidth,align=center] (scr) at ($(xk)+(0,-2)$) {screening test};
+        %
+        \node[font=\small] (identif-zero) at ($(scr)+(0,-0.75)$) {Identify some $\opt{\pvi{\idxentry}} = 0$};
+      }
+      %
+      %
+      %
+      \onslide<5-> {
+        \node[font=\small] (action-zero) at ($(identif-zero)+(0,-1)$) {Fix $\pvi{\idxentry} = 0$};
+        \draw[ultra thick,->] (identif-zero) -- (action-zero);
+      }
+      %
+      %
+      %
+      \onslide<6-> {
+        \node[draw,ultra thick,mLightBrown,fill=mLightWhite,font=\small,text width=0.2\linewidth,align=center] (smt) at ($(x0)!0.45!(xk)+(0,-1)$) {smoothing test};
+        %
+        \node[font=\small] (identif-nzero) at ($(smt)+(-2.9,0)$) {Identify some $\opt{\pvi{\idxentry}} \neq 0$};
+      }
+      %
+      %
+      %
+      \onslide<7-> {
+        \node[font=\small] (action-nzero) at ($(identif-nzero)+(0,-1)$) {Smooth $\separable{\relaxrfunc}{\idxentry}$};
+        \draw[ultra thick,->] (identif-nzero) -- (action-nzero);
+      }
+      %
+      %
+      %
+      \onslide<8-> {
+        \begin{scope}[xshift=-0.41\textwidth,yshift=-0.3\textheight]
+          \draw[ultra thick,->] (-1.25,0) -- (1.25,0) node[right,font=\small] {$\pvi{}$};
+          \draw[ultra thick,->] (0,-0.25) -- (0,1.5);
+          \node[below left] at (0,0) {0};
+          %
+          \node[font=\small,gray] at (-1.25,1.3) {$\separable{\relaxrfunc}{\idxentry}$};
+          \draw[domain=-1.25:0,smooth,variable=\x,very thick,gray] plot ({\x}, {-0.5*\x + 0.3*\x*\x});
+        \end{scope}
+      }
+      %
+      %
+      %
+      \onslide<8> {
+        \begin{scope}[xshift=-0.41\textwidth,yshift=-0.3\textheight]
+          \draw[domain=0:1.25,smooth,variable=\x,very thick,LavenderBlush4] plot ({\x}, {0.5*\x + 0.3*\x*\x});
+        \end{scope}
+      }
+      %
+      %
+      %
+      \onslide<9-> {
+        \begin{scope}[xshift=-0.41\textwidth,yshift=-0.3\textheight]
+          \draw[domain=0:1.25,smooth,variable=\x,very thick,LavenderBlush4,dashed] plot ({\x}, {0.5*\x + 0.3*\x*\x});
+          \draw[domain=0:1,smooth,variable=\x,very thick,LavenderBlush4] plot ({\x}, {-0.5*\x + 0.3*\x*\x});
+        \end{scope}
+      }
+      %
+      %
+      %
+      \onslide<10-> {
+        \node[font=\small,text width=0.4\linewidth,align=center] at ($(identif-nzero)+(0,-4)$) {Break non-smoothness \\ Higher-order iteration};
+      }
+      %
+      %
+      %
+      % \onslide<11-> {
+      %   \node[anchor=north,font=\small] (cost) at (2,-3) {\textbf{Solving cost}};
+      %   \node[font=\small] (cost-formula) at ($(cost)+(0,-0.35)$) {number of iterations $\times$ cost per iteration};
+      %   \node[font=\small] at ($(cost-formula)+(-1.5,-0.35)$) {regularity of $\lfunc/\relaxrfunc$};
+      %   \node[font=\small] at ($(cost-formula)+(1.5,-0.35)$) {dimension of $\pv$};
+      % }
+      %
+      %
+      %
+      \onslide<11-> {
+        \node[font=\small,text width=0.3\linewidth,align=center] (safe-action) at ($(safe)+(2.5,-2)$) {\textcolor{mLightBrown}{All} zeros and non-zeros identified after a finite number of iterations};
+        \draw[ultra thick,->,dashed] ($(safe-action)+(-1.25,2)$) .. controls ($(safe-action)+(0,2)$) .. (safe-action) node[midway,font=\small,xshift=10,rotate=-45] {mild cond.};
+      }
+    \end{scope}
+  \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Axis 2 -- Numerics}
+  \begin{tikzpicture}[remember picture,overlay]
+    \begin{scope}[xshift=0.5\linewidth]
+      \onslide<1-> {
+        \node[text width=0.35\linewidth, align=center] (problem) at (0,2.75) {
+          \begin{blockcolor}{mDarkTeal}{Convex problem}
+              \centering
+              $\min_{\pv \in \kR^{\pdim}} \lfunc(\dic\pv) + \relaxrfunc(\pv)$
+          \end{blockcolor}
+        };
+        %
+        \node[font=\small] at ($(problem)+(0,-1)$) {$\lfunc$ : Quadratic / $\relaxrfunc$ : $\ell_1\ell_2$-norm};
+      }
+      %
+      %
+      %
+      \onslide<7-> {
+        \node[text width=0.75\linewidth,align=center] at (3,-2.75) {\textbf{Transform 1${}^{\text{st}}$-order \\ into 2${}^{\text{nd}}$-order iterations} \\ More costly but way less iterations \\ Gains in terms of solving time};
+      }
+    \end{scope}
+    \begin{scope}[xshift=0.1\linewidth,yshift=-0.2\textheight]
+      \onslide<2-> {
+        \node[font=\small,text width=0.5\linewidth,align=left] at (6.75,1.5) {\textbf{Proximal gradient} \\ \ref{plot:ProximalGradient} Vanilla method \\ \ref{plot:ProximalGradientScr} With screening \\ \ref{plot:ProximalGradientScrRlx} With screening and smoothing};
+      }
+      %
+      %
+      %
+      \onslide<4-> {
+        \node[font=\small,rotate=-15] at (3,1.17) {linear};
+        \node[font=\small,rotate=-25] at (3,0.45) {linear};
+      }
+      %
+      %
+      %
+      \onslide<6-> {
+        \node[font=\small,rotate=-87] at (0.5,0.75) {quadratic};
+      }
+      %
+      %
+      %
+      \onslide<2> {
+        \pgfplotscreateplotcyclelist{cycle_perfprofiles_synthetic_logistic}{
+          RoyalBlue2, very thick, smooth\\    
+          PaleGreen4, very thick, smooth\\
+          Firebrick4, very thick, smooth\\
+        }
+        \begin{axis}[
+            width   = 0.5\textwidth,
+            height  = 0.4\textwidth,,
+            legend style={
+                at={(1.1,0.5)},
+                anchor=west,
+                legend columns=1,
+                draw=none
+            },
+            cycle list name=cycle_perfprofiles_synthetic_logistic,
+            mbaseplot,
+            axis line style = ultra thick,
+            major tick style = {ultra thick,color=mDarkTeal},
+            xmajorgrids=true,
+            ymajorgrids=true,
+            major grid style={dotted},
+            axis x line=bottom,
+            axis y line=left,
+            ymode=log,
+            minor tick style={draw=none},
+            xlabel=\textbf{\small{Iterations}},
+            ylabel=\textbf{\small{Sub-optimality}},
+            xmax = 220,
+            ymax = 0.5,
+            ymin=1e-18,
+            xmin = 0,
+        ]
+        \end{axis}
+      }
+      %
+      %
+      %
+      \onslide<3-4> {
+        \pgfplotscreateplotcyclelist{cycle_perfprofiles_synthetic_logistic}{
+          RoyalBlue2, very thick, smooth\\    
+          PaleGreen4, very thick, smooth\\
+          Firebrick4, very thick, smooth\\
+        }
+        \begin{axis}[
+            width   = 0.5\textwidth,
+            height  = 0.4\textwidth,,
+            legend style={
+                at={(1.1,0.5)},
+                anchor=west,
+                legend columns=1,
+                draw=none
+            },
+            cycle list name=cycle_perfprofiles_synthetic_logistic,
+            mbaseplot,
+            axis line style = ultra thick,
+            major tick style = {ultra thick,color=mDarkTeal},
+            xmajorgrids=true,
+            ymajorgrids=true,
+            major grid style={dotted},
+            axis x line=bottom,
+            axis y line=left,
+            ymode=log,
+            minor tick style={draw=none},
+            xlabel=\textbf{\small{Iterations}},
+            ylabel=\textbf{\small{Sub-optimality}},
+            xmax = 220,
+            ymax = 0.5,
+            ymin=1e-18,
+        ]
+          \foreach \solver in {ProximalGradient,ProximalGradientScr}{
+            \addplot table[
+                x=grid_iter,
+                y=\solver_iter_sopt,
+                col sep=comma
+            ] {data/quadratic_l1l2norm(0.5)_50_500_1000_0.5_10_True_0.3_600.0_1e-14.csv};
+          }
+        \end{axis}
+      }
+      %
+      %
+      %
+      \onslide<5-> {
+        \pgfplotscreateplotcyclelist{cycle_perfprofiles_synthetic_logistic}{
+          RoyalBlue2, very thick, smooth\\    
+          PaleGreen4, very thick, smooth\\
+          Firebrick4, very thick, smooth\\
+        }
+        \begin{axis}[
+            width   = 0.5\textwidth,
+            height  = 0.4\textwidth,,
+            legend style={
+                at={(1.1,0.5)},
+                anchor=west,
+                legend columns=1,
+                draw=none
+            },
+            cycle list name=cycle_perfprofiles_synthetic_logistic,
+            mbaseplot,
+            axis line style = ultra thick,
+            major tick style = {ultra thick,color=mDarkTeal},
+            xmajorgrids=true,
+            ymajorgrids=true,
+            major grid style={dotted},
+            axis x line=bottom,
+            axis y line=left,
+            ymode=log,
+            minor tick style={draw=none},
+            xlabel=\textbf{\small{Iterations}},
+            ylabel=\textbf{\small{Sub-optimality}},
+            xmax = 220,
+            ymax = 0.5,
+            ymin=1e-18,
+        ]
+
+          \foreach \solver in {ProximalGradient,ProximalGradientScr,ProximalGradientScrRlx}{
+            \addplot table[
+                x=grid_iter,
+                y=\solver_iter_sopt,
+                col sep=comma
+            ] {data/quadratic_l1l2norm(0.5)_50_500_1000_0.5_10_True_0.3_600.0_1e-14.csv};
+            \label{plot:\solver}
+          }
+        \end{axis}
+      } 
     \end{scope}
   \end{tikzpicture}
 \end{frame}
 
 \begin{frame}
   \begin{tikzpicture}[remember picture,overlay]
-    \begin{scope}[xshift=0.5\textwidth]
-      \node at (0,3.5) {\Large{\textbf{Let's recap}}};
-      %
-      %
-      %
-      \begin{scope}[opacity=0.4]
-        \node[mLightBrown] at (-3.75,2) (axis1) {\textbf{Axis 1}};
-        \node[text width=0.35\linewidth,align=center,mLightBrown] at ($(axis1)+(0,-0.75)$) (axis1-text) {How to generalize the BnB method ?};
-        \draw[ultra thick,mLightBrown] ($(axis1-text.center)+(-1.7,0.5)$) rectangle ($(axis1-text.center)+(1.7,-0.5)$);
+    \begin{scope}[xshift=0.5\linewidth]
+      \onslide<1-> {
+        \node at (-4.75,4) {\Large{\textbf{Let's recap}}};
         %
-        \node at (0,2) (spotlight1) {\textbf{Spotlight result}};
-        \node[text width=0.35\linewidth,align=center] at ($(spotlight1)+(0,-0.75)$) (spotlight1-text) {Bi-conjugate characterization};
-        \draw[ultra thick] ($(spotlight1-text.center)+(-1.7,0.5)$) rectangle ($(spotlight1-text.center)+(1.7,-0.5)$);
         %
-        \node at (3.75,2) (contribution1) {\textbf{Contribution}};
-        \node[text width=0.35\linewidth,align=center] at ($(contribution1)+(0,-0.75)$) (contribution1-text) {Generic Branch-and-Bound algorithm};
-        \draw[ultra thick] ($(contribution1-text.center)+(-1.7,0.5)$) rectangle ($(contribution1-text.center)+(1.7,-0.5)$);
-      \end{scope}
+        %
+        \node[text width=0.45\linewidth, align=center] (problem) at (0,3.5) {
+          \begin{blockcolor}{mDarkTeal}{Problem}
+            \centering
+            $\opt{\pobj} = \min_{\pv \in \kR^{\pdim}} \lfunc(\dic\pv) + \rfunc(\pv)$
+          \end{blockcolor}
+        };
+        %
+        \node[font=\small,anchor=west] (problem-text) at ($(problem)+(3,-0.15)$) {$\rfunc(\pv) = \reg\norm{\pv}{0} + \pfunc(\pv)$};
+        \draw[ultra thick,->] ($(problem-text.west)+(-0.3,0)$) -- ($(problem-text.west)+(0.05,0)$);
+        %
+        %
+        %
+        \node (bnb) at ($(problem.south)+(0,-0.3)$) {};
+        \draw[ultra thick,->] ($(bnb)+(0,0.4)$) -- ($(bnb)+(0,-0.4)$);
+        \node[draw,ultra thick,font=\small,text width=0.25\linewidth,align=center,fill=mLightWhite,inner sep=2pt] at (bnb)  {BnB algorithm};
+        %
+        %
+        %
+        \node[text width=0.45\linewidth, align=center] (restrict) at ($(bnb)+(0,-0.9)$) {
+          \begin{blockcolor}{mDarkTeal}{Restriction to region $\nodeSymb$}
+            \centering
+            $\node{\pobj} = \min_{\textcolor{mLightBrown}{\pv \in \nodeSymb}} \lfunc(\dic\pv) + \rfunc(\pv)$
+          \end{blockcolor}
+        };
+        %
+        \node[font=\small,anchor=west] (easy-text) at ($(restrict)+(3,-0.15)$) {lower bound on $\node{\pobj}$};
+        \draw[ultra thick,->] ($(easy-text.west)+(-0.3,0)$) -- ($(easy-text.west)+(0.05,0)$);
+        %
+        %
+        %
+        \node (challenge) at ($(restrict.south)+(0,-0.3)$) {};
+        \draw[ultra thick,->] ($(challenge)+(0,0.4)$) -- ($(challenge)+(0,-0.4)$);
+        \node[draw,ultra thick,font=\small,text width=0.25\linewidth,align=center,fill=mLightWhite,inner sep=2pt] at (challenge) {standard strategy};
+        %
+        %
+        %
+        \node[text width=0.45\linewidth, align=center] (relax) at ($(challenge)+(0,-0.9)$) {
+          \begin{blockcolor}{mDarkTeal}{Relaxation for region $\nodeSymb$}
+            \centering
+            $\node{\pobj}_{\text{lb}} = \min_{\pv \in \nodeSymb} \lfunc(\dic\pv) + \textcolor{mLightBrown}{\rfunc_{\text{lb}}}(\pv)$
+          \end{blockcolor}
+        };
+        %
+        \node[font=\small,anchor=west] (relax-text) at ($(relax)+(3,-0.15)$) {$\node{\pobj}_{\text{lb}} \leq \node{\pobj}$};
+        \draw[ultra thick,->] ($(relax-text.west)+(-0.3,0)$) -- ($(relax-text.west)+(0.05,0)$);
+        %
+        %
+        %
+        \begin{scope}[opacity=0.5]
+          \node[mLightBrown] at (-4,-1.75) (axis1) {\textbf{Axis 1}};
+          \node[text width=0.3\linewidth,align=center,mLightBrown,font=\small] at ($(axis1.south)+(0,-0.5)$) (axis1-text) {How to construct relaxations generically ?};
+          \draw[ultra thick,mLightBrown] ($(axis1-text.center)+(-1.7,0.5)$) rectangle ($(axis1-text.center)+(1.7,-0.5)$);
+          %
+          \node[text width=0.35\linewidth,align=left,anchor=north,font=\small] at ($(axis1)+(0.1,-1.25)$) {1) Set $\rfunc_{\text{lb}}$ $=$ $\rfunc_{\text{cvx}}$ \\ 2) Closed-form expression \\ 3) Generalize BnB method};
+        \end{scope}
+      }
       %
       %
       %
-      \node[mLightBrown] at (-3.75,0) (axis2) {\textbf{Axis 2}};
-      \node[text width=0.35\linewidth,align=center,inner sep=2pt,mLightBrown] at ($(axis2)+(0,-0.75)$) (axis2-text) {How to improve the branching process ?};
-      \draw[ultra thick,mLightBrown] ($(axis2-text.center)+(-1.7,0.5)$) rectangle ($(axis2-text.center)+(1.7,-0.5)$);
-      %
-      \node at (0,0) (spotlight2) {\textbf{Spotlight result}};
-      \node[text width=0.35\linewidth,align=center] at ($(spotlight2)+(0,-0.75)$) (spotlight2-text) {Simultaneous pruning tests};
-      \draw[ultra thick] ($(spotlight2-text.center)+(-1.7,0.5)$) rectangle ($(spotlight2-text.center)+(1.7,-0.5)$);
-      %
-      \node at (3.75,0) (contribution2) {\textbf{Contribution}};
-      \node[text width=0.35\linewidth,align=center] at ($(contribution2)+(0,-0.75)$) (contribution2-text) {More efficient tree exploration};
-      \draw[ultra thick] ($(contribution2-text.center)+(-1.7,0.5)$) rectangle ($(contribution2-text.center)+(1.7,-0.5)$);
+      \onslide<1> {
+        \node[mLightBrown] at (0,-1.75) (axis2) {\textbf{Axis 2}};
+        \node[text width=0.3\linewidth,align=center,mLightBrown,font=\small] at ($(axis2.south)+(0,-0.5)$) (axis2-text) {How to solve relaxations efficiently ?};
+        \draw[ultra thick,mLightBrown] ($(axis2-text.center)+(-1.7,0.5)$) rectangle ($(axis2-text.center)+(1.7,-0.5)$);
+        %
+        \node[text width=0.35\linewidth,align=left,anchor=north,font=\small] at ($(axis2)+(0.1,-1.25)$) {1) Cast as convex problem \\ 2) Screening/smoothing \\ 3) Reduce solving cost};
+      }
       %
       %
       %
-      \begin{scope}[opacity=0.4]
-        \node[mLightBrown] at (-3.75,-2) (axis3) {\textbf{Axis 3}};
-        \node[text width=0.35\linewidth,align=center,inner sep=2pt,mLightBrown] at ($(axis3)+(0,-0.75)$) (axis3-text) {How to improve the bounding process ?};
+      \onslide<2-> {
+        \begin{scope}[opacity=0.5]
+          \node[mLightBrown] at (0,-1.75) (axis2) {\textbf{Axis 2}};
+          \node[text width=0.3\linewidth,align=center,mLightBrown,font=\small] at ($(axis2.south)+(0,-0.5)$) (axis2-text) {How to solve relaxations efficiently ?};
+          \draw[ultra thick,mLightBrown] ($(axis2-text.center)+(-1.7,0.5)$) rectangle ($(axis2-text.center)+(1.7,-0.5)$);
+          %
+          \node[text width=0.35\linewidth,align=left,anchor=north,font=\small] at ($(axis2)+(0.1,-1.25)$) {1) Cast as convex problem \\ 2) Screening/smoothing \\ 3) Reduce solving cost};
+        \end{scope}
+      }
+      %
+      %
+      %
+      \onslide<2-> {
+        \node[mLightBrown] at (4,-1.75) (axis3) {\textbf{Axis 3}};
+        \node[text width=0.3\linewidth,align=center,mLightBrown,font=\small] at ($(axis3.south)+(0,-0.5)$) (axis3-text) {How to improve the standard strategy ?};
         \draw[ultra thick,mLightBrown] ($(axis3-text.center)+(-1.7,0.5)$) rectangle ($(axis3-text.center)+(1.7,-0.5)$);
-      \end{scope}
+        %
+        \node[text width=0.35\linewidth,align=center,anchor=north,font=\small] at ($(axis3)+(0,-1.25)$) {Manuscript -- Chap. 4-5};
+        \node[text width=0.35\linewidth,align=left,anchor=north,font=\small] at ($(axis3)+(0.4,-1.75)$) {$\rightarrow$ ICASSP (2022) \\ \textcolor{mDarkTeal!25}{$\rightarrow$ EUSIPCO (2023)} \\ $\rightarrow$ ICML (2024)};
+      }
     \end{scope}
   \end{tikzpicture}
 \end{frame}
-

@@ -5,290 +5,631 @@
     \begin{scope}[xshift=0.5\textwidth]
       \node[text width=\textwidth,align=center] at (0,3.25) {Explore \textcolor{mLightBrown}{regions} in the feasible space and \textcolor{mLightBrown}{prune} those \\ that cannot contain any optimal solution.};
     \end{scope}
-    %
     \begin{scope}[xshift=0.4\textwidth,yshift=0.5cm]
-      \draw[ultra thick, fill=gray!20,rotate=15] (0,0) ellipse (3.5cm and 1.75cm);
-      \node[rotate=15] at (-0.5,1.25) {\small{Feasible space}};
-      \draw[ultra thick, fill=gray!40,rotate=30] (1,-1) ellipse (1cm and 0.75cm);
-      \node[rotate=15] at (1.4,0) {\small{Region $\nodeSymb$}};
+      \onslide<1-> {
+        \draw[ultra thick, fill=gray!20,rotate=15] (0,0) ellipse (3.5cm and 1.75cm);
+        \node[rotate=15] at (-0.5,1.25) {\small{Feasible space}};
+        %
+        \draw[ultra thick, fill=gray!40,rotate=30] (1,-1) ellipse (1cm and 0.75cm);
+        \node[rotate=15] at (1.4,0) {\small{Region $\nodeSymb$}};
+      }
       %
-      \draw[dashed, very thick, ->] (2.3,-0.25) ..controls(2.75,-0.5) .. (2.75,-2) node[below] {$\node{\pobj}$};
-      \node[fill=black!2,inner sep=2pt] at (2.75,-1.55) {\small{Best val.}};
       %
-      \node[below] (gg) at (3.5,-2.1) {$>$};
       %
-      \draw[dashed, very thick, ->] (3.25,0) ..controls(4.25,-0.9) .. (4.25,-2) node[below] (popt) {$\opt{\pobj}$};
-      \node[fill=black!2,inner sep=2pt] at (4.25,-1.55) {\small{Best val.}};
+      \onslide<2-> {
+        \draw[ultra thick,<-] (2.3,-0.25) .. controls(3.5,-0.5) .. (4,-1) node[below] {\textbf{Pruning test}};
+      }
       %
-      \node (prune) at (6,-2.3) {\small{Prune}};
-      \draw[ultra thick,->] ($(prune)+(-1,0)$) -- (prune);
       %
-      \node at (2.7,-3.75) {$\textcolor{gray!50}{\node{\pobj} \geq} \ \node{\pobj}_{\mathrm{lb}}$};
-      \node at (3.5,-3.75) {$>$};
-      \node at (4.3,-3.75) {$\opt{\pobj}_{\mathrm{ub}} \ \textcolor{gray!50}{\geq \opt{\pobj}}$};
-      \node[below] at (3.5,-4) {\textcolor{mLightBrown}{{\small{Pruning test}}}};
       %
-      \draw[ultra thick] (1.9,-3.4) rectangle (5.1,-4.5);
+      \onslide<3-> {
+        \node[scale=3] at (1.5,-0.6) {\ding{55}};
+      }
       %
-      \draw[ultra thick,->] ($(gg)+(0,-0.9)$) -- ($(gg)+(0,-0.4)$);
-      % 
-      \node at (-1.5,-3.9) {$\begin{array}{lcl}\text{Region management} &: & \text{\textcolor{mLightBrown}{Branching}} \\ \text{Bound evaluation} &: & \text{\textcolor{mLightBrown}{Bounding}} \end{array}$};
+      %
+      %
+      \onslide<4-> {
+        \node at (1,-3.25) {$\begin{array}{lcl}\textbf{Branching} &\textbf{--}& \text{Region management} \\  \textbf{Bounding}  &\textbf{--}& \text{Pruning test evaluation} \end{array}$};
+      }
     \end{scope}
   \end{tikzpicture}
 \end{frame}
 
-\begin{frame}{BnB -- Branching}
+\begin{frame}{BnB -- How to construct regions in the feasible space ?}
   \begin{tikzpicture}[remember picture,overlay]
     \begin{scope}[xshift=0.5\textwidth]
-      \node[text width=0.675\textwidth,align=center,draw,ultra thick,inner sep=5pt] (problem) at (0,3) {How to manage regions in the feasible space ?};
-      \node at ($(problem.north)+(0,0.2)$) {\textbf{Branching}};
+      \onslide<1-> {
+        \node[text width=0.45\linewidth, align=center] (problem) at (0,3.25) {
+          \begin{blockcolor}{mDarkTeal}{Problem}
+              \centering
+              $\min_{\pv \in \kR^{\pdim}} \lfunc(\dic\pv) + \reg\norm{\pv}{0} + \pfunc(\pv)$
+          \end{blockcolor}
+        };
+      }
       %
-      \node[align=center,text width=0.525\textwidth] (question) at ($(problem.south)+(0,-1)$) {
-        \begin{blockcolor}{black}{$\boldsymbol{\ell}_0$-regularized problem}
-          \centering
-          $\min_{\pv \in \kR^{\pdim}} \lfunc(\dic\pv) + \reg\norm{\pv}{0} + \pfunc(\pv)$
-        \end{blockcolor}
-      };
       %
-      \node[text width=0.4\textwidth,align=center] (observation) at ($(question.south)+(-3,-1)$) {The problem solution is expected to be sparse};
-      % \node at ($(question.south)+(0,-0.75)$) {$\rightarrow$};
-      \node[text width=0.4\textwidth,align=center] (conclusion) at ($(question.south)+(3,-1)$) {Construct regions by \textcolor{mLightBrown}{driving the sparsity} of the variable};
-      \draw[ultra thick,->] (observation) -- (conclusion);
       %
-      \node[align=center,text width=0.5\textwidth] (region) at ($(question.south)+(0,-3.5)$) {
-        \begin{blockcolor}{mLightBrown}{$\node{\pset} = \left\{
-              \pv \in \kR^{\pdim}
-              \left|
-              \begin{array}{ll}
-                  \pvi{\idxentry} = 0, &\forall \idxentry \in \setzero \\
-                  \pvi{\idxentry} \neq 0, &\forall \idxentry \in \setone \\
-                  \pvi{\idxentry} \in \kR, &\forall \idxentry \in \setnone
-              \end{array}
-              \right.
-          \right\}$}
-        \end{blockcolor}
-      };
-      \node[mLightBrown] at ($(region.north)+(0,-0.1)$) {\textbf{Region $\nodeSymb = (\setzero,\setone,\setnone)$}};
+      \onslide<2-> {
+        \node[text width=0.4\linewidth,align=center] (obs) at ($(problem)+(-4,-1.5)$) {\textbf{Observation} \\ Solutions expected \\ to be sparse};
+      }
+      %
+      %
+      %
+      \onslide<3-> {
+        \node[text width=0.4\linewidth,align=center] (method) at ($(problem)+(4,-1.5)$) {\textbf{Method} \\ Drive the sparsity of the optimization variable};
+      }
+      %
+      %
+      %
+      \onslide<4-> {
+        \node at (0,0.75) (node0) {};
+        \node at ($(node0)+(0,1)$) {\small{$\kR^{\pdim}$}};
+        \draw[ultra thick,->] ($(node0)+(0,0.8)$) -- ($(node0)+(0,0.5)$);
+        \draw[
+            ultra thick,
+            top color = white,
+            bottom color = gray!60,
+        ] (node0) circle (10pt) node {$\nodeSymb_0$};
+      }
+      %
+      %
+      %
+      \onslide<5-> {
+        \node at ($(node0)+(-3,-0.75)$) (node1) {};
+        \draw[
+            ultra thick,
+            top color = white,
+            bottom color = gray!60,
+        ] (node1) circle (10pt) node {$\nodeSymb_1$};
+        \draw[ultra thick,->] ($(node0.south west)+(-0.2,0)$) -- ($(node1.east)+(0.2,0.2)$) node[midway,fill=mLightWhite,draw,font=\scriptsize,inner sep=2] {$\pvi{1} = 0$};
+        %
+        \node at ($(node0)+(3,-0.75)$) (node2) {};
+        \draw[
+            ultra thick,
+            top color = white,
+            bottom color = gray!60,
+        ] (node2) circle (10pt) node {$\nodeSymb_2$};
+        \draw[ultra thick,->] ($(node0.south east)+(0.2,0)$) -- ($(node2.west)+(-0.2,0.2)$) node[midway,fill=mLightWhite,draw,font=\scriptsize,inner sep=1.75] {$\pvi{1} \neq 0$};
+        %
+        \draw[
+          ultra thick,
+          top color = white,
+          bottom color = gray!60,
+        ] (node2) circle (10pt) node {$\nodeSymb_2$};
+      }
+      %
+      %
+      %
+      \onslide<6> {
+        \node[font=\scriptsize,text width=0.2\linewidth,align=center,anchor=north] at ($(node1)+(0,-0.5)$) {\textbf{Pruning test} \\ Solutions in $\nodeSymb_1$ ?};
+        \node[font=\scriptsize,text width=0.2\linewidth,align=center,anchor=north] at ($(node2)+(0,-0.5)$) {\textbf{Pruning test} \\ Solutions in $\nodeSymb_2$ ?};
+      }
+      %
+      %
+      %
+      \onslide<7> {
+        \node[font=\scriptsize,text width=0.2\linewidth,align=center,anchor=north] at ($(node1)+(0,-0.5)$) {\textbf{Pruning test} \\ Solutions in $\nodeSymb_1$ ? \\ \textcolor{gray!60}{Maybe}};
+        \node[font=\scriptsize,text width=0.2\linewidth,align=center,anchor=north] at ($(node2)+(0,-0.5)$) {\textbf{Pruning test} \\ Solutions in $\nodeSymb_2$ ? \\ \textcolor{mLightRed}{No}};
+      }
+      %
+      %
+      %
+      \onslide<7-> {
+        \draw[
+            ultra thick,
+            top color = white,
+            bottom color = mLightRed,
+        ] (node2) circle (10pt) node {$\nodeSymb_{2}$};
+      }
+      %
+      %
+      %
+      \onslide<8-> {
+        \node at ($(node1)+(-1.5,-1.25)$) (node3) {};
+        \draw[
+            ultra thick,
+            top color = white,
+            bottom color = gray!60,
+        ] (node3) circle (10pt) node {$\nodeSymb_3$};
+        \draw[ultra thick,->] ($(node1.south west)+(-0.2,0)$) -- ($(node3.north)+(0.2,0.2)$) node[midway,fill=mLightWhite,draw,font=\scriptsize,inner sep=2] {$\pvi{2} = 0$};
+        %
+        \node at ($(node1)+(1.5,-1.25)$) (node4) {};
+        \draw[
+            ultra thick,
+            top color = white,
+            bottom color = gray!60,
+        ] (node4) circle (10pt) node {$\nodeSymb_4$};
+        \draw[ultra thick,->] ($(node1.south east)+(0.2,0)$) -- ($(node4.north)+(-0.2,0.2)$) node[midway,fill=mLightWhite,draw,font=\scriptsize,inner sep=1.75] {$\pvi{2} \neq 0$};
+      }
+      %
+      %
+      %
+      \onslide<9> {
+        \node[font=\scriptsize,text width=0.2\linewidth,align=center,anchor=north] at ($(node4)+(0,-0.5)$) {\textbf{Pruning test} \\ Solutions in $\nodeSymb_4$ ?};
+        \node[font=\scriptsize,text width=0.2\linewidth,align=center,anchor=north] at ($(node3)+(0,-0.5)$) {\textbf{Pruning test} \\ Solutions in $\nodeSymb_3$ ?};
+      }
+      %
+      %
+      %
+      \onslide<10> {
+        \node[font=\scriptsize,text width=0.2\linewidth,align=center,anchor=north] at ($(node4)+(0,-0.5)$) {\textbf{Pruning test} \\ Solutions in $\nodeSymb_4$ ? \\ \textcolor{gray!60}{Maybe}};
+        \node[font=\scriptsize,text width=0.2\linewidth,align=center,anchor=north] at ($(node3)+(0,-0.5)$) {\textbf{Pruning test} \\ Solutions in $\nodeSymb_3$ ? \\ \textcolor{mLightRed}{No}};
+      }
+      %
+      %
+      %
+      \onslide<10-> {
+        \draw[
+            ultra thick,
+            top color = white,
+            bottom color = mLightRed,
+        ] (node3) circle (10pt) node {$\nodeSymb_{3}$};
+      }
+      %
+      %
+      %
+      \onslide<11-> {
+        \node at ($(node4)+(-1.25,-1.35)$) (node5) {};
+        \draw[
+            ultra thick,
+            top color = white,
+            bottom color = gray!60,
+        ] (node5) circle (10pt) node {$\nodeSymb_{5}$};
+        \draw[ultra thick,->] ($(node4.south west)+(-0.125,-0.125)$) -- ($(node5.north)+(0.2,0.2)$) node[midway,fill=mLightWhite,draw,font=\scriptsize,inner sep=2] {$\pvi{3} = 0$};
+        %
+        \node at ($(node4)+(1.25,-1.35)$) (node6) {};
+        \draw[
+            ultra thick,
+            top color = white,
+            bottom color = gray!60,
+        ] (node6) circle (10pt) node {$\nodeSymb_{6}$};
+        \draw[ultra thick,->] ($(node4.south east)+(0.125,-0.125)$) -- ($(node6.north)+(-0.2,0.2)$) node[midway,fill=mLightWhite,draw,font=\scriptsize,inner sep=1.75] {$\pvi{3} \neq 0$};
+      }
+      %
+      %
+      %
+      \onslide<12> {
+        \node[font=\scriptsize,text width=0.2\linewidth,align=center,anchor=north] at ($(node6)+(0,-0.5)$) {\textbf{Pruning test} \\ Solutions in $\nodeSymb_6$ ?};
+        \node[font=\scriptsize,text width=0.2\linewidth,align=center,anchor=north] at ($(node5)+(0,-0.5)$) {\textbf{Pruning test} \\ Solutions in $\nodeSymb_5$ ?};
+      }
+      %
+      %
+      %
+      \onslide<13> {
+        \node[font=\scriptsize,text width=0.2\linewidth,align=center,anchor=north] at ($(node6)+(0,-0.5)$) {\textbf{Pruning test} \\ Solutions in $\nodeSymb_6$ ? \\ \textcolor{mLightRed}{No}};
+        \node[font=\scriptsize,text width=0.2\linewidth,align=center,anchor=north] at ($(node5)+(0,-0.5)$) {\textbf{Pruning test} \\ Solutions in $\nodeSymb_5$ ? \\ \textcolor{gray!60}{Maybe}};
+      }
+      %
+      %
+      %
+      \onslide<13-> {
+        \draw[
+            ultra thick,
+            top color = white,
+            bottom color = mLightRed,
+        ] (node6) circle (10pt) node {$\nodeSymb_{6}$};
+      }
+      %
+      %
+      %
+      \onslide<14-> {
+        \node[font=\scriptsize,text width=0.1\linewidth,align=center,anchor=north] at ($(node5)+(0,-0.5)$) {\textbf{Recover \\ solution}};
+      }
+      %
+      %
+      %
+      \onslide<15-> {
+        \node[text width=0.5\linewidth,align=center] at (3,-2) {\textbf{Algorithmic complexity} \\ number of nodes processed \\ $\times$ \\ pruning test evaluation time};
+      }
     \end{scope}
   \end{tikzpicture}
 \end{frame}
 
-\begin{frame}{BnB - Region separation}
-  \begin{tikzpicture}[remember picture,overlay]
-    \begin{scope}[xshift=0.55\linewidth,scale=0.4]
-      \node at (0,6) (node0) {};
-      \fill[gray!60] ($(node0)+(-2,1.8)$) -- ($(node0)+(1.8,1.8)$) -- ($(node0)+(1.8,-2)$) -- ($(node0)+(-2,-2)$) -- ($(node0)+(-2,1.8)$);
-      \draw[very thick, black, ->] ($(node0)+(-2.3,0)$) -- ($(node0)+(2.5,0)$) node[right] {\small$\pvi{1}$};
-      \draw[very thick, black, ->] ($(node0)+(0,-2.3)$) -- ($(node0)+(0,2.5)$) node[above] {\small$\pvi{2}$};
-      % \node[gray,font=\small] at ($(node0)+(-3,1)$) {$\pset^{\nodeSymb_0}$};
-      %
-      \node at ($(node0)+(6.5,-6)$) (node1) {};
-      \fill[gray!60] ($(node1)+(-2,1.8)$) -- ($(node1)+(-0.3,1.8)$) -- ($(node1)+(-0.3,-2)$) -- ($(node1)+(-2,-2)$) -- ($(node1)+(-2,1.8)$);
-      \fill[gray!60] ($(node1)+(1.8,1.8)$) -- ($(node1)+(0.3,1.8)$) -- ($(node1)+(0.3,-2)$) -- ($(node1)+(1.8,-2)$) -- ($(node1)+(1.8,1.8)$);
-      \draw[very thick, black, ->] ($(node1)+(-2.3,0)$) -- ($(node1)+(2.5,0)$) node[right] {\small$\pvi{1}$};
-      \draw[very thick, black, ->] ($(node1)+(0,-2.3)$) -- ($(node1)+(0,2.5)$) node[above] {\small$\pvi{2}$};
-      % \node[gray,font=\small] at ($(node1)+(3,1.25)$) {$\pset^{\nodeSymb_2}$};
-      %
-      \node at ($(node0)+(-6.5,-6)$) (node2) {};
-      \fill[gray!60] ($(node2)+(-0.3,1.8)$) -- ($(node2)+(0.3,1.8)$) -- ($(node2)+(0.3,-2)$) -- ($(node2)+(-0.3,-2)$) -- ($(node2)+(-0.3,1.8)$);
-      \draw[very thick, black, ->] ($(node2)+(-2.3,0)$) -- ($(node2)+(2.5,0)$) node[right] {\small$\pvi{1}$};
-      \draw[very thick, black, ->] ($(node2)+(0,-2.3)$) -- ($(node2)+(0,2.5)$) node[above] {\small$\pvi{2}$};
-      % \node[gray,font=\small] at ($(node2)+(-1.25,1.25)$) {$\pset^{\nodeSymb_1}$};
-      %
-      \node at ($(node2)+(-6.5,-6)$) (node3) {};
-      \fill[gray!60] ($(node3)+(0.3,0.3)$) -- ($(node3)+(-0.3,0.3)$) -- ($(node3)+(-0.3,-0.3)$) -- ($(node3)+(0.3,-0.3)$) -- ($(node3)+(0.3,0.3)$);
-      \draw[very thick, black, ->] ($(node3)+(-2.3,0)$) -- ($(node3)+(2.5,0)$) node[right] {\small$\pvi{1}$};
-      \draw[very thick, black, ->] ($(node3)+(0,-2.3)$) -- ($(node3)+(0,2.5)$) node[above] {\small$\pvi{2}$};
-      % \node[gray,font=\small] at ($(node3)+(-1.25,1.25)$) {$\pset^{\nodeSymb_3}$};
-      %
-      \node at ($(node2)+(6.5,-6)$) (node4) {};
-      \fill[gray!60] ($(node4)+(0.3,-2)$) -- ($(node4)+(0.3,-0.3)$) -- ($(node4)+(-0.3,-0.3)$) -- ($(node4)+(-0.3,-2)$) -- ($(node4)+(0.3,-2)$);
-      \fill[gray!60] ($(node4)+(0.3,1.8)$) -- ($(node4)+(0.3,0.3)$) -- ($(node4)+(-0.3,0.3)$) -- ($(node4)+(-0.3,1.8)$) -- ($(node4)+(0.3,1.8)$);
-      \draw[very thick, black, ->] ($(node4)+(-2.3,0)$) -- ($(node4)+(2.5,0)$) node[right] {\small$\pvi{1}$};
-      \draw[very thick, black, ->] ($(node4)+(0,-2.3)$) -- ($(node4)+(0,2.5)$) node[above] {\small$\pvi{2}$};
-      \fill[black] ($(node4)+(0,-1.25)$) circle (5pt) node[right,xshift=3] {$\opt{\pv}$};
-      % \node[gray,font=\small] at ($(node4)+(-1.25,1.25)$) {$\pset^{\nodeSymb_4}$};
-      %
-      \draw[very thick,dashed,->] ($(node0)+(0,-3)$) .. controls ($(node0)+(0,-5)$) .. ($(node1)+(-4,1)$);
-      \draw[very thick,dashed,->] ($(node0)+(0,-3)$) .. controls ($(node0)+(0,-5)$) .. ($(node2)+(4,1)$);
-      \draw[very thick,dashed,->] ($(node2)+(0,-3)$) .. controls ($(node2)+(0,-5)$) .. ($(node3)+(4,1)$);
-      \draw[very thick,dashed,->] ($(node2)+(0,-3)$) .. controls ($(node2)+(0,-5)$) .. ($(node4)+(-4,1)$);
-      \node[mLightRed,ultra thick,fill=white,inner sep=2pt] at ($(node1)+(0,-3)$) {\scriptsize{Pruned}};
-      \node[mLightRed,thick,fill=white,inner sep=2pt] at ($(node3)+(0,-3)$) {\scriptsize{Pruned}};
-    \end{scope} 
-  \end{tikzpicture}
-\end{frame}
-
-\begin{frame}{BnB -- Bounding}
+\begin{frame}{BnB -- How to evaluate a pruning test ?}
   \begin{tikzpicture}[remember picture,overlay]
     \begin{scope}[xshift=0.5\textwidth]
-      \node[text width=0.75\textwidth,align=center,draw,ultra thick,inner sep=5pt] (question) at (0,3) {How to evaluate the pruning test in a given region $\nodeSymb$ ?};
-      \node at ($(problem.north)+(0,0.2)$) {\textbf{Bounding}};
-      \node[align=center,text width=0.525\textwidth] (problem) at ($(question)+(-3,-1.5)$) {
-        \begin{blockcolor}{black}{$\boldsymbol{\ell}_0$-regularized problem}
-          \centering
-          $\opt{\pobj} = \min_{\pv \in \kR^{\pdim}} \lfunc(\dic\pv) + \reg\norm{\pv}{0} + \pfunc(\pv)$
-        \end{blockcolor}
-      };
-      \node[align=center,text width=0.525\textwidth] (restriction) at ($(question)+(3,-1.5)$) {
-        \begin{blockcolor}{black}{Restriction to region \textcolor{mLightBrown}{$\node{\pset}$}}
-          \centering
-          $\node{\pobj} = \inf_{\pv \in \textcolor{mLightBrown}{\node{\pset}}} \lfunc(\dic\pv) + \reg\norm{\pv}{0} + \pfunc(\pv)$
-        \end{blockcolor}
-      };
+      \onslide<1-> {
+        \node at (0,3.25) (nodek) {};
+        \draw[
+            ultra thick,
+            top color = white,
+            bottom color = gray!60,
+        ] (nodek) circle (10pt) node {$\nodeSymb$};
+        \draw[ultra thick,->] ($(nodek.north east)+(0.6,0.4)$) -- ($(nodek.east)+(0.2,0.2)$);
+        \node[font=\small,text width=\linewidth,align=center] at ($(nodek)+(0,-1)$) {\textbf{Pruning test} \\ Does region $\nodeSymb$ contain solutions ?};
+      }
       %
-      \node (upper) at ($(problem.south)+(0,-0.75)$) {Upper bound $\opt{\pobj}_{\mathrm{ub}}$ on $\opt{\pobj}$};
-      \node[text width=0.52\linewidth,align=center] (upper-method) at ($(upper.south)+(0,-1)$) {Construct a \textcolor{mLightBrown}{candidate} $\node{\pv} \in \node{\pset}$ to obtain some $\node{\pobj}_{\mathrm{ub}} \geq \opt{\pobj}$};
-      \draw[ultra thick,->] (upper) -- (upper-method);
-      \node[text width=0.4\linewidth,align=center] (upper-bound) at ($(upper-method.south)+(0,-0.75)$) {$\opt{\pobj}_{\mathrm{ub}} = \min(\opt{\pobj}_{\mathrm{ub}},\node{\pobj}_{\mathrm{ub}})$};
-      \draw[ultra thick,->] (upper-method) -- (upper-bound);
       %
-      \node (lower) at ($(restriction.south)+(0,-0.75)$) {Lower bound $\node{\pobj}_{\mathrm{lb}}$ on $\node{\pobj}$};
-      \node[text width=0.52\linewidth,align=center] (lower-method) at ($(lower.south)+(0,-1)$) {Solve a \textcolor{mLightBrown}{relaxation} of the restricted problem};
-      \draw[ultra thick,->] (lower) -- (lower-method);
-      \node[text width=0.5\linewidth,align=center] (lower-bound) at ($(lower-method.south)+(0,-0.75)$) {$\node{\pobj}_{\mathrm{lb}} = \min_{\pv \in \kR^{\pdim}} \lfunc(\dic\pv) + \textcolor{mLightBrown}{\node{\relaxrfunc}}(\pv)$};
-      \draw[ultra thick,->] (lower-method) -- (lower-bound);
+      %
+      \onslide<2-> {
+        \node[text width=0.55\linewidth, align=center] (problem) at ($(nodek)+(-2.5,-2.25)$) {
+            \begin{blockcolor}{mDarkTeal}{Problem}
+                \centering
+                $\opt{\pobj} = \min_{\pv \in \kR^{\pdim}} \lfunc(\dic\pv) + \reg\norm{\pv}{0} + \pfunc(\pv)$
+            \end{blockcolor}
+        };
+      }
+      %
+      %
+      %
+      \onslide<3-> {
+        \node[text width=0.55\linewidth, align=center] (region-problem) at ($(problem)+(0,-2.25)$) {
+            \begin{blockcolor}{mDarkTeal}{Restriction to region $\nodeSymb$}
+                \centering
+                $\node{\pobj} = \min_{\textcolor{mLightBrown}{\pv \in \nodeSymb} \ } \lfunc(\dic\pv) + \reg\norm{\pv}{0} + \pfunc(\pv)$
+            \end{blockcolor}
+        };
+        \draw[ultra thick,->] ($(problem)+(0,-0.75)$) -- ($(region-problem)+(0,0.5)$) node[midway,fill=mLightWhite,draw,ultra thick,font=\small] {restrict to $\nodeSymb$};
+      }
+      %
+      %
+      %
+      \onslide<4> {
+        \node[text width=0.25\linewidth,align=center] (pruning) at ($(region-problem)+(0,-2.25)$) {
+          \begin{blockcolor}{mDarkTeal}{Pruning test}
+            \centering
+            $\node{\pobj} > \opt{\pobj}$
+          \end{blockcolor}
+        };
+        \draw[ultra thick,->] ($(region-problem)+(0,-0.75)$) -- ($(pruning)+(0,0.5)$) node[midway,fill=mLightWhite,draw,ultra thick,font=\small] {compare};
+      }
+      %
+      %
+      %
+      \onslide<5-> {
+        \node[text width=0.25\linewidth,align=center] (pruning) at ($(region-problem)+(0,-2.25)$) {
+          \begin{blockcolor}{mDarkTeal}{Pruning test}
+            \centering
+            $\node{\pobj}_{\textcolor{mLightBrown}{\text{lb}}} > \opt{\pobj}_{\textcolor{mLightBrown}{\text{ub}}}$
+          \end{blockcolor}
+        };
+        \draw[ultra thick,->] ($(region-problem)+(0,-0.75)$) -- ($(pruning)+(0,0.5)$) node[midway,fill=mLightWhite,draw,ultra thick,font=\small] {compare};
+      }
+      %
+      %
+      %
+      \onslide<6-> {
+        \node (easy) at ($(problem)+(6,0)$) {\textbf{Easy task}};
+        \node[draw,ultra thick,text width=0.44\linewidth,align=center] (easy-text) at ($(easy.south)+(0,-0.25)$) {Compute an upper bound on $\opt{\pobj}$};
+      }
+      %
+      %
+      %
+      \onslide<7-> {
+        \node[font=\small,text width=0.375\linewidth,align=center,anchor=north] (easy-text2) at ($(easy-text.south)+(0,-0.05)$) {Construct and evaluate a feasible vector in each region explored to refine $\opt{\pobj}_{\text{ub}}$};
+      }
+      %
+      %
+      %
+      \onslide<8-> {
+        \node (easy) at ($(problem)+(6,-3.25)$) {\textbf{Main challenge}};
+        \node[draw,ultra thick,text width=0.44\linewidth,align=center] (easy-text) at ($(easy.south)+(0,-0.25)$) {Compute a lower bound on $\node{\pobj}$};
+      }
     \end{scope}
   \end{tikzpicture}
 \end{frame}
 
-\begin{frame}{BnB -- Tree representation}
+\begin{frame}{BnB -- Standard lower bounding strategy}
   \begin{tikzpicture}[remember picture,overlay]
-    \begin{scope}[xshift=0.5\textwidth]
-      \node at (0,2) (node0) {};
-      \node at ($(node0)+(0,1.1)$) {\small{$\kR^{3}$}};
-      \draw[ultra thick,->] ($(node0)+(0,0.8)$) -- ($(node0)+(0,0.5)$);
-      \draw[
-          ultra thick,
-          top color = white,
-          bottom color = gray!60,
-      ] (node0) circle (10pt) node {$\nodeSymb_0$};
-      \node[font=\scriptsize] at ($(node0)+(-1.2,0)$) {$\begin{array}{rl}\pobj^{\nodeSymb_0}_{\mathrm{lb}} &= 3.2\\[1pt]\pobj^{\nodeSymb_0}_{\mathrm{ub}} &= 5.5\end{array}$};
+    \begin{scope}[xshift=0.5\linewidth]
+      \onslide<1-> {
+        \node[text width=0.525\linewidth, align=center] (restrict) at (0,3) {
+          \begin{blockcolor}{mDarkTeal}{Restriction to region $\nodeSymb$}
+              \centering
+              $\node{\pobj} = \min_{\pv \in \nodeSymb} \lfunc(\dic\pv) + \reg\norm{\pv}{0} + \pfunc(\pv)$
+          \end{blockcolor}
+        };
+      }
       %
       %
       %
-      \node at ($(node0)+(-1.25,-1.5)$) (node1) {};
-      \draw[
-          ultra thick,
-          top color = white,
-          bottom color = gray!60,
-      ] (node1) circle (10pt) node {$\nodeSymb_1$};
-      \draw[ultra thick,->] ($(node0.south west)+(-0.2,0)$) -- ($(node1.north)+(0.2,0.2)$) node[midway,fill=mLightWhite,draw,font=\scriptsize,inner sep=2] {$\pvi{1} = 0$};
-      \node[font=\scriptsize] at ($(node1)+(-1.2,0)$) {$\begin{array}{rl}\pobj^{\nodeSymb_1}_{\mathrm{lb}} &= 3.5\\[1pt]\pobj^{\nodeSymb_1}_{\mathrm{ub}} &= 4.2\end{array}$};
+      \onslide<2-> {
+        \node[text width=0.675\linewidth,align=left] at (0,1.25) {\textbf{Requirement 1 --} Tight lower bound on $\node{\pobj}$};
+      }
+      %
+      \onslide<2-> {
+        \node[text width=0.675\linewidth,align=left] at (0,0.75) {\textbf{Requirement 2 --} Tractable lower bound on $\node{\pobj}$};
+      }
       %
       %
       %
-      \node at ($(node0)+(1.25,-1.5)$) (node2) {};
-      \draw[
-          ultra thick,
-          top color = white,
-          bottom color = mLightRed!50,
-      ] (node2) circle (10pt) node {$\nodeSymb_2$};
-      \draw[ultra thick,->] ($(node0.south east)+(0.2,0)$) -- ($(node2.north)+(-0.2,0.2)$) node[midway,fill=mLightWhite,draw,font=\scriptsize,inner sep=2] {$\pvi{1} \neq 0$};
-      \node[font=\scriptsize] at ($(node2)+(1.2,0)$) {$\begin{array}{rl}\pobj^{\nodeSymb_2}_{\mathrm{lb}} &= 5.4\\[1pt]\pobj^{\nodeSymb_2}_{\mathrm{ub}} &= 5.7\end{array}$};
-      \node[mLightRed,font=\scriptsize] at ($(node2)+(0,-0.6)$) {Pruned};
+      \onslide<3-> {
+        \node (std) at (0,-0.5) {\textbf{Standard strategy}};
+        \node (std-text) at ($(std.south)+(0,-0.1)$) {Construct and solve a \textcolor{mLightBrown}{relaxation}};
+        \draw[ultra thick,->] ($(std)+(0,0.75)$) -- ($(std)+(0,0.4)$);
+      }
       %
       %
       %
-      \node at ($(node1)+(-1.25,-1.5)$) (node3) {};
-      \draw[
-          ultra thick,
-          top color = white,
-          bottom color = mLightRed!50,
-      ] (node3) circle (10pt) node {$\nodeSymb_3$};
-      \draw[ultra thick,->] ($(node1.south west)+(-0.2,0)$) -- ($(node3.north)+(0.2,0.2)$) node[midway,fill=mLightWhite,draw,font=\scriptsize,inner sep=2] {$\pvi{2} = 0$};
-      \node[font=\scriptsize] at ($(node3)+(-1.2,0)$) {$\begin{array}{rl}\pobj^{\nodeSymb_3}_{\mathrm{lb}} &= 5.3\\[1pt]\pobj^{\nodeSymb_3}_{\mathrm{ub}} &= 5.6\end{array}$};
-      \node[mLightRed,font=\scriptsize] at ($(node3)+(0,-0.6)$) {Pruned};
+      \onslide<4-> {
+        \draw[very thick] ($(restrict)+(0.6,-0.7)$) -- ($(restrict)+(0.6,-0.75)$) -- ($(restrict)+(2.7,-0.75)$) -- ($(restrict)+(2.7,-0.7)$);
+        \node at ($(restrict)+(1.65,-1)$) {$\rfunc(\pv)$};
+      }
       %
       %
       %
-      \node at ($(node1)+(1.25,-1.5)$) (node4) {};
-      \draw[
-          ultra thick,
-          top color = white,
-          bottom color = gray!60,
-      ] (node4) circle (10pt) node {$\nodeSymb_4$};
-      \draw[ultra thick,->] ($(node1.south east)+(0.2,0)$) -- ($(node4.north)+(-0.2,0.2)$) node[midway,fill=mLightWhite,draw,font=\scriptsize,inner sep=2] {$\pvi{2} \neq 0$};
-      \node[font=\scriptsize] at ($(node4)+(1.2,0)$) {$\begin{array}{rl}\pobj^{\nodeSymb_4}_{\mathrm{lb}} &= 3.8\\[1pt]\pobj^{\nodeSymb_4}_{\mathrm{ub}} &= 4.6\end{array}$};
+      \onslide<5-> {
+        \node[text width=0.5\linewidth, align=center] (relax) at (0,-1.75) {
+          \begin{blockcolor}{mDarkTeal}{Relaxation for region $\nodeSymb$}
+              \centering
+              $\node{\pobj}_{\text{lb}} = \min_{\pv \in \nodeSymb} \lfunc(\dic\pv) + \textcolor{mLightBrown}{\rfunc_{\text{lb}}}(\pv)$
+          \end{blockcolor}
+        };
+      }
       %
       %
       %
-      \node at ($(node4)+(-1.25,-1.5)$) (node5) {};
-      \draw[
-          ultra thick,
-          top color = white,
-          bottom color = gray!60,
-      ] (node5) circle (10pt) node {$\nodeSymb_5$};
-      \draw[ultra thick,->] ($(node4.south west)+(-0.2,0)$) -- ($(node5.north)+(0.2,0.2)$) node[midway,fill=mLightWhite,draw,font=\scriptsize,inner sep=2] {$\pvi{3} = 0$};
-      \node[font=\scriptsize] at ($(node5)+(-1.2,0)$) {$\begin{array}{rl}\pobj^{\nodeSymb_5}_{\mathrm{lb}} &= 4.1\\[1pt]\pobj^{\nodeSymb_5}_{\mathrm{ub}} &= 4.1\end{array}$};
+      \onslide<6-> {
+        \node[font=\small,text width=0.2\linewidth,align=left,anchor=west] at ($(relax)+(2.75,-0.1)$) {$\rfunc_{\text{lb}} \leq \rfunc$ \\ $\rfunc_{\text{lb}}$ convex};
+      }
       %
       %
       %
-      \node at ($(node4)+(1.25,-1.5)$) (node6) {};
-      \draw[
-          ultra thick,
-          top color = white,
-          bottom color = mLightRed!50,
-      ] (node6) circle (10pt) node {$\nodeSymb_6$};
-      \draw[ultra thick,->] ($(node4.south east)+(0.2,0)$) -- ($(node6.north)+(-0.2,0.2)$) node[midway,fill=mLightWhite,draw,font=\scriptsize,inner sep=2] {$\pvi{3} \neq 0$};
-      \node[font=\scriptsize] at ($(node6)+(1.2,0)$) {$\begin{array}{rl}\pobj^{\nodeSymb_6}_{\mathrm{lb}} &= 5.1\\[1pt]\pobj^{\nodeSymb_6}_{\mathrm{ub}} &= 5.1\end{array}$};
-      \node[mLightRed,font=\scriptsize] at ($(node6)+(0,-0.6)$) {Pruned};
-      %
-      %
-      %
-      \node[font=\scriptsize] at ($(node5)+(0,-0.6)$) {Solution $\pv^{\nodeSymb_5}$};
-      %
-      %
-      %
-      \node at (4,3.5) (best-sol) {\small{Best upper bound}};
-      \node at ($(best-sol)+(0,-0.5)$) (best-sol-0) {$\pv^{\nodeSymb_0} \rightarrow \opt{\pobj}_{\mathrm{ub}} = 5.5$};
-      \node at ($(best-sol-0)+(0,-0.5)$) (best-sol-1) {$\pv^{\nodeSymb_1} \rightarrow \opt{\pobj}_{\mathrm{ub}} = 4.2$};
-      \node at ($(best-sol-1)+(0,-0.5)$) (best-sol-5) {$\pv^{\nodeSymb_5} \rightarrow \opt{\pobj}_{\mathrm{ub}} = 4.1$};
+      \onslide<7-> {
+        \node[mLightBrown] (lb) at (0,-3) {\textbf{Lower bound}};
+        \node[draw,ultra thick,mLightBrown] (lb-text) at ($(lb.south)+(0,-0.25)$) {$\node{\pobj}_{\text{lb}} \leq \node{\pobj}$};
+      }
     \end{scope}
   \end{tikzpicture}
 \end{frame}
 
-\begin{frame}{BnB -- Research directions}
+\begin{frame}{BnB -- Enhanced performance}
   \begin{tikzpicture}[remember picture,overlay]
     \begin{scope}[xshift=0.5\textwidth]
-      \node[align=center,text width=0.525\textwidth] (problem) at (0,3.25) {
-        \begin{blockcolor}{black}{$\boldsymbol{\ell}_0$-regularized problem}
-          \centering
-          $\min_{\pv \in \kR^{\pdim}} \lfunc(\dic\pv) + \reg\norm{\pv}{0} + \pfunc(\pv)$
-        \end{blockcolor}
-      };
-      %
-      \node (versatility) at ($(problem)+(-3,-1.5)$)  {\textbf{BnB versatility}};
-      \node[text width=0.5\linewidth,align=center] (versatility-text) at ($(versatility)+(0,-0.75)$) {Relaxation construction methods available for};
-      \node at ($(versatility-text.south)+(0,-1)$) (relax-methods) {$\begin{array}{rl}\lfunc(\dic\pv) &= \tfrac{1}{2}\norm{\dic\pv-\obs}{2}^2 \\ \pfunc(\pv) &= \tfrac{\regtwo}{2}\norm{\pv}{2}^2 \\ \pfunc(\pv) &= \icvx(\norm{\pv}{\infty} \leq \bigM) \end{array}$};
-      %
-      \node (efficiency) at ($(problem)+(3,-1.5)$) {\textbf{BnB scalability}};
-      \node[text width=0.5\linewidth,align=center] at ($(efficiency)+(0,-0.75)$) {Number of regions explored $\times$ Time to explore a region};
-      \draw[
-          ultra thick,
-          top color = white,
-          bottom color = gray!60,
-      ] ($(efficiency)+(-0.75,-1.75)$) circle (10pt) node {};
-      \draw[
-          ultra thick,
-          top color = white,
-          bottom color = gray!60,
-      ] ($(efficiency)+(0.75,-2.5)$) circle (10pt) node {};
-      \draw[ultra thick,->] ($(efficiency)+(-0.4,-1.9)$) -- ($(efficiency)+(0.4,-2.4)$);
+      \onslide<1-> {
+        \node[text width=0.45\linewidth, align=center] (problem) at (0,2.75) {
+          \begin{blockcolor}{mDarkTeal}{Problem}
+              \centering
+              $\min_{\pv \in \kR^{\pdim}} \lfunc(\dic\pv) + \reg\norm{\pv}{0} + \pfunc(\pv)$
+          \end{blockcolor}
+        };
+      }
       %
       %
       %
-      \node[mLightBrown] at (-3.75,-2) (axis1) {\textbf{Axis 1}};
-      \node[text width=0.3\linewidth,align=center,mLightBrown] at ($(axis1.south)+(0,-0.5)$) (axis1-text) {How to generalize the BnB method ?};
-      \draw[ultra thick,mLightBrown] ($(axis1-text.center)+(-1.7,0.5)$) rectangle ($(axis1-text.center)+(1.7,-0.5)$);
+      \onslide<1-3> {
+        \node[font=\small] at ($(problem)+(0,-1)$) {$\lfunc:$ Quadratic / $\pfunc:$ Bound constraint};
+        %
+        \node[text width=0.6\linewidth,align=left,font=\small] at (2.75,-0.5) {\textbf{MIP solvers} \\ \ref{plot:bnb-Scip} Scip \\ \ref{plot:bnb-Cplex} Cplex \\ \ref{plot:bnb-Mosek} Mosek};
+      }
       %
-      \node[mLightBrown] at (0,-2) (axis2) {\textbf{Axis 2}};
-      \node[text width=0.3\linewidth,align=center,inner sep=2pt,mLightBrown] at ($(axis2.south)+(0,-0.5)$) (axis2-text) {How to improve the branching process ?};
-      \draw[ultra thick,mLightBrown] ($(axis2-text.center)+(-1.7,0.5)$) rectangle ($(axis2-text.center)+(1.7,-0.5)$);
       %
-      \node[mLightBrown] at (3.75,-2) (axis3) {\textbf{Axis 3}};
-      \node[text width=0.3\linewidth,align=center,inner sep=2pt,mLightBrown] at ($(axis3.south)+(0,-0.5)$) (axis3-text) {How to improve the bounding process ?};
-      \draw[ultra thick,mLightBrown] ($(axis3-text.center)+(-1.7,0.5)$) rectangle ($(axis3-text.center)+(1.7,-0.5)$);
+      %
+      \onslide<2-3> {
+        \node[text width=0.6\linewidth,align=left,font=\small] at (2.75,-2.1) {\textbf{BnB solvers} \\ \ref{plot:L0Bnb} L0Bnb -- H. Hazimeh \textit{et al.} (2021) \\ \ref{plot:SBnb} SBnb -- S. Bourguignon \textit{et al.} (2021)};
+      }
+      %
+      %
+      %
+      \onslide<3-> {
+        \node[text width=0.35\linewidth,align=center] (obs) at ($(problem)+(3.75,-2.5)$) {\textbf{Observation} \\ Better performance \\ with BnB solvers};
+      }
+      %
+      %
+      %
+      \onslide<4-> {
+        \node[font=\small] at ($(problem)+(0,-1)$) {$\lfunc:$ Logistic / $\pfunc:$ $\ell_1$-norm};
+        \node[text width=0.6\linewidth,align=left,font=\small] at (2.75,-0.5) {\textbf{MIP solvers} \\ \ref{plot:Scip} \textcolor{mDarkTeal!25}{Scip} \\ \ref{plot:Cplex} \textcolor{mDarkTeal!25}{Cplex} \\ \ref{plot:Mosek} Mosek};
+        %
+        \node[text width=0.6\linewidth,align=left,font=\small] at (2.75,-2.1) {\textbf{BnB solvers} \\ \ref{plot:L0Bnb} \textcolor{mDarkTeal!25}{L0Bnb -- H. Hazimeh \textit{et al.} (2021)} \\ \ref{plot:SBnb} \textcolor{mDarkTeal!25}{SBnb -- S. Bourguignon \textit{et al.} (2021)}};
+      }
+      %
+      %
+      %
+      \onslide<5-> {
+        \node[text width=0.35\linewidth,align=center,anchor=north,mLightBrown] at ($(obs)+(0,-0.675)$) {... but they are not generic};
+      }
+    \end{scope}
+    \begin{scope}[xshift=0.075\linewidth,yshift=-65]
+        %
+        \pgfplotscreateplotcyclelist{cycle_perfprofiles_bnb}{
+            RoyalBlue2, very thick, smooth\\    
+            SkyBlue2, very thick, smooth\\
+            PaleGreen4, very thick, smooth\\
+            DarkGoldenrod1, very thick, smooth\\    
+            OrangeRed1, very thick, smooth\\
+            Firebrick4, very thick, smooth\\
+        }
+        %
+        \onslide<1-> {
+          \draw[very thick,dotted] (3.6,0) -- (3.6,2.5) node[above,font=\scriptsize] {1 hour};
+        }
+        %
+        %
+        %
+        \onslide<1-3> {
+          \begin{axis}[
+              width   = 0.5\textwidth,
+              height  = 0.4\textwidth,,
+              legend style={
+                  at={(1,0.5)},
+                  anchor=west,
+                  legend columns=1, 
+                  /tikz/every even column/.style = {column sep=5pt},
+                  draw=none
+              },
+              cycle list name=cycle_perfprofiles_bnb,
+              mbaseplot,
+              axis line style = ultra thick,
+              major tick style = {ultra thick,color=mDarkTeal},
+              xmajorgrids=true,
+              ymajorgrids=true,
+              major grid style={dotted},
+              axis x line=bottom,
+              axis y line=left,
+              xmode=log,
+              minor tick style={draw=none},
+              xlabel=\textbf{\small{Time (seconds)}},
+              ymax=110,
+              ymin=0,
+              xmin=0.01,
+              xmax=7000,
+              ylabel=\textbf{\small{Instances solved}},
+              ytick={0,25,50,75,100},
+          ]
+            \foreach \solver in {Scip,Cplex,Mosek} {
+              \addplot table[
+                  x=times,
+                  y expr=100*\thisrow{\solver},
+                  col sep=comma
+              ] {data/perfprofiles_medium_Leastsquares_Bigm_3600.csv};
+            }
+          \end{axis}
+        }
+        %
+        %
+        %
+        \onslide<2-3> {
+          \begin{axis}[
+              width   = 0.5\textwidth,
+              height  = 0.4\textwidth,,
+              legend style={
+                  at={(1,0.5)},
+                  anchor=west,
+                  legend columns=1, 
+                  /tikz/every even column/.style = {column sep=5pt},
+                  draw=none
+              },
+              cycle list name=cycle_perfprofiles_bnb,
+              mbaseplot,
+              axis line style = ultra thick,
+              major tick style = {ultra thick,color=mDarkTeal},
+              xmajorgrids=true,
+              ymajorgrids=true,
+              major grid style={dotted},
+              axis x line=bottom,
+              axis y line=left,
+              xmode=log,
+              minor tick style={draw=none},
+              xlabel=\textbf{\small{Time (seconds)}},
+              ymax=110,
+              ymin=0,
+              xmin=0.01,
+              xmax=7000,
+              ylabel=\textbf{\small{Instances solved}},
+              ytick={0,25,50,75,100},
+          ]
+            \foreach \solver in {Scip,Cplex,Mosek,L0Bnb,SBnb} {
+              \addplot table[
+                  x=times,
+                  y expr=100*\thisrow{\solver},
+                  col sep=comma
+              ] {data/perfprofiles_medium_Leastsquares_Bigm_3600.csv};
+              \label{plot:\solver}
+            }
+          \end{axis}
+        }
+        %
+        %
+        %
+        \onslide<4-> {
+          \begin{axis}[
+              width   = 0.5\textwidth,
+              height  = 0.4\textwidth,,
+              legend style={
+                  at={(1,0.5)},
+                  anchor=west,
+                  legend columns=1, 
+                  /tikz/every even column/.style = {column sep=5pt},
+                  draw=none
+              },
+              mbaseplot,
+              axis line style = ultra thick,
+              major tick style = {ultra thick,color=mDarkTeal},
+              xmajorgrids=true,
+              ymajorgrids=true,
+              major grid style={dotted},
+              axis x line=bottom,
+              axis y line=left,
+              xmode=log,
+              minor tick style={draw=none},
+              xlabel=\textbf{\small{Time (seconds)}},
+              ymax=110,
+              ymin=0,
+              xmin=0.01,
+              xmax=7000,
+              ylabel=\textbf{\small{Instances solved}},
+              ytick={0,25,50,75,100},
+          ]
+            \addplot[PaleGreen4, very thick] table[
+                x=times,
+                y expr=100*\thisrow{Mosek},
+                col sep=comma
+            ] {data/perfprofiles_medium_Logistic_Bigm_3600.csv};
+          \end{axis}
+        }
+    \end{scope}
+  \end{tikzpicture}
+\end{frame}
+
+\begin{frame}
+  \begin{tikzpicture}[remember picture,overlay]
+    \begin{scope}[xshift=0.5\linewidth]
+      \onslide<1-> {
+        \node at (-4.75,4) {\Large{\textbf{Let's recap}}};
+      }
+      %
+      %
+      %
+      \onslide<2-> {
+        \node[text width=0.45\linewidth, align=center] (problem) at (0,3.75) {
+          \begin{blockcolor}{mDarkTeal}{Problem}
+            \centering
+            $\opt{\pobj} = \min_{\pv \in \kR^{\pdim}} \lfunc(\dic\pv) + \rfunc(\pv)$
+          \end{blockcolor}
+        };
+        \node[font=\small,anchor=west] (problem-text) at ($(problem)+(3,-0.15)$) {$\rfunc(\pv) = \reg\norm{\pv}{0} + \pfunc(\pv)$};
+        \draw[ultra thick,->] ($(problem-text.west)+(-0.3,0)$) -- ($(problem-text.west)+(0.05,0)$);
+      }
+      %
+      %
+      %
+      \onslide<3-> {
+        \node (bnb) at ($(problem.south)+(0,-0.3)$) {};
+        \draw[ultra thick,->] ($(bnb)+(0,0.4)$) -- ($(bnb)+(0,-0.4)$);
+        \node[draw,ultra thick,font=\small,text width=0.25\linewidth,align=center,fill=mLightWhite,inner sep=2pt] at (bnb)  {BnB algorithm};
+        %
+        \node[text width=0.45\linewidth, align=center] (restrict) at ($(bnb)+(0,-0.9)$) {
+          \begin{blockcolor}{mDarkTeal}{Restriction to region $\nodeSymb$}
+            \centering
+            $\node{\pobj} = \min_{\textcolor{mLightBrown}{\pv \in \nodeSymb}} \lfunc(\dic\pv) + \rfunc(\pv)$
+          \end{blockcolor}
+        };
+        %
+        \node[font=\small,anchor=west] (easy-text) at ($(restrict)+(3,-0.15)$) {lower bound on $\node{\pobj}$};
+        \draw[ultra thick,->] ($(easy-text.west)+(-0.3,0)$) -- ($(easy-text.west)+(0.05,0)$);
+      }
+      %
+      %
+      %
+      \onslide<4-> {
+        \node (challenge) at ($(restrict.south)+(0,-0.3)$) {};
+        \draw[ultra thick,->] ($(challenge)+(0,0.4)$) -- ($(challenge)+(0,-0.4)$);
+        \node[draw,ultra thick,font=\small,text width=0.25\linewidth,align=center,fill=mLightWhite,inner sep=2pt] at (challenge) {standard strategy};
+        %
+        %
+        %
+        \node[text width=0.45\linewidth, align=center] (relax) at ($(challenge)+(0,-0.9)$) {
+          \begin{blockcolor}{mDarkTeal}{Relaxation for region $\nodeSymb$}
+            \centering
+            $\node{\pobj}_{\text{lb}} = \min_{\pv \in \nodeSymb} \lfunc(\dic\pv) + \textcolor{mLightBrown}{\rfunc_{\text{lb}}}(\pv)$
+          \end{blockcolor}
+        };
+        %
+        \node[font=\small,anchor=west] (relax-text) at ($(relax)+(3,-0.15)$) {$\node{\pobj}_{\text{lb}} \leq \node{\pobj}$};
+        \draw[ultra thick,->] ($(relax-text.west)+(-0.3,0)$) -- ($(relax-text.west)+(0.05,0)$);
+      }
+      %
+      %
+      %
+      \onslide<5-> {
+        \node[mLightBrown] at (-3.75,-1.5) (axis1) {\textbf{Axis 1}};
+        \node[text width=0.3\linewidth,align=center,mLightBrown,font=\small] at ($(axis1.south)+(0,-0.5)$) (axis1-text) {How to construct relaxations generically ?};
+        \draw[ultra thick,mLightBrown] ($(axis1-text.center)+(-1.7,0.5)$) rectangle ($(axis1-text.center)+(1.7,-0.5)$);
+        %
+        \node[text width=0.35\linewidth,align=center,anchor=north,font=\small] at ($(axis1)+(0,-1.25)$) {Manuscript -- Chap. 3};
+        \node[text width=0.35\linewidth,align=left,anchor=north,font=\small] at ($(axis1)+(0.20,-1.75)$) {$\rightarrow$ Journal paper (202x)};
+      }
     \end{scope}
   \end{tikzpicture}
 \end{frame}
