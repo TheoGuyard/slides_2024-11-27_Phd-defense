@@ -341,7 +341,14 @@
       %
       %
       \onslide<3-> {
-        \node (parent) at (0,0.75) {};
+        \node[mLightBrown] at (0,1) (result) {\textbf{Spotlight result}};
+        \node[text width=0.9\linewidth,align=center,inner sep=5pt,mLightBrown,draw,ultra thick] at ($(result.south)+(0,-0.3)$) (result-text) {Successor nodes in the BnB tree share similar dual lower bounds.};
+      }
+      %
+      %
+      %
+      \onslide<4-> {
+        \node (parent) at (0,-0.5) {};
         \node (child0) at ($(parent)+(-2.25,-1.25)$) {};
         \node (child1) at ($(parent)+(2.25,-1.25)$) {};
         \node[font=\small,anchor=east] at ($(child0)+(-0.5,0)$) {successor};
@@ -369,14 +376,7 @@
       %
       %
       %
-      \onslide<4-> {
-        \node[mLightBrown] at (0,-1.25) (result) {\textbf{Spotlight result}};
-        \node[text width=0.9\linewidth,align=center,inner sep=5pt,mLightBrown,draw,ultra thick] at ($(result.south)+(0,-0.3)$) (result-text) {Successor nodes in the BnB tree share similar dual lower bounds.};
-      }
-      %
-      %
-      %
-      \onslide<3-> {
+      \onslide<5-> {
         \node[text width=\linewidth,align=left] (theorem) at (0,-3) {\textbf{Theorem --} Let $\nodeSymb_{\idxentry,b}$ with $b \in \{0,1\}$ be a successor of node $\nodeSymb$, then
         \vspace*{-5pt}
         \begin{equation*}
@@ -387,7 +387,7 @@
       %
       %
       %
-      \onslide<4-> {
+      \onslide<6-> {
         \draw[ultra thick,mLightBrown] ($(theorem)+(-0.4,-0.5)$) -- ($(theorem)+(-0.4,-0.6)$) -- ($(theorem)+(0.5,-0.6)$) -- ($(theorem)+(0.5,-0.5)$);
         \draw[ultra thick,mLightBrown,font=\small] ($(theorem)+(0.05,-0.6)$) .. controls ($(theorem)+(0.05,-0.75)$) .. ($(theorem)+(-1.5,-0.75)$) node[left,mLightBrown,font=\small] {Independent of $\nodeSymb_{i,b}$};
         %
@@ -397,13 +397,13 @@
       %
       %
       %
-      \onslide<5-> {
+      \onslide<7-> {
         \draw[very thick,->] ($(parent.east)+(0.35,0)$) -- ($(parent.east)+(0.6,0)$) node[right,font=\small] {$\node{\dfunc}(\dv)$};
       }
       %
       %
       %
-      \onslide<6-> {
+      \onslide<8-> {
         \draw[very thick,->,font=\scriptsize] ($(parent.east)+(1.75,0)$) .. controls ($(child1.north)+(0,1)$) .. ($(child1.north)+(0,0.35)$) node[midway,right] {$+ \ \Delta_{i,1}(\dv)$};
       }
     \end{scope}
@@ -858,7 +858,7 @@
         \node[text width=0.3\linewidth,align=center,mLightBrown,font=\small] at ($(axis2.south)+(0,-0.5)$) (axis2-text) {How to solve relaxations efficiently ?};
         \draw[ultra thick,mLightBrown] ($(axis2-text.center)+(-1.7,0.5)$) rectangle ($(axis2-text.center)+(1.7,-0.5)$);
         %
-        \node[text width=0.35\linewidth,align=left,anchor=north,font=\small] at ($(axis2)+(0.1,-1.25)$) {1) Cast as convex problem \\ 2) Screening/smoothing \\ 3) Accelerate solution};
+        \node[text width=0.35\linewidth,align=left,anchor=north,font=\small] at ($(axis2)+(0.1,-1.2  5)$) {1) Cast as convex problem \\ 2) Screening/smoothing \\ 3) Accelerate solution};
       \end{scope}
       %
       %

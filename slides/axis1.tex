@@ -121,7 +121,7 @@
             \draw[domain=1:1.5,smooth,variable=\x,LavenderBlush4,dashed,ultra thick] plot ({\x}, {0.45 + 0.5*\x*\x});
             \draw[domain=-1.5:-1,smooth,variable=\x,LavenderBlush4,dashed,ultra thick] plot ({\x}, {0.45 + 0.5*\x*\x});
             \fill[LavenderBlush4] (0,0) circle (0.1);
-            \node[right,LavenderBlush3] at (-1.75,0.75) {$\rfunc_{\text{cvx}}$};
+            \node[right,LavenderBlush4] at (-1.75,0.75) {$\rfunc_{\text{cvx}}$};
           }
         \end{scope}
       }
@@ -337,7 +337,7 @@
         \node[text width=0.3\linewidth,align=center,mLightBrown,font=\small] at ($(axis1.south)+(0,-0.5)$) (axis1-text) {How to construct relaxations generically ?};
         \draw[ultra thick,mLightBrown] ($(axis1-text.center)+(-1.7,0.5)$) rectangle ($(axis1-text.center)+(1.7,-0.5)$);
         %
-        \node[text width=0.35\linewidth,align=left,anchor=north,font=\small] at ($(axis1)+(0.1,-1.5)$) {1) Set $\rfunc_{\text{lb}}$ $=$ $\rfunc_{\text{cvx}}$ \\ 2) Closed-form expression \\ 3) Generalize BnB method};
+        \node[text width=0.35\linewidth,align=left,anchor=north,font=\small] at ($(axis1)+(0.1,-1.25)$) {1) Set $\rfunc_{\text{lb}}$ $=$ $\rfunc_{\text{cvx}}$ \\ 2) Closed-form expression \\ 3) Generalize BnB method};
       }
       %
       %
