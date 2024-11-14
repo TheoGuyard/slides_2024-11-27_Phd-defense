@@ -13,15 +13,27 @@
         %
         \node[draw,ultra thick] (question) at (0,0.5) {How to design generic and efficient solution methods ?};
         \node at ($(question)+(0,0.5)$) {\textbf{Question}};
-        %
-        \node (generic) at (-4,-1) {\textbf{1) Generic BnB}};
-        \node [text width=0.4\linewidth, align=center,font=\small,anchor=north] at ($(generic)+(0,-0.45)$) {\textbf{Axis 1} \\ Generic relaxation \\ construction};
-        %
-        \node (efficient) at (0,-1) {\textbf{2) Efficient BnB}};
+      }
+      %
+      %
+      %
+      \onslide<2-> {
+        \node (generic) at (-4.1,-1) {\textbf{1) Generic solver}};
+        \node [text width=0.4\linewidth, align=center,font=\small,anchor=north] at ($(generic)+(0,-0.45)$) {\textbf{Axis 1} \\ BnB solver with \\ generic framework};
+      }
+      %
+      %
+      %
+      \onslide<3-> {
+        \node (efficient) at (0,-1) {\textbf{2) Efficient solver}};
         \node [text width=0.4\linewidth, align=center,font=\small,anchor=north] at ($(efficient)+(0,-0.45)$) {\textbf{Axis 2 \& 3} \\ Efficient relaxation solution, simultaneous pruning};
-        %
-        \node (practical) at (4,-1) {\textbf{3) Practical solver}};
-        \node [text width=0.44\linewidth, align=center,font=\small,anchor=north] at ($(practical)+(0,-0.45)$) {\textbf{El0ps} \\ Flexible framework with SoTA performance};
+      }
+      %
+      %
+      %
+      \onslide<4-> {
+        \node (practical) at (4.1,-1) {\textbf{3) Practical solver}};
+        \node [text width=0.44\linewidth, align=center,font=\small,anchor=north] at ($(practical)+(0,-0.45)$) {\textbf{El0ps} \\ Flexible with state-of-the-art performance};
       }
     \end{scope}
   \end{tikzpicture}
@@ -30,118 +42,60 @@
 \begin{frame}{Perspectives}
   \begin{tikzpicture}[remember picture,overlay]
     \begin{scope}[xshift=0.5\linewidth]
-      \onslide<1-4> {
-        \node[align=center,text width=0.33\textwidth] (persp2) at (-4,3.25) {\textbf{Towards stronger relaxations}};
+      \onslide<1-5> {
+        \node[align=center,text width=0.33\textwidth] (persp1) at (-4,3.25) {\textbf{Extension to other formulations}};
       }
       %
       %
       %
-      \onslide<2-4> {
-        \node[align=center,text width=0.35\textwidth,font=\small] (restrict) at ($(persp2)+(0,-1.25)$) {\textbf{Restriction to region $\nodeSymb$} \\ $\min_{\pv \in \nodeSymb} \lfunc(\dic\pv) + \rfunc(\pv)$};
-        %
-        \node[align=center,text width=0.33\textwidth,font=\small] (cvx-relax) at ($(restrict)+(0,-2.5)$) {\textbf{Convex relaxation} \\ $\min_{\pv \in \nodeSymb} \lfunc(\dic\pv) + \textcolor{mLightBrown}{\rfunc_{\text{cvx}}}(\pv)$};
-        %
-        \node[fill=mLightWhite,draw,ultra thick,font=\small,text width=0.175\linewidth,align=center] (lb) at ($(restrict)+(0,-1.25)$) {lower bound};
-        \draw[ultra thick] (restrict) -- (lb);
-        \draw[ultra thick,->] (lb) -- (cvx-relax);
-      }
-      %
-      %
-      %
-      \onslide<3-4> {
-        \node[align=center,text width=0.345\textwidth,font=\small] (ccv-relax) at ($(cvx-relax)+(0,-2.25)$) {\textbf{Concave relaxation} \\ $\min_{\pv \in \nodeSymb} \lfunc(\dic\pv) + \textcolor{mLightBrown}{\rfunc_{\text{ccv}}}(\pv)$};
-        %
-        \node[fill=mLightWhite,draw,ultra thick,font=\small,text width=0.175\linewidth,align=center,inner sep=2.5pt] (stronger) at ($(cvx-relax)+(0,-1.25)$) {stronger};
-        \draw[ultra thick,-] (cvx-relax) -- (stronger);
-        \draw[ultra thick,->] (stronger) -- (ccv-relax);
-      }
-      %
-      %
-      %
-      \onslide<4> {
-        \node[align=center,text width=0.345\textwidth,font=\small,anchor=north] (ccv-relax-text) at ($(ccv-relax)+(0,-0.5)$) {$\rightarrow$ tune $\rfunc_{\text{ccv}}$ to preserve the overall convexity};
-      }
-      %
-      %
-      %
-      \onslide<4-> {
-        \begin{scope}[opacity=0.5]
-          \node[align=center,text width=0.33\textwidth] (persp2) at (-4,3.25) {\textbf{Towards stronger relaxations}};
-          %
-          \node[align=center,text width=0.35\textwidth,font=\small] (restrict) at ($(persp2)+(0,-1.25)$) {\textbf{Restriction to region $\nodeSymb$} \\ $\min_{\pv \in \nodeSymb} \lfunc(\dic\pv) + \rfunc(\pv)$};
-          %
-          \node[align=center,text width=0.33\textwidth,font=\small] (cvx-relax) at ($(restrict)+(0,-2.5)$) {\textbf{Convex relaxation} \\ $\min_{\pv \in \nodeSymb} \lfunc(\dic\pv) + \textcolor{mLightBrown}{\rfunc_{\text{cvx}}}(\pv)$};
-          %
-          \node[fill=mLightWhite,draw,ultra thick,font=\small,text width=0.175\linewidth,align=center] (lb) at ($(restrict)+(0,-1.25)$) {lower bound};
-          \draw[ultra thick] (restrict) -- (lb);
-          \draw[ultra thick,->] (lb) -- (cvx-relax);
-          %
-          \node[align=center,text width=0.345\textwidth,font=\small] (ccv-relax) at ($(cvx-relax)+(0,-2.25)$) {\textbf{Concave relaxation} \\ $\min_{\pv \in \nodeSymb} \lfunc(\dic\pv) + \textcolor{mLightBrown}{\rfunc_{\text{ccv}}}(\pv)$};
-          %
-          \node[fill=mLightWhite,draw,ultra thick,font=\small,text width=0.175\linewidth,align=center,inner sep=2.5pt] (stronger) at ($(cvx-relax)+(0,-1.25)$) {stronger};
-          \draw[ultra thick,-] (cvx-relax) -- (stronger);
-          \draw[ultra thick,->] (stronger) -- (ccv-relax);
-          %
-          \node[align=center,text width=0.345\textwidth,font=\small,anchor=north] (ccv-relax-text) at ($(ccv-relax)+(0,-0.5)$) {$\rightarrow$ tune $\rfunc_{\text{ccv}}$ to preserve the overall convexity};
-        \end{scope}
-      }
-      %
-      %
-      %
-      \onslide<5-9> {
-        \node[align=center,text width=0.33\textwidth] (persp1) at (0,3.25) {\textbf{Extension to other formulations}};
-      }
-      %
-      %
-      %
-      \onslide<6-9> {
+      \onslide<2-5> {
         \node[align=center,text width=0.35\textwidth,font=\small] (l0norm) at ($(persp1)+(0,-1.25)$) {Minimize loss $\lfunc(\dic\pv)$ \\ Force sparsity with $\norm{\pv}{0}$};
       }
       %
       %
       %
-      \onslide<7-9> {
-        \node[align=center,text width=0.33\textwidth,font=\small] (l0norm-reg) at ($(l0norm)+(0,-2.5)$) {\textbf{Regularized version} \\ $\min_{\pv \in \kR^{\pdim}} \lfunc(\dic\pv) + \textcolor{mLightBrown}{\reg\norm{\pv}{0}}$};
+      \onslide<3-5> {
+        \node[align=center,text width=0.33\textwidth,font=\small] (l0norm-reg) at ($(l0norm)+(0,-2.25)$) {\textbf{Regularized version} \\ $\min_{\pv \in \kR^{\pdim}} \lfunc(\dic\pv) + \textcolor{mLightBrown}{\reg\norm{\pv}{0}}$};
         %
-        \node[fill=mLightWhite,draw,ultra thick,font=\small,text width=0.175\linewidth,align=center,font=\small] (contrib) at ($(l0norm)+(0,-1.25)$) {contributions};
+        \node[fill=mLightWhite,draw,ultra thick,font=\small,text width=0.175\linewidth,align=center,font=\small] (contrib) at ($(l0norm)+(0,-1.125)$) {contributions};
         \draw[ultra thick,-] (l0norm) -- (contrib);
         \draw[ultra thick,->] (contrib) -- (l0norm-reg);
       }
       %
       %
       %
-      \onslide<8-9> {
+      \onslide<4-5> {
         \node[align=center,text width=0.345\textwidth,font=\small] (l0norm-cstr) at ($(l0norm-reg)+(0,-2.25)$) {\textbf{Constrained version} \\ $\min_{\pv \in \kR^{\pdim}} \lfunc(\dic\pv) \ \text{s.t.} \ \textcolor{mLightBrown}{\norm{\pv}{0} \leq k}$};
         %
-        \node[fill=mLightWhite,draw,ultra thick,font=\small,text width=0.175\linewidth,align=center] (extend) at ($(l0norm-reg)+(0,-1.25)$) {extend};
-        \draw[ultra thick,-] (l0norm-reg) -- (extend);
+        \node[fill=mLightWhite,draw,ultra thick,font=\small,text width=0.175\linewidth,align=center] (extend) at ($(l0norm-reg)+(0,-1.125)$) {connections};
+        \draw[ultra thick,<-] (l0norm-reg) -- (extend);
         \draw[ultra thick,->] (extend) -- (l0norm-cstr);
       }
       %
       %
       %
-      \onslide<9> {
+      \onslide<5> {
         \node[align=center,text width=0.345\textwidth,font=\small,anchor=north] at ($(l0norm-cstr)+(0,-0.5)$) {$\rightarrow$ non-separability of the $\ell_0$-norm constraint};
       }
       %
       %
       %
-      \onslide<10-> {
+      \onslide<6-> {
         \begin{scope}[opacity=0.5]
-          \node[align=center,text width=0.33\textwidth] (persp1) at (0,3.25) {\textbf{Extension to other formulations}};
+          \node[align=center,text width=0.33\textwidth] (persp1) at (-4,3.25) {\textbf{Extension to other formulations}};
           %
           \node[align=center,text width=0.35\textwidth,font=\small] (l0norm) at ($(persp1)+(0,-1.25)$) {Minimize loss $\lfunc(\dic\pv)$ \\ Force sparsity with $\norm{\pv}{0}$};
           %
-          \node[align=center,text width=0.33\textwidth,font=\small] (l0norm-reg) at ($(l0norm)+(0,-2.5)$) {\textbf{Regularized version} \\ $\min_{\pv \in \kR^{\pdim}} \lfunc(\dic\pv) + \textcolor{mLightBrown}{\reg\norm{\pv}{0}}$};
+          \node[align=center,text width=0.33\textwidth,font=\small] (l0norm-reg) at ($(l0norm)+(0,-2.25)$) {\textbf{Regularized version} \\ $\min_{\pv \in \kR^{\pdim}} \lfunc(\dic\pv) + \textcolor{mLightBrown}{\reg\norm{\pv}{0}}$};
           %
-          \node[fill=mLightWhite,draw,ultra thick,font=\small,text width=0.175\linewidth,align=center,font=\small] (contrib) at ($(l0norm)+(0,-1.25)$) {contributions};
+          \node[fill=mLightWhite,draw,ultra thick,font=\small,text width=0.175\linewidth,align=center,font=\small] (contrib) at ($(l0norm)+(0,-1.125)$) {contributions};
           \draw[ultra thick,-] (l0norm) -- (contrib);
           \draw[ultra thick,->] (contrib) -- (l0norm-reg);
           %
           \node[align=center,text width=0.345\textwidth,font=\small] (l0norm-cstr) at ($(l0norm-reg)+(0,-2.25)$) {\textbf{Constrained version} \\ $\min_{\pv \in \kR^{\pdim}} \lfunc(\dic\pv) \ \text{s.t.} \ \textcolor{mLightBrown}{\norm{\pv}{0} \leq k}$};
           %
-          \node[fill=mLightWhite,draw,ultra thick,font=\small,text width=0.175\linewidth,align=center] (extend) at ($(l0norm-reg)+(0,-1.25)$) {extend};
-          \draw[ultra thick,-] (l0norm-reg) -- (extend);
+          \node[fill=mLightWhite,draw,ultra thick,font=\small,text width=0.175\linewidth,align=center] (extend) at ($(l0norm-reg)+(0,-1.125)$) {connections};
+          \draw[ultra thick,<-] (l0norm-reg) -- (extend);
           \draw[ultra thick,->] (extend) -- (l0norm-cstr);
           %
           \node[align=center,text width=0.345\textwidth,font=\small,anchor=north] at ($(l0norm-cstr)+(0,-0.5)$) {$\rightarrow$ non-separability of the $\ell_0$-norm constraint};
@@ -150,36 +104,105 @@
       %
       %
       %
-      \onslide<10-> {
-        \node[align=center,text width=0.33\textwidth] (persp3) at (4,3.25) {\textbf{Screen/smooth beyond sparsity}};
+      \onslide<6-10> {
+        \node[align=center,text width=0.33\textwidth] (persp2) at (0,3.25) {\textbf{Towards stronger relaxations}};
+      }
+      %
+      %
+      %
+      \onslide<7-10> {
+        \node[align=center,text width=0.35\textwidth,font=\small] (restrict) at ($(persp2)+(0,-1.25)$) {\textbf{Restriction to region $\nodeSymb$} \\ $\min_{\pv \in \nodeSymb} \lfunc(\dic\pv) + \rfunc(\pv)$};
+      }
+      %
+      %
+      %
+      \onslide<8-10> {
+        \node[align=center,text width=0.33\textwidth,font=\small] (cvx-relax) at ($(restrict)+(0,-2.25)$) {\textbf{Convex relaxation} \\ $\min_{\pv \in \nodeSymb} \lfunc(\dic\pv) + \textcolor{mLightBrown}{\rfunc_{\text{cvx}}}(\pv)$};
+        %
+        \node[fill=mLightWhite,draw,ultra thick,font=\small,text width=0.175\linewidth,align=center] (lb) at ($(restrict)+(0,-1.125)$) {lower bound};
+        \draw[ultra thick] (restrict) -- (lb);
+        \draw[ultra thick,->] (lb) -- (cvx-relax);
+      }
+      %
+      %
+      %
+      \onslide<9-10> {
+        \node[align=center,text width=0.345\textwidth,font=\small] (ccv-relax) at ($(cvx-relax)+(0,-2.25)$) {\textbf{Concave relaxation} \\ $\min_{\pv \in \nodeSymb} \lfunc(\dic\pv) + \textcolor{mLightBrown}{\rfunc_{\text{non-cvx}}}(\pv)$};
+        %
+        \node[fill=mLightWhite,draw,ultra thick,font=\small,text width=0.175\linewidth,align=center,inner sep=2.5pt] (stronger) at ($(cvx-relax)+(0,-1.125)$) {improve};
+        \draw[ultra thick,-] (cvx-relax) -- (stronger);
+        \draw[ultra thick,->] (stronger) -- (ccv-relax);
+      }
+      %
+      %
+      %
+      \onslide<10> {
+        \node[align=center,text width=0.345\textwidth,font=\small,anchor=north] (ccv-relax-text) at ($(ccv-relax)+(0,-0.5)$) {$\rightarrow$ tune $\rfunc_{\text{non-cvx}}$ to preserve the overall convexity};
       }
       %
       %
       %
       \onslide<11-> {
-        \node[align=center,text width=0.35\textwidth,font=\small] (cvx) at ($(persp3)+(0,-1.25)$) {\textbf{Convex problem} \\ $\min_{\pv \in \kR^{\pdim}} \lfunc(\dic\pv) + \relaxrfunc(\pv)$};
+        \begin{scope}[opacity=0.5]
+          \node[align=center,text width=0.33\textwidth] (persp2) at (0,3.25) {\textbf{Towards stronger relaxations}};
+          %
+          \node[align=center,text width=0.35\textwidth,font=\small] (restrict) at ($(persp2)+(0,-1.25)$) {\textbf{Restriction to region $\nodeSymb$} \\ $\min_{\pv \in \nodeSymb} \lfunc(\dic\pv) + \rfunc(\pv)$};
+          %
+          \node[align=center,text width=0.33\textwidth,font=\small] (cvx-relax) at ($(restrict)+(0,-2.25)$) {\textbf{Convex relaxation} \\ $\min_{\pv \in \nodeSymb} \lfunc(\dic\pv) + \textcolor{mLightBrown}{\rfunc_{\text{cvx}}}(\pv)$};
+          %
+          \node[fill=mLightWhite,draw,ultra thick,font=\small,text width=0.175\linewidth,align=center] (lb) at ($(restrict)+(0,-1.125)$) {lower bound};
+          \draw[ultra thick] (restrict) -- (lb);
+          \draw[ultra thick,->] (lb) -- (cvx-relax);
+          %
+          \node[align=center,text width=0.345\textwidth,font=\small] (ccv-relax) at ($(cvx-relax)+(0,-2.25)$) {\textbf{Concave relaxation} \\ $\min_{\pv \in \nodeSymb} \lfunc(\dic\pv) + \textcolor{mLightBrown}{\rfunc_{\text{non-cvx}}}(\pv)$};
+          %
+          \node[fill=mLightWhite,draw,ultra thick,font=\small,text width=0.175\linewidth,align=center,inner sep=2.5pt] (stronger) at ($(cvx-relax)+(0,-1.125)$) {improve};
+          \draw[ultra thick,-] (cvx-relax) -- (stronger);
+          \draw[ultra thick,->] (stronger) -- (ccv-relax);
+          %
+          \node[align=center,text width=0.345\textwidth,font=\small,anchor=north] (ccv-relax-text) at ($(ccv-relax)+(0,-0.5)$) {$\rightarrow$ tune $\rfunc_{\text{non-cvx}}$ to preserve the overall convexity};
+        \end{scope}
+      }
+      %
+      %
+      %
+      \onslide<11-> {
+        \node[align=center,text width=0.33\textwidth] (persp3) at (4,3.25) {\textbf{Broader exploitation of smoothing tests}};
       }
       %
       %
       %
       \onslide<12-> {
-        \node[align=center,text width=0.33\textwidth,font=\small] (scrsmt) at ($(cvx)+(0,-2.7)$) {\textbf{Screen/smooth tests} \\ $\opt{\pvi{\idxentry}} = 0$ or $\opt{\pvi{\idxentry}} \neq 0$ \\ Safe identif. from \textcolor{mLightBrown}{$\subdiff\relaxrfunc$}};
+        \node[align=center,text width=0.35\textwidth,font=\small] (cvx) at ($(persp3)+(0,-1.125)$) {\textbf{Convex problem} \\ $\min_{\pv \in \kR^{\pdim}} \lfunc(\dic\pv) + \relaxrfunc(\pv)$};
+      }
+      %
+      %
+      %
+      \onslide<13-> {
+        \node[align=center,text width=0.33\textwidth,font=\small] (scrsmt) at ($(cvx)+(0,-2.25)$) {\textbf{Screen/smooth tests} \\ $\opt{\pvi{\idxentry}} = 0$ or $\opt{\pvi{\idxentry}} \neq 0$};
         %
         \draw[ultra thick,->] ($(cvx.south)+(0,0)$) -- ($(scrsmt.north)+(0,0)$) node[midway,fill=mLightWhite,draw,ultra thick,font=\small,text width=0.175\linewidth,align=center] {accelerate};
       }
       %
       %
       %
-      \onslide<13-> {
-        \node[align=center,text width=0.35\textwidth,font=\small] (structure) at ($(scrsmt)+(0,-2.35)$) {\textbf{Structure identif.} \\ $\opt{\pv}$ in manifold $\mathcal{M}$ \\ Unsafe identif. from \textcolor{mLightBrown}{$\prox_{\relaxrfunc}$}};
+      \onslide<14-> {
+        \node[align=center,text width=0.2\textwidth,font=\small] (action-zero) at ($(scrsmt)+(-1,-2)$) {Set $\pvi{\idxentry}=0$ \\ Strategy tailored to any instance};
+        \draw[ultra thick,->] ($(scrsmt.south)+(-1,-0.1)$) -- ($(scrsmt.south)+(-1,-0.5)$);
       }
       %
       %
       %
-      \onslide<14-> {
-        \draw[ultra thick,<-] ($(scrsmt.south)+(-0.75,0)$) .. controls ($(scrsmt.south)+(-1.25,-0.5)$) .. ($(structure.north)+(-0.75,0)$) node[midway,fill=mLightWhite,draw,ultra thick,font=\small,text width=0.125\linewidth,align=center] {extend};
-        %
-        \draw[ultra thick,->] ($(scrsmt.south)+(0.75,0)$) .. controls ($(scrsmt.south)+(1.25,-0.5)$) .. ($(structure.north)+(0.75,0)$) node[midway,fill=mLightWhite,draw,ultra thick,font=\small,text width=0.125\linewidth,align=center] {make safe};
+      \onslide<15-> {
+        \node[align=center,text width=0.2\textwidth,font=\small] (action-nonzero) at ($(scrsmt)+(1,-2)$) {Smooth $\separable{\relaxrfunc}{\idxentry}$ \\ Strategy depends on the instance};
+        \draw[ultra thick,->] ($(scrsmt.south)+(1,-0.1)$) -- ($(scrsmt.south)+(1,-0.5)$);
+      }
+      %
+      %
+      %
+      \onslide<16-> {
+        \node[align=center,text width=0.4\textwidth,font=\small] (action-nonzero) at ($(scrsmt)+(0,-3.75)$) {Generic strategy ?};
+        \draw[ultra thick,->] ($(scrsmt.south)+(1,-2.5)$) -- ($(scrsmt.south)+(0.75,-3)$);
       }
     \end{scope}
   \end{tikzpicture}

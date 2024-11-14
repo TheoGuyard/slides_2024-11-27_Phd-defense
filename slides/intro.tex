@@ -14,14 +14,14 @@
             %
             \onslide<2-> {
                 \node (loss) at (-4,0) {\textbf{1) Loss} $\lfunc(\dic\pv)$};
-                \node [text width=0.35\linewidth, align=center,font=\small,anchor=north] at ($(loss)+(0,-0.35)$) {Models the \\ \textcolor{mLightBrown}{application} at hand, encodes constraints};
+                \node [text width=0.35\linewidth, align=center,font=\small,anchor=north] at ($(loss)+(0,-0.35)$) {Models the quantity to minimize in the \textcolor{mLightBrown}{application} at hand};
             }
             %
             %
             %
             \onslide<3-> {
                 \node (norm) at (0,0) {\textbf{2) $\ell_0$-norm} $\norm{\pv}{0}$};
-                \node [text width=0.325\linewidth, align=center,font=\small,anchor=north] at ($(norm)+(0,-0.35)$) {Counts the number of non-zeros to promote \\ \textcolor{mLightBrown}{sparse} solutions};
+                \node [text width=0.325\linewidth, align=center,font=\small,anchor=north] at ($(norm)+(0,-0.35)$) {Counts non-zeros in its input to promote \\ \textcolor{mLightBrown}{sparse} solutions};
             }
             %
             %
@@ -120,7 +120,7 @@
             %
             %
             \onslide<2> {
-                \node[draw,ultra thick,fill=mLightWhite,font=\small,text width=0.3\linewidth,align=center] at (-4,1.25) {Sparsity linked to \\ model robustness};
+                \node[draw,ultra thick,fill=mLightWhite,font=\small,text width=0.3\linewidth,align=center] at (-4,1.25) {Sparsity linked to \\ model explainability};
             }
             %
             %
@@ -132,7 +132,7 @@
             %
             %
             \onslide<4> {
-                \node[draw,ultra thick,fill=mLightWhite,font=\small,text width=0.3\linewidth,align=center] at (2,-2.25) {Sparsity linked to \\ production cost};
+                \node[draw,ultra thick,fill=mLightWhite,font=\small,text width=0.3\linewidth,align=center] at (2,-2.25) {Sparsity linked to \\ unit cost count};
             }
             %
             %
@@ -177,14 +177,14 @@
             %
             %
             \onslide<3-> {
-                \node[text width=0.3\linewidth,align=left] (prop) at (3,-1) {\textbf{Properties} \\ $\ \ \bullet$ non-convex \\ $\ \ \bullet$ non-smooth \\ $\ \ \bullet$ non-continuous \\ $\ \ \bullet$ ...};
+                \node[text width=0.3\linewidth,align=left] (prop) at (3,-0.75) {\textbf{Properties} \\ $\ \ \bullet$ non-convex \\ $\ \ \bullet$ non-smooth \\ $\ \ \bullet$ non-continuous \\ $\ \ \bullet$ ...};
             }
             %
             %
             %
             \onslide<4-> {
-                \node[text width=0.4\linewidth,align=center] (hard) at (3,-3.5) {\textbf{Can be tackled using \\ generic MIP solvers}};
-                \draw[ultra thick,->] ($(prop.south)+(0,-0.25)$) -- ($(hard.north)+(0,0.25)$);
+                \node[text width=0.4\linewidth,align=center] (hard) at (3,-3.25) {\textbf{Can be tackled using \\ generic MIP solvers} \\ D. Bertsimas \textit{et. al} (2016)};
+                \draw[ultra thick,->] ($(prop.south)+(0,-0.1)$) -- ($(hard.north)+(0,0.1)$);
             }
             %
             %
@@ -209,7 +209,7 @@
                     \end{blockcolor}
                 };
                 %
-                \node[font=\small] at ($(problem)+(0,-1)$) {$\lfunc:$ Quadratic / $\pfunc:$ Bound constraint};
+                \node[font=\small] at ($(problem)+(0,-1)$) {$\dic \in \kR^{100\times300}$ / $\lfunc:$ Quadratic / $\pfunc:$ Bound constraint};
             }
             %
             %
@@ -221,7 +221,7 @@
             %
             %
             \onslide<4-> {
-                \node[text width=0.35\linewidth,align=center] (obs) at ($(problem)+(3.75,-2.75)$) {\textbf{Poor performance} \\ Observed in general with MIP solvers};
+                \node[text width=0.3\linewidth,align=center] (obs) at ($(problem)+(3.75,-2.75)$) {\textbf{Can we do better ?}};
             }
             %
             %

@@ -219,7 +219,7 @@
       %
       %
       \onslide<15-> {
-        \node[text width=0.5\linewidth,align=center] at (3,-2) {\textbf{Algorithmic complexity} \\ number of nodes processed \\ $\times$ \\ pruning test evaluation time};
+        \node[text width=0.5\linewidth,align=center] at (3,-2.25) {\textbf{Solve time} \\ nodes processed \\ $\times$ \\ pruning test time};
       }
     \end{scope}
   \end{tikzpicture}
@@ -388,7 +388,7 @@
       %
       %
       \onslide<1-3> {
-        \node[font=\small] at ($(problem)+(0,-1)$) {$\lfunc:$ Quadratic / $\pfunc:$ Bound constraint};
+        \node[font=\small] at ($(problem)+(0,-1)$) {$\dic \in \kR^{100\times300}$ / $\lfunc:$ Quadratic / $\pfunc:$ Bound constraint};
         %
         \node[text width=0.6\linewidth,align=left,font=\small] at (2.75,-0.5) {\textbf{MIP solvers} \\ \ref{plot:bnb-Scip} Scip \\ \ref{plot:bnb-Cplex} Cplex \\ \ref{plot:bnb-Mosek} Mosek};
       }
@@ -408,7 +408,7 @@
       %
       %
       \onslide<4-> {
-        \node[font=\small] at ($(problem)+(0,-1)$) {$\lfunc:$ Logistic / $\pfunc:$ $\ell_1$-norm};
+        \node[font=\small] at ($(problem)+(0,-1)$) {$\dic \in \kR^{100\times300}$ / $\lfunc:$ Logistic / $\pfunc:$ $\ell_1$-norm};
         \node[text width=0.6\linewidth,align=left,font=\small] at (2.75,-0.5) {\textbf{MIP solvers} \\ \ref{plot:Scip} \textcolor{mDarkTeal!25}{Scip} \\ \ref{plot:Cplex} \textcolor{mDarkTeal!25}{Cplex} \\ \ref{plot:Mosek} Mosek};
         %
         \node[text width=0.6\linewidth,align=left,font=\small] at (2.75,-2.1) {\textbf{BnB solvers} \\ \ref{plot:L0Bnb} \textcolor{mDarkTeal!25}{L0Bnb -- H. Hazimeh \textit{et al.} (2021)} \\ \ref{plot:SBnb} \textcolor{mDarkTeal!25}{SBnb -- S. Bourguignon \textit{et al.} (2021)}};
@@ -417,7 +417,7 @@
       %
       %
       \onslide<5-> {
-        \node[text width=0.35\linewidth,align=center,anchor=north,mLightBrown] at ($(obs)+(0,-0.675)$) {... but they are not generic};
+        \node[text width=0.35\linewidth,align=center,anchor=north,mLightBrown] at ($(obs)+(0,-0.675)$) {... but they are instance-specific};
       }
     \end{scope}
     \begin{scope}[xshift=0.075\linewidth,yshift=-65]
@@ -578,7 +578,7 @@
             $\opt{\pobj} = \min_{\pv \in \kR^{\pdim}} \lfunc(\dic\pv) + \rfunc(\pv)$
           \end{blockcolor}
         };
-        \node[font=\small,anchor=west] (problem-text) at ($(problem)+(3,-0.15)$) {$\rfunc(\pv) = \reg\norm{\pv}{0} + \pfunc(\pv)$};
+        \node[font=\small,anchor=west] (problem-text) at ($(problem)+(2.75,-0.15)$) {$\rfunc(\pv) = \reg\norm{\pv}{0} + \pfunc(\pv)$};
         \draw[ultra thick,->] ($(problem-text.west)+(-0.3,0)$) -- ($(problem-text.west)+(0.05,0)$);
       }
       %
@@ -596,7 +596,7 @@
           \end{blockcolor}
         };
         %
-        \node[font=\small,anchor=west] (easy-text) at ($(restrict)+(3,-0.15)$) {lower bound on $\node{\pobj}$};
+        \node[font=\small,anchor=west] (easy-text) at ($(restrict)+(2.75,-0.15)$) {lower bound on $\node{\pobj}$};
         \draw[ultra thick,->] ($(easy-text.west)+(-0.3,0)$) -- ($(easy-text.west)+(0.05,0)$);
       }
       %
@@ -616,7 +616,7 @@
           \end{blockcolor}
         };
         %
-        \node[font=\small,anchor=west] (relax-text) at ($(relax)+(3,-0.15)$) {$\node{\pobj}_{\text{lb}} \leq \node{\pobj}$};
+        \node[font=\small,anchor=west] (relax-text) at ($(relax)+(2.75,-0.15)$) {no generic construction};
         \draw[ultra thick,->] ($(relax-text.west)+(-0.3,0)$) -- ($(relax-text.west)+(0.05,0)$);
       }
       %

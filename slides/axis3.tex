@@ -163,8 +163,8 @@
       %
       %
       \onslide<2-> {
-        \node[draw,ultra thick] (complexity) at (0,-3.75) {Number of nodes processed $\times$ Time to solve a relaxation};
-        \node at ($(complexity)+(0,0.5)$) {\textbf{Algorithmic complexity}};
+        \node[draw,ultra thick] (complexity) at (0,-3.75) {number of nodes explored $\times$ node process time};
+        \node at ($(complexity)+(0,0.5)$) {\textbf{Solving time}};
       }
       %
       %
@@ -220,14 +220,14 @@
       \onslide<4-> {
         \draw[very thick,dashed,->] ($(node0.south east)+(0.2,0)$) -- ($(node0.south east)+(0.8,-0.25)$);
         %
-        \node (std) at (2.5,0.25) {\textbf{With the standard strategy}};
-        %
-        \node[text width=0.3\linewidth,align=center,font=\small] (notpruned) at ($(std)+(-1.5,-1)$) {$\nodeSymb_1$ and $\nodeSymb_3$ \\ processed but not pruned};
+        \node[text width=0.5\linewidth,align=center] (std) at (3,0.75) {\textbf{Standard strategy} \\ one relaxation solved per node};
       }
       %
       %
       %
       \onslide<5-> {
+        \node[text width=0.3\linewidth,align=center,font=\small] (notpruned) at ($(std)+(-1.5,-1.25)$) {$\nodeSymb_1$ and $\nodeSymb_3$ \\ processed but not pruned};
+        %
         \node[text width=0.3\linewidth,align=center,font=\small] at ($(notpruned)+(0,-1.5)$) {useless relaxation \\ resolution};
         \draw[very thick,->] ($(notpruned.south)+(0,0)$) -- ($(notpruned.south)+(0,-0.25)$);
       }
@@ -235,12 +235,8 @@
       %
       %
       \onslide<6-> {
-        \node[text width=0.3\linewidth,align=center,font=\small] (pruned) at ($(std)+(1.5,-1)$) {$\nodeSymb_4$, $\nodeSymb_7$ and $\nodeSymb_8$ \\ can be pruned with rough lower bounds};
-      }
-      %
-      %
-      %
-      \onslide<7-> {
+        \node[text width=0.3\linewidth,align=center,font=\small] (pruned) at ($(std)+(1.5,-1.25)$) {$\nodeSymb_4$, $\nodeSymb_7$ and $\nodeSymb_8$ \\ pruned with \textcolor{mLightBrown}{rough} lower bounds};
+        %
         \node[text width=0.3\linewidth,align=center,font=\small] at ($(pruned)+(0,-1.5)$) {unnecessarily tight \\ lower bounds};
         \draw[very thick,->] ($(pruned.south)+(0,0)$) -- ($(pruned.south)+(0,-0.25)$);
       }
@@ -248,14 +244,14 @@
   \end{tikzpicture}
 \end{frame}
   
-\begin{frame}{Axis 3 -- Change of paradigm}
+\begin{frame}{Axis 3 -- Dual bounds}
   \begin{tikzpicture}[remember picture,overlay]
     \begin{scope}[xshift=0.5\textwidth]
       \onslide<1-> {
-        \node[draw,ultra thick] (question) at (0,3) {How to compute a \textcolor{mLightBrown}{rough} but \textcolor{mLightBrown}{very cheap} lower bound on $\node{\pobj}$ ?};
+        \node[draw,ultra thick,text width=0.7\linewidth,align=center] (question) at (0,2.75) {Can we balance the \textcolor{mLightBrown}{complexity}/\textcolor{mLightBrown}{tightness} tradeoff \\ when computing the lower bound on $\node{\pobj}$ ?};
         \node at ($(question.north)+(0,0.25)$) {\textbf{Question}};
         %
-        \node[align=center,text width=0.45\textwidth] (problem) at (0,1.75) {
+        \node[align=center,text width=0.45\textwidth] (problem) at (0,1.25) {
           \begin{blockcolor}{mDarkTeal}{Restriction to region $\nodeSymb$}
             \centering
             $\node{\pobj} = \min_{\pv \in \nodeSymb} \lfunc(\dic\pv) + \rfunc(\pv)$
@@ -271,13 +267,13 @@
         \node[align=center,text width=0.45\textwidth] (cvx-relaxation) at ($(problem)+(0,-1.75)$) {
           \begin{blockcolor}{mDarkTeal}{Relaxation for region $\nodeSymb$}
             \centering
-            $\node{\pobj}_{\text{lb}} = \min_{\pv \in \nodeSymb} \lfunc(\dic\pv) + \rfunc_{\text{lb}}(\pv)$
+            $\node{\pobj}_{\text{cvx}} = \min_{\pv \in \nodeSymb} \lfunc(\dic\pv) + \rfunc_{\text{cvx}}(\pv)$
           \end{blockcolor}
         };
         %
         \node at ($(problem)+(0,-1)$) {\rotatebox{90}{$\leq$}};
         %
-        \draw[ultra thick,->] ($(cvx-relaxation.east)+(0.1,-0.1)$) -- ($(cvx-relaxation.east)+(0.45,-0.1)$) node[right,font=\small] {$\node{\pobj}_{\text{lb}} \leq \node{\pobj}$};
+        \draw[ultra thick,->] ($(cvx-relaxation.east)+(0.1,-0.1)$) -- ($(cvx-relaxation.east)+(0.45,-0.1)$) node[right,font=\small] {$\node{\pobj}_{\text{cvx}} \leq \node{\pobj}$};
         %
         \draw[ultra thick,->] ($(problem.west)+(0,-0.25)$) .. controls ($(cvx-relaxation.west)+(-1.5,0.8)$) .. ($(cvx-relaxation.west)+(0,0.25)$) node[midway,fill=mLightWhite,draw,ultra thick,font=\small,text width=0.125\linewidth,align=center] {convexify};
       }
@@ -300,57 +296,55 @@
       %
       %
       \onslide<4-> {
-        \draw[ultra thick,->] ($(dual-relaxation.east)+(0.1,-0.1)$) -- ($(dual-relaxation.east)+(0.45,-0.1)$) node[right,font=\small] {$\textcolor{mLightBrown}{\node{\pobj}_{\text{dual}}} \leq \node{\pobj}_{\text{lb}} \leq \node{\pobj}$};
+        \draw[ultra thick,->] ($(dual-relaxation.east)+(0.1,-0.1)$) -- ($(dual-relaxation.east)+(0.45,-0.1)$) node[right,font=\small] {$\textcolor{mLightBrown}{\node{\pobj}_{\text{dual}}} \leq \node{\pobj}_{\text{cvx}} \leq \node{\pobj}$};
       }
       %
       %
       %
       \onslide<5-> {
-        \node at ($(dual-relaxation)+(0,-1.5)$) {\textbf{Any evaluation of $\node{\dfunc}$ gives a lower-bound on $\node{\pobj}$}};
+        \node[text width=0.8\linewidth,align=center] at ($(dual-relaxation)+(0,-1.45)$) {\textbf{Any evaluation of $\node{\dfunc}$ gives a lower-bound on $\node{\pobj}$}};
       }
     \end{scope}
   \end{tikzpicture}
 \end{frame}
 
-\begin{frame}{Axis 3 -- Dual bounds}
+\begin{frame}{Axis 3 -- Successor link}
   \begin{tikzpicture}[remember picture,overlay]
     \begin{scope}[xshift=0.5\textwidth]
       \onslide<1-> {
-        \node[align=center,text width=0.375\textwidth] (stdbound) at (-2.5,3.25) {
+        \node[text width=\linewidth,align=center] at (0,3.5) {A. Atamtürk \textit{et al.} (2020) / G. Samain \textit{et al.} (2023)};
+        %
+        \node[align=center,text width=0.375\textwidth] (stdbound) at (-2.75,2.5) {
           \begin{blockcolor}{mDarkTeal}{Standard lower bound}
             \centering
-            $\node{\pobj} \geq \node{\pobj}_{\text{lb}}$
+            $\node{\pobj} \geq \node{\pobj}_{\text{cvx}}$
           \end{blockcolor}
         };
-        \node[text width=0.5\linewidth,align=center] at ($(stdbound.south)+(0,-0.5)$) (node) {\textbf{Tight but expensive} \\ Need to solve a relaxation};
-      }
-      %
-      %
-      %
-      \onslide<2-> {
-        \node[align=center,text width=0.375\textwidth] (dualbound) at (2.5,3.25) {
+        \node[text width=0.5\linewidth,align=center] at ($(stdbound.south)+(0,-0.25)$) (node) {Tight but expensive};
+        %
+        \node[align=center,text width=0.375\textwidth] (dualbound) at (2.75,2.5) {
           \begin{blockcolor}{mDarkTeal}{Dual lower bound}
             \centering
             $\node{\pobj} \geq \textcolor{mLightBrown}{\node{\dfunc}(\dv)}$
           \end{blockcolor}
         };
         %
-        \node[text width=0.5\linewidth,align=center] at ($(dualbound.south)+(0,-0.5)$) (node) {\textbf{Rough but very cheap} \\ Need to evaluate $\node{\dfunc}$};
+        \node[text width=0.5\linewidth,align=center] at ($(dualbound.south)+(0,-0.25)$) (node) {Rough but economical};
       }
       %
       %
       %
-      \onslide<3-> {
-        \node[mLightBrown] at (0,1) (result) {\textbf{Spotlight result}};
+      \onslide<2-> {
+        \node[mLightBrown] at (0,0.65) (result) {\textbf{Spotlight result}};
         \node[text width=0.9\linewidth,align=center,inner sep=5pt,mLightBrown,draw,ultra thick] at ($(result.south)+(0,-0.3)$) (result-text) {Successor nodes in the BnB tree share similar dual lower bounds.};
       }
       %
       %
       %
-      \onslide<4-> {
-        \node (parent) at (0,-0.5) {};
-        \node (child0) at ($(parent)+(-2.25,-1.25)$) {};
-        \node (child1) at ($(parent)+(2.25,-1.25)$) {};
+      \onslide<3-> {
+        \node (parent) at (0,-0.85) {};
+        \node (child0) at ($(parent)+(-2.25,-1)$) {};
+        \node (child1) at ($(parent)+(2.25,-1)$) {};
         \node[font=\small,anchor=east] at ($(child0)+(-0.5,0)$) {successor};
         \node[font=\small,anchor=west] at ($(child1)+(0.5,0)$) {successor};
         \draw[
@@ -376,7 +370,7 @@
       %
       %
       %
-      \onslide<5-> {
+      \onslide<4-> {
         \node[text width=\linewidth,align=left] (theorem) at (0,-3) {\textbf{Theorem --} Let $\nodeSymb_{\idxentry,b}$ with $b \in \{0,1\}$ be a successor of node $\nodeSymb$, then
         \vspace*{-5pt}
         \begin{equation*}
@@ -387,212 +381,434 @@
       %
       %
       %
-      \onslide<6-> {
-        \draw[ultra thick,mLightBrown] ($(theorem)+(-0.4,-0.5)$) -- ($(theorem)+(-0.4,-0.6)$) -- ($(theorem)+(0.5,-0.6)$) -- ($(theorem)+(0.5,-0.5)$);
-        \draw[ultra thick,mLightBrown,font=\small] ($(theorem)+(0.05,-0.6)$) .. controls ($(theorem)+(0.05,-0.75)$) .. ($(theorem)+(-1.5,-0.75)$) node[left,mLightBrown,font=\small] {Independent of $\nodeSymb_{i,b}$};
+      \onslide<5-> {
+        \draw[ultra thick] ($(theorem)+(-0.4,-0.5)$) -- ($(theorem)+(-0.4,-0.6)$) -- ($(theorem)+(0.5,-0.6)$) -- ($(theorem)+(0.5,-0.5)$);
+        \draw[ultra thick,font=\small] ($(theorem)+(0.05,-0.6)$) .. controls ($(theorem)+(0.05,-1)$) .. ($(theorem)+(-1,-1)$) node[left,font=\small] {Independent of $\nodeSymb_{i,b}$};
         %
-        \draw[ultra thick,mLightBrown] ($(theorem)+(0.9,-0.5)$) -- ($(theorem)+(0.9,-0.6)$) -- ($(theorem)+(2.1,-0.6)$) -- ($(theorem)+(2.1,-0.5)$);
-        \draw[ultra thick,mLightBrown,font=\small] ($(theorem)+(1.5,-0.6)$) .. controls ($(theorem)+(1.5,-0.75)$) .. ($(theorem)+(3,-0.75)$) node[right,mLightBrown] {Cheap to compute};
+        \draw[ultra thick] ($(theorem)+(0.9,-0.5)$) -- ($(theorem)+(0.9,-0.6)$) -- ($(theorem)+(2.1,-0.6)$) -- ($(theorem)+(2.1,-0.5)$);
+        \draw[ultra thick,font=\small] ($(theorem)+(1.5,-0.6)$) .. controls ($(theorem)+(1.5,-1)$) .. ($(theorem)+(2.5,-1)$) node[right] {Virtually cost-free};
+      }
+      %
+      %
+      %
+      \onslide<6-> {
+        \draw[very thick,->,mLightBrown] ($(parent.east)+(0.35,0)$) -- ($(parent.east)+(0.6,0)$) node[right,font=\small] {$\node{\dfunc}(\dv)$};
       }
       %
       %
       %
       \onslide<7-> {
-        \draw[very thick,->] ($(parent.east)+(0.35,0)$) -- ($(parent.east)+(0.6,0)$) node[right,font=\small] {$\node{\dfunc}(\dv)$};
-      }
-      %
-      %
-      %
-      \onslide<8-> {
-        \draw[very thick,->,font=\scriptsize] ($(parent.east)+(1.75,0)$) .. controls ($(child1.north)+(0,1)$) .. ($(child1.north)+(0,0.35)$) node[midway,right] {$+ \ \Delta_{i,1}(\dv)$};
+        \draw[very thick,->,font=\small,mLightBrown] ($(parent.east)+(1.75,0)$) .. controls ($(child1.north)+(0,0.75)$) .. ($(child1.north)+(0,0.35)$) node[midway,right] {$+ \ \Delta_{i,1}(\dv)$};
       }
     \end{scope}
   \end{tikzpicture}
 \end{frame}
 
-\begin{frame}{Axis 3 -- Simultaneous pruning}
+% \begin{frame}{Axis 3 -- Change of paradigm}
+%   \begin{tikzpicture}[remember picture,overlay]
+%     \begin{scope}[xshift=0.5\textwidth]
+%       \onslide<1-> {
+%         \node[text width=0.45\linewidth, align=center] (problem) at (0,3.25) {
+%           \begin{blockcolor}{mDarkTeal}{Problem}
+%               \centering
+%               $\min_{\pv \in \kR^{\pdim}} \lfunc(\dic\pv) + \reg\norm{\pv}{0} + \pfunc(\pv)$
+%           \end{blockcolor}
+%         };
+%       }
+%       %
+%       %
+%       %
+%       \onslide<2-> {
+%         \node at ($(problem.south)+(0,-1.5)$) (node0) {};
+%         \node at ($(node0)+(0,1.1)$) {\small{$\kR^{\pdim}$}};
+%         \draw[very thick,->] ($(node0)+(0,0.8)$) -- ($(node0)+(0,0.5)$);
+%         \draw[
+%           ultra thick,
+%           top color = white,
+%           bottom color = gray!60,
+%         ] (node0) circle (10pt) node {$\nodeSymb_0$};
+%       }
+%       %
+%       %
+%       %
+%       \onslide<3-6> {
+%         \draw[very thick,->] ($(node0.east)+(0.35,0)$) -- ($(node0.east)+(0.6,0)$) node[right,font=\small] {evaluate $\dfunc^{\nodeSymb_0}(\dv)$};
+%       }
+%       %
+%       %
+%       %
+%       \onslide<4-> {
+%         \node at ($(node0)+(-3,-1)$) (node1) {};
+%         \draw[
+%           dashed,
+%           very thick,
+%           top color = white,
+%           bottom color = gray!60,
+%         ] (node1) circle (10pt) node {$\nodeSymb_1$};
+%         \draw[dashed,very thick,->] ($(node0.south west)+(-0.2,0)$) -- ($(node1.east)+(0.2,0.2)$) node[midway,fill=mLightWhite,draw,font=\scriptsize,inner sep=2] {$\pvi{1} = 0$};
+%       }
+%       %
+%       %
+%       %
+%       \onslide<4-6> {
+%         \draw[very thick,->,font=\scriptsize] ($(node0.west)+(-0.4,0.2)$) .. controls ($(node1.north)+(1,1)$) .. ($(node1.north)+(0.2,0.4)$) node[midway,above,xshift=5,yshift=2,rotate=10] {$+ \ \Delta_{1,0}(\dv)$};
+%       }
+%       %
+%       %
+%       %
+%       \onslide<4> {
+%         \node[font=\scriptsize,text width=0.15\linewidth,align=center,anchor=north] at ($(node1)+(0,-0.3)$) {Dual pruning \\ test};
+%       }
+%       %
+%       %
+%       %
+%       \onslide<5-> {
+%         \node at ($(node1)+(-1.5,-1.25)$) (node2) {};
+%         \draw[
+%           dashed,
+%           very thick,
+%           top color = white,
+%           bottom color = gray!60,
+%         ] (node2) circle (10pt) node {$\nodeSymb_2$};
+%         \draw[dashed,very thick,->] ($(node1.south west)+(-0.2,0)$) -- ($(node2.north)+(0.2,0.2)$) node[midway,fill=mLightWhite,draw,font=\scriptsize,inner sep=2] {$\pvi{2} = 0$};
+%         %
+%         \node at ($(node1)+(1.5,-1.25)$) (node3) {};
+%         \draw[
+%           dashed,
+%           very thick,
+%           top color = white,
+%           bottom color = mLightRed,
+%         ] (node3) circle (10pt) node {$\nodeSymb_3$};
+%         \draw[dashed,very thick,->] ($(node1.south east)+(0.2,0)$) -- ($(node3.north)+(-0.2,0.2)$) node[midway,fill=mLightWhite,draw,font=\scriptsize,inner sep=1.75] {$\pvi{2} \neq 0$};
+%       }
+%       %
+%       %
+%       %
+%       \onslide<5-6> {
+%         \draw[very thick,->,font=\scriptsize] ($(node1.west)+(-0.4,0)$) .. controls ($(node2.north)+(0,1)$) .. ($(node2.north)+(0,0.4)$) node[midway,above left,yshift=3,xshift=25,rotate=10] {$+ \ \Delta_{2,0}(\dv)$};
+%         %
+%         \draw[very thick,->,font=\scriptsize] ($(node1.east)+(0.4,0)$) .. controls ($(node3.north)+(0,1)$) .. ($(node3.north)+(0,0.4)$) node[midway,above right,yshift=3,xshift=-25,rotate=-10] {$+ \ \Delta_{2,1}(\dv)$};
+%       }
+%       %
+%       %
+%       %
+%       \onslide<5> {
+%         \node[font=\scriptsize,text width=0.15\linewidth,align=center,anchor=north] at ($(node2)+(0,-0.3)$) {Dual pruning \\ test};
+%         %
+%         \node[font=\scriptsize,text width=0.15\linewidth,align=center,anchor=north] at ($(node3)+(0,-0.3)$) {Dual pruning \\ test};
+%       }
+%       %
+%       %
+%       %
+%       \onslide<6-> {
+%         \node at ($(node2)+(-1,-1.5)$) (node4) {};
+%         \draw[
+%           dashed,
+%           very thick,
+%           top color = white,
+%           bottom color = mLightRed,
+%         ] (node4) circle (10pt) node {$\nodeSymb_{4}$};
+%         \draw[dashed,very thick,->] ($(node2.south west)+(-0.125,-0.125)$) -- ($(node4.north)+(0.2,0.2)$) node[midway,fill=mLightWhite,draw,font=\scriptsize,inner sep=2] {$\pvi{3} = 0$};
+%         %
+%         \node at ($(node2)+(1,-1.5)$) (node5) {};
+%         \draw[
+%           dashed,
+%           very thick,
+%           top color = white,
+%           bottom color = mLightRed,
+%         ] (node5) circle (10pt) node {$\nodeSymb_{5}$};
+%         \draw[dashed,very thick,->] ($(node2.south east)+(0.125,-0.125)$) -- ($(node5.north)+(-0.2,0.2)$) node[midway,fill=mLightWhite,draw,font=\scriptsize,inner sep=1.75] {$\pvi{3} \neq 0$};
+%       }
+%       %
+%       %
+%       %
+%       \onslide<6> {
+%         \draw[very thick,->,font=\scriptsize] ($(node2.west)+(-0.4,0)$) .. controls ($(node4.north)+(-0.1,1)$) .. ($(node4.north)+(-0.1,0.4)$) node[midway,above left,yshift=17,xshift=20,rotate=40] {$+ \ \Delta_{3,0}(\dv)$};
+%         %
+%         \draw[very thick,->,font=\scriptsize] ($(node2.east)+(0.4,0)$) .. controls ($(node5.north)+(0.1,1)$) .. ($(node5.north)+(0.1,0.4)$) node[midway,above right,yshift=17,xshift=-20,rotate=-40] {$+ \ \Delta_{3,1}(\dv)$};
+%       }
+%       %
+%       %
+%       %
+%       \onslide<6> {
+%         \node[font=\scriptsize,text width=0.15\linewidth,align=center,anchor=north] at ($(node4)+(0,-0.3)$) {Dual pruning \\ test};
+%         %
+%         \node[font=\scriptsize,text width=0.15\linewidth,align=center,anchor=north] at ($(node5)+(0,-0.3)$) {Dual pruning \\ test};
+%       }
+%       %
+%       %
+%       %
+%       \onslide<7-> {
+%         \draw[
+%           ultra thick,
+%           top color = white,
+%           bottom color = mLightRed,
+%         ] (node3) circle (10pt) node {$\nodeSymb_3$};
+%         %
+%         \draw[
+%           ultra thick,
+%           top color = white,
+%           bottom color = gray!60,
+%         ] (node1) circle (10pt) node {$\nodeSymb_1$};
+%         \draw[ultra thick,->] ($(node0.south west)+(-0.2,0)$) -- ($(node1.east)+(0.2,0.2)$) node[midway,fill=mLightWhite,draw,font=\scriptsize,inner sep=2] {$\pvi{1} = 0$};
+%         \draw[ultra thick,->] ($(node1.south east)+(0.2,0)$) -- ($(node3.north)+(-0.2,0.2)$) node[midway,fill=mLightWhite,draw,font=\scriptsize,inner sep=1.75] {$\pvi{2} \neq 0$};
+%         %
+%         \draw[
+%           ultra thick,
+%           top color = white,
+%           bottom color = gray!60,
+%         ] (node2) circle (10pt) node {$\nodeSymb_2$};
+%         \draw[ultra thick,->] ($(node1.south west)+(-0.2,0)$) -- ($(node2.north)+(0.2,0.2)$) node[midway,fill=mLightWhite,draw,font=\scriptsize,inner sep=2] {$\pvi{2} = 0$};
+%         %
+%         \draw[
+%           ultra thick,
+%           top color = white,
+%           bottom color = mLightRed,
+%         ] (node4) circle (10pt) node {$\nodeSymb_4$};
+%         \draw[ultra thick,->] ($(node2.south west)+(-0.125,-0.125)$) -- ($(node4.north)+(0.2,0.2)$) node[midway,fill=mLightWhite,draw,font=\scriptsize,inner sep=2] {$\pvi{3} = 0$};
+%         %
+%         \draw[
+%           ultra thick,
+%           top color = white,
+%           bottom color = mLightRed,
+%         ] (node5) circle (10pt) node {$\nodeSymb_5$};
+%         \draw[ultra thick,->] ($(node2.south east)+(0.125,-0.125)$) -- ($(node5.north)+(-0.2,0.2)$) node[midway,fill=mLightWhite,draw,font=\scriptsize,inner sep=1.75] {$\pvi{3} \neq 0$};
+%         %
+%         \draw[very thick,dashed,->] ($(node0.south east)+(0.2,0)$) -- ($(node0.south east)+(0.8,-0.25)$);
+%       }
+%       %
+%       %
+%       %
+%       \onslide<8-> {
+%         \node[text width=0.5\linewidth,align=center] (std) at (3,-0.5) {\textbf{With standard pruning} \\ Solve 5 relaxations};
+%       }
+%       %
+%       %
+%       %
+%       \onslide<9-> {
+%         \node[text width=0.5\linewidth,align=center] at ($(std)+(0,-2)$) {\textbf{With simultaneous pruning} \\ Evaluate $\dfunc^{\nodeSymb_0}(\dv)$ once and perform virtually cost-free operations};
+%       }
+%     \end{scope}
+%   \end{tikzpicture}
+% \end{frame}
+
+\begin{frame}{Axis 3 -- Paradigm shift}
   \begin{tikzpicture}[remember picture,overlay]
     \begin{scope}[xshift=0.5\textwidth]
       \onslide<1-> {
-        \node[text width=0.45\linewidth, align=center] (problem) at (0,3.25) {
-          \begin{blockcolor}{mDarkTeal}{Problem}
-              \centering
-              $\min_{\pv \in \kR^{\pdim}} \lfunc(\dic\pv) + \reg\norm{\pv}{0} + \pfunc(\pv)$
-          \end{blockcolor}
-        };
+        \node (std) at (-3.5,3.5) {\textbf{Standard pruning}};
+        \node[text width=0.5\linewidth,align=center,font=\small,anchor=north] at ($(std)+(0,-0.25)$) {Solve one relaxation per node \\ Select \textcolor{mLightBrown}{two successors} to test next};
+        %
+        \node at (-3.5,1.5) (node0) {};
+        \draw[ultra thick,<-] ($(node0)+(0.275,0.275)$) -- ($(node0)+(0.5,0.5)$);
+        \draw[
+          ultra thick,
+          top color = white,
+          bottom color = gray!60,
+        ] (node0) circle (10pt) node {$\nodeSymb$};
       }
       %
       %
       %
       \onslide<2-> {
-        \node at ($(problem.south)+(0,-1.5)$) (node0) {};
-        \node at ($(node0)+(0,1.1)$) {\small{$\kR^{\pdim}$}};
-        \draw[very thick,->] ($(node0)+(0,0.8)$) -- ($(node0)+(0,0.5)$);
+        \node at ($(node0)+(-1,-1.35)$) (node1) {};
         \draw[
           ultra thick,
           top color = white,
           bottom color = gray!60,
-        ] (node0) circle (10pt) node {$\nodeSymb_0$};
+        ] (node1) circle (10pt) node {$\nodeSymb_{1,0}$};
+        \draw[ultra thick,->] ($(node0.south west)+(-0.2,0)$) -- ($(node1)+(0.2,0.325)$) node[midway,fill=mLightWhite,draw,font=\scriptsize,inner sep=2] {$\pvi{1} = 0$};
+        %
+        \node at ($(node0)+(1,-1.35)$) (node2) {};
+        \draw[
+          ultra thick,
+          top color = white,
+          bottom color = gray!60,
+        ] (node2) circle (10pt) node {$\nodeSymb_{1,1}$};
+        \draw[ultra thick,->] ($(node0.south east)+(0.2,0)$) -- ($(node2)+(-0.2,0.325)$) node[midway,fill=mLightWhite,draw,font=\scriptsize,inner sep=2] {$\pvi{1} \neq 0$};
       }
       %
       %
       %
-      \onslide<3-6> {
-        \draw[very thick,->] ($(node0.east)+(0.35,0)$) -- ($(node0.east)+(0.6,0)$) node[right,font=\small] {evaluate $\dfunc^{\nodeSymb_0}(\dv)$};
+      \onslide<3-> {
+        \draw[very thick,<->] ($(node1)+(-0.5,0)$) -- ($(node1)+(-0.85,0)$) node[left,yshift=2,xshift=2] {$\nodeSymb'$};
+        %
+        \draw[
+          ultra thick,
+          top color = white,
+          bottom color = mLightRed,
+        ] (node2) circle (10pt) node {$\nodeSymb_{1,1}$};
       }
       %
       %
       %
       \onslide<4-> {
-        \node at ($(node0)+(-3,-1)$) (node1) {};
+        %
+        \node at ($(node1)+(-1,-1.35)$) (node3) {};
         \draw[
-          dashed,
-          very thick,
+          ultra thick,
           top color = white,
           bottom color = gray!60,
-        ] (node1) circle (10pt) node {$\nodeSymb_1$};
-        \draw[dashed,very thick,->] ($(node0.south west)+(-0.2,0)$) -- ($(node1.east)+(0.2,0.2)$) node[midway,fill=mLightWhite,draw,font=\scriptsize,inner sep=2] {$\pvi{1} = 0$};
-      }
-      %
-      %
-      %
-      \onslide<4-6> {
-        \draw[very thick,->,font=\scriptsize] ($(node0.west)+(-0.4,0.2)$) .. controls ($(node1.north)+(1,1)$) .. ($(node1.north)+(0.2,0.4)$) node[midway,above,xshift=5,yshift=2,rotate=10] {$+ \ \Delta_{1,0}(\dv)$};
-      }
-      %
-      %
-      %
-      \onslide<4> {
-        \node[font=\scriptsize,text width=0.15\linewidth,align=center,anchor=north] at ($(node1)+(0,-0.3)$) {Dual pruning \\ test};
+        ] (node3) circle (10pt) node {$\nodeSymb'_{2,0}$};
+        \draw[ultra thick,->] ($(node1.south west)+(-0.2,0)$) -- ($(node3)+(0.2,0.325)$) node[midway,fill=mLightWhite,draw,font=\scriptsize,inner sep=2] {$\pvi{2} = 0$};
+        %
+        \node at ($(node1)+(1,-1.35)$) (node4) {};
+        \draw[
+          ultra thick,
+          top color = white,
+          bottom color = gray!60,
+        ] (node4) circle (10pt) node {$\nodeSymb'_{2,1}$};
+        \draw[ultra thick,->] ($(node1.south east)+(0.2,0)$) -- ($(node4)+(-0.2,0.325)$) node[midway,fill=mLightWhite,draw,font=\scriptsize,inner sep=1.75] {$\pvi{2} \neq 0$};
       }
       %
       %
       %
       \onslide<5-> {
-        \node at ($(node1)+(-1.5,-1.25)$) (node2) {};
         \draw[
-          dashed,
-          very thick,
-          top color = white,
-          bottom color = gray!60,
-        ] (node2) circle (10pt) node {$\nodeSymb_2$};
-        \draw[dashed,very thick,->] ($(node1.south west)+(-0.2,0)$) -- ($(node2.north)+(0.2,0.2)$) node[midway,fill=mLightWhite,draw,font=\scriptsize,inner sep=2] {$\pvi{2} = 0$};
-        %
-        \node at ($(node1)+(1.5,-1.25)$) (node3) {};
-        \draw[
-          dashed,
-          very thick,
+          ultra thick,
           top color = white,
           bottom color = mLightRed,
-        ] (node3) circle (10pt) node {$\nodeSymb_3$};
-        \draw[dashed,very thick,->] ($(node1.south east)+(0.2,0)$) -- ($(node3.north)+(-0.2,0.2)$) node[midway,fill=mLightWhite,draw,font=\scriptsize,inner sep=1.75] {$\pvi{2} \neq 0$};
-      }
-      %
-      %
-      %
-      \onslide<5-6> {
-        \draw[very thick,->,font=\scriptsize] ($(node1.west)+(-0.4,0)$) .. controls ($(node2.north)+(0,1)$) .. ($(node2.north)+(0,0.4)$) node[midway,above left,yshift=3,xshift=25,rotate=10] {$+ \ \Delta_{2,0}(\dv)$};
+        ] (node3) circle (10pt) node {$\nodeSymb'_{2,0}$};
         %
-        \draw[very thick,->,font=\scriptsize] ($(node1.east)+(0.4,0)$) .. controls ($(node3.north)+(0,1)$) .. ($(node3.north)+(0,0.4)$) node[midway,above right,yshift=3,xshift=-25,rotate=-10] {$+ \ \Delta_{2,1}(\dv)$};
-      }
-      %
-      %
-      %
-      \onslide<5> {
-        \node[font=\scriptsize,text width=0.15\linewidth,align=center,anchor=north] at ($(node2)+(0,-0.3)$) {Dual pruning \\ test};
-        %
-        \node[font=\scriptsize,text width=0.15\linewidth,align=center,anchor=north] at ($(node3)+(0,-0.3)$) {Dual pruning \\ test};
+        \draw[ultra thick,->] ($(node4)+(0.26,-0.26)$) -- ($(node4)+(0.4,-0.5)$);
+        \draw[ultra thick,->] ($(node4)+(-0.26,-0.26)$) -- ($(node4)+(-0.4,-0.5)$);
       }
       %
       %
       %
       \onslide<6-> {
-        \node at ($(node2)+(-1,-1.5)$) (node4) {};
-        \draw[
-          dashed,
-          very thick,
-          top color = white,
-          bottom color = mLightRed,
-        ] (node4) circle (10pt) node {$\nodeSymb_{4}$};
-        \draw[dashed,very thick,->] ($(node2.south west)+(-0.125,-0.125)$) -- ($(node4.north)+(0.2,0.2)$) node[midway,fill=mLightWhite,draw,font=\scriptsize,inner sep=2] {$\pvi{3} = 0$};
-        %
-        \node at ($(node2)+(1,-1.5)$) (node5) {};
-        \draw[
-          dashed,
-          very thick,
-          top color = white,
-          bottom color = mLightRed,
-        ] (node5) circle (10pt) node {$\nodeSymb_{5}$};
-        \draw[dashed,very thick,->] ($(node2.south east)+(0.125,-0.125)$) -- ($(node5.north)+(-0.2,0.2)$) node[midway,fill=mLightWhite,draw,font=\scriptsize,inner sep=1.75] {$\pvi{3} \neq 0$};
-      }
-      %
-      %
-      %
-      \onslide<6> {
-        \draw[very thick,->,font=\scriptsize] ($(node2.west)+(-0.4,0)$) .. controls ($(node4.north)+(-0.1,1)$) .. ($(node4.north)+(-0.1,0.4)$) node[midway,above left,yshift=17,xshift=20,rotate=40] {$+ \ \Delta_{3,0}(\dv)$};
-        %
-        \draw[very thick,->,font=\scriptsize] ($(node2.east)+(0.4,0)$) .. controls ($(node5.north)+(0.1,1)$) .. ($(node5.north)+(0.1,0.4)$) node[midway,above right,yshift=17,xshift=-20,rotate=-40] {$+ \ \Delta_{3,1}(\dv)$};
-      }
-      %
-      %
-      %
-      \onslide<6> {
-        \node[font=\scriptsize,text width=0.15\linewidth,align=center,anchor=north] at ($(node4)+(0,-0.3)$) {Dual pruning \\ test};
-        %
-        \node[font=\scriptsize,text width=0.15\linewidth,align=center,anchor=north] at ($(node5)+(0,-0.3)$) {Dual pruning \\ test};
+        \node[text width=0.5\linewidth,align=center,font=\small,anchor=north] at (-3.5,-2.25) {Slow and costly \\ tree expansion};
       }
       %
       %
       %
       \onslide<7-> {
-        \draw[
-          ultra thick,
-          top color = white,
-          bottom color = mLightRed,
-        ] (node3) circle (10pt) node {$\nodeSymb_3$};
+        \draw (-0.75,3.5) -- (-0.75,-4);
         %
-        \draw[
-          ultra thick,
-          top color = white,
-          bottom color = gray!60,
-        ] (node1) circle (10pt) node {$\nodeSymb_1$};
-        \draw[ultra thick,->] ($(node0.south west)+(-0.2,0)$) -- ($(node1.east)+(0.2,0.2)$) node[midway,fill=mLightWhite,draw,font=\scriptsize,inner sep=2] {$\pvi{1} = 0$};
-        \draw[ultra thick,->] ($(node1.south east)+(0.2,0)$) -- ($(node3.north)+(-0.2,0.2)$) node[midway,fill=mLightWhite,draw,font=\scriptsize,inner sep=1.75] {$\pvi{2} \neq 0$};
+        \node (sim) at (2.5,3.5) {\textbf{Simultaneous pruning}};
+        \node[text width=0.55\linewidth,align=center,font=\small,anchor=north] at ($(sim)+(0,-0.25)$) {Obtain $\node{\dfunc}(\dv)$ during node processing \\ Test \textcolor{mLightBrown}{all successors} with dual bounds};
         %
+        \node at (2.5,1.5) (node0) {};
+        \draw[ultra thick,<-] ($(node0)+(0.275,0.275)$) -- ($(node0)+(0.5,0.5)$);
         \draw[
           ultra thick,
           top color = white,
           bottom color = gray!60,
-        ] (node2) circle (10pt) node {$\nodeSymb_2$};
-        \draw[ultra thick,->] ($(node1.south west)+(-0.2,0)$) -- ($(node2.north)+(0.2,0.2)$) node[midway,fill=mLightWhite,draw,font=\scriptsize,inner sep=2] {$\pvi{2} = 0$};
-        %
-        \draw[
-          ultra thick,
-          top color = white,
-          bottom color = mLightRed,
-        ] (node4) circle (10pt) node {$\nodeSymb_4$};
-        \draw[ultra thick,->] ($(node2.south west)+(-0.125,-0.125)$) -- ($(node4.north)+(0.2,0.2)$) node[midway,fill=mLightWhite,draw,font=\scriptsize,inner sep=2] {$\pvi{3} = 0$};
-        %
-        \draw[
-          ultra thick,
-          top color = white,
-          bottom color = mLightRed,
-        ] (node5) circle (10pt) node {$\nodeSymb_5$};
-        \draw[ultra thick,->] ($(node2.south east)+(0.125,-0.125)$) -- ($(node5.north)+(-0.2,0.2)$) node[midway,fill=mLightWhite,draw,font=\scriptsize,inner sep=1.75] {$\pvi{3} \neq 0$};
-        %
-        \draw[very thick,dashed,->] ($(node0.south east)+(0.2,0)$) -- ($(node0.south east)+(0.8,-0.25)$);
+        ] (node0) circle (10pt) node {$\nodeSymb$};
       }
       %
       %
       %
       \onslide<8-> {
-        \node[text width=0.5\linewidth,align=center] (std) at (3,-0.5) {\textbf{With standard pruning} \\ Solve 5 relaxations};
+        \node at ($(node0)+(-2.25,-1.35)$) (node1) {};
+        \draw[
+          ultra thick,
+          top color = white,
+          bottom color = gray!60,
+        ] (node1) circle (10pt) node {$\nodeSymb_{1,0}$};
+        \draw[ultra thick,->] ($(node0.west)+(-0.25,0)$) .. controls ($(node0.west)+(-1.85,-0.05)$) .. ($(node1)+(0,0.4)$) node[midway,fill=mLightWhite,draw,font=\scriptsize,inner sep=2,xshift=-10,yshift=-10] {$\pvi{1} = 0$};
+        %
+        \node at ($(node0)+(-1.375,-1.35)$) (node2) {};
+        \draw[
+          ultra thick,
+          top color = white,
+          bottom color = gray!60,
+        ] (node2) circle (10pt) node {$\nodeSymb_{1,1}$};
+        \draw[ultra thick,->] ($(node0.west)+(-0.175,-0.2)$) .. controls ($(node0.west)+(-1.2,-0.55)$) .. ($(node2)+(0,0.4)$) node[midway,fill=mLightWhite,draw,font=\scriptsize,inner sep=1.75] {$\pvi{1} \neq 0$};
+        %
+        \node at ($(node0)+(-0.5,-1.35)$) (node3) {};
+        \draw[
+          ultra thick,
+          top color = white,
+          bottom color = gray!60,
+        ] (node3) circle (10pt) node {$\nodeSymb_{2,0}$};
+        \draw[ultra thick,->] ($(node0.south)+(-0.1,-0.2)$) -- ($(node3)+(0.1,0.4)$) node[midway,fill=mLightWhite,draw,font=\scriptsize,inner sep=2] {$\pvi{2} = 0$};
+        %
+        \node at ($(node0)+(0.47,-1.35)$) (node4) {$\dots$};
+        %
+        \node at ($(node0)+(1.375,-1.35)$) (node5) {};
+        \draw[
+          ultra thick,
+          top color = white,
+          bottom color = gray!60,
+        ] (node5) circle (10pt) node {$\nodeSymb_{\pdim,0}$};
+        \draw[ultra thick,->] ($(node0.east)+(0.175,-0.2)$) .. controls ($(node0.east)+(1.2,-0.55)$) .. ($(node5)+(0,0.4)$) node[midway,fill=mLightWhite,draw,font=\scriptsize,inner sep=2] {$\pvi{\pdim} = 0$};
+        %
+        \node at ($(node0)+(2.25,-1.35)$) (node6) {};
+        \draw[
+          ultra thick,
+          top color = white,
+          bottom color = gray!60,
+        ] (node6) circle (10pt) node {$\nodeSymb_{\pdim,1}$};
+        \draw[ultra thick,->] ($(node0.east)+(0.25,0)$) .. controls ($(node0.east)+(1.85,-0.05)$) .. ($(node6)+(0,0.4)$) node[midway,fill=mLightWhite,draw,font=\scriptsize,inner sep=1.75,xshift=10,yshift=-10] {$\pvi{\pdim} \neq 0$};
       }
       %
       %
       %
       \onslide<9-> {
-        \node[text width=0.5\linewidth,align=center] at ($(std)+(0,-2)$) {\textbf{With simultaneous pruning} \\ Evaluate $\dfunc^{\nodeSymb_0}(\dv)$ once and perform virtually cost-free operations};
+        \draw[very thick,<-,dashed,mLightBrown] ($(node0)+(2.75,-1.35)$) .. controls ($(node0)+(3.25,-0.725)$) .. ($(node0)+(2.75,0)$) node[above,font=\scriptsize] {$\node{\dfunc}(\dv) +\Delta_{i,b}(\dv)$};
+      }
+      %
+      %
+      %
+      \onslide<10-> {
+        \draw[
+          ultra thick,
+          top color = white,
+          bottom color = mLightRed,
+        ] (node2) circle (10pt) node {$\nodeSymb_{1,1}$};
+        %
+        \draw[
+          ultra thick,
+          top color = white,
+          bottom color = mLightRed,
+        ] (node3) circle (10pt) node {$\nodeSymb_{2,0}$};
+      }
+      %
+      %
+      %
+      \onslide<11-> {
+        \node[text width=0.5\linewidth,align=center] (std) at (2.5,-0.75) {\textbf{Tree expansion}};
+        \node at (2.5,-1.5) (node0) {};
+        \draw[ultra thick,<-] ($(node0)+(0.275,0.275)$) -- ($(node0)+(0.5,0.5)$);
+        \draw[
+          ultra thick,
+          top color = white,
+          bottom color = gray!60,
+        ] (node0) circle (10pt) node {$\nodeSymb$};
+      }
+      %
+      %
+      %
+      \onslide<12-> {
+        \node at ($(node0)+(-1.75,-1)$) (node1) {};
+        \draw[
+          dashed,
+          ultra thick,
+          top color = white,
+          bottom color = gray!60,
+        ] (node1) circle (10pt) node {$\nodeSymb_{1,0}$};
+        \draw[ultra thick,->] ($(node0.south west)+(-0.2,0)$) -- ($(node1)+(0.2,0.325)$) node[midway,fill=mLightWhite,draw,font=\scriptsize,inner sep=2] {$\pvi{1} = 0$};
+      }
+      %
+      %
+      %
+      \onslide<13-> {
+        \node at ($(node1)+(1.75,-1)$) (node4) {};
+        \draw[
+          ultra thick,
+          top color = white,
+          bottom color = gray!60,
+        ] (node4) circle (10pt) node {$\nodeSymb'_{2,1}$};
+        \draw[ultra thick,->] ($(node1.south east)+(0.2,0)$) -- ($(node4)+(-0.2,0.325)$) node[midway,fill=mLightWhite,draw,font=\scriptsize,inner sep=1.75] {$\pvi{2} \neq 0$};
+        \draw[ultra thick,->] ($(node4)+(0.26,-0.26)$) -- ($(node4)+(0.4,-0.5)$);
+        \draw[ultra thick,->] ($(node4)+(-0.26,-0.26)$) -- ($(node4)+(-0.4,-0.5)$);
+      }
+      %
+      %
+      %
+      \onslide<14-> {
+        \node[text width=0.3\linewidth,align=center,font=\small,anchor=north] at (4.5,-2.25) {Fast and economic tree expansion};
       }
     \end{scope}
   \end{tikzpicture}
@@ -802,7 +1018,7 @@
         \end{blockcolor}
       };
       %
-      \node[font=\small,anchor=west] (problem-text) at ($(problem)+(3,-0.15)$) {$\rfunc(\pv) = \reg\norm{\pv}{0} + \pfunc(\pv)$};
+      \node[font=\small,anchor=west] (problem-text) at ($(problem)+(2.75,-0.15)$) {$\rfunc(\pv) = \reg\norm{\pv}{0} + \pfunc(\pv)$};
       \draw[ultra thick,->] ($(problem-text.west)+(-0.3,0)$) -- ($(problem-text.west)+(0.05,0)$);
       %
       %
@@ -820,7 +1036,7 @@
         \end{blockcolor}
       };
       %
-      \node[font=\small,anchor=west] (easy-text) at ($(restrict)+(3,-0.15)$) {lower bound on $\node{\pobj}$};
+      \node[font=\small,anchor=west] (easy-text) at ($(restrict)+(2.75,-0.15)$) {lower bound on $\node{\pobj}$};
       \draw[ultra thick,->] ($(easy-text.west)+(-0.3,0)$) -- ($(easy-text.west)+(0.05,0)$);
       %
       %
@@ -838,7 +1054,7 @@
         \end{blockcolor}
       };
       %
-      \node[font=\small,anchor=west] (relax-text) at ($(relax)+(3,-0.15)$) {$\node{\pobj}_{\text{lb}} \leq \node{\pobj}$};
+      \node[font=\small,anchor=west] (relax-text) at ($(relax)+(2.75,-0.15)$) {no generic construction};
       \draw[ultra thick,->] ($(relax-text.west)+(-0.3,0)$) -- ($(relax-text.west)+(0.05,0)$);
       %
       %
@@ -867,7 +1083,7 @@
       \node[text width=0.3\linewidth,align=center,mLightBrown,font=\small] at ($(axis3.south)+(0,-0.5)$) (axis3-text) {How to improve the standard strategy ?};
       \draw[ultra thick,mLightBrown] ($(axis3-text.center)+(-1.7,0.5)$) rectangle ($(axis3-text.center)+(1.7,-0.5)$);
       %
-      \node[text width=0.375\linewidth,align=left,anchor=north,font=\small] at ($(axis3)+(0.2,-1.25)$) {1) Dual bound $\node{\dfunc}(\dv) \leq \node{\pobj}$ \\ 2) Simultaneous pruning \\ 3) Reduce complexity};
+      \node[text width=0.375\linewidth,align=left,anchor=north,font=\small] at ($(axis3)+(0.2,-1.25)$) {1) Dual bound $\node{\dfunc}(\dv) \leq \node{\pobj}$ \\ 2) Link between successors \\ 3) Change of paradigm};
     \end{scope}
   \end{tikzpicture}
 \end{frame}

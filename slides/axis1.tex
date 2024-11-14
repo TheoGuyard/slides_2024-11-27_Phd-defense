@@ -74,13 +74,13 @@
       \onslide<2-> {
         \node[text width=\linewidth,align=left] (theorem) at (-0.3,0.75) {\textbf{Theorem (1d version) --} Let $\rfunc(\pvi{}) = \reg\norm{\pvi{}}{0} + \pfunc(\pvi{})$, one has
         \begin{equation*}
-          \rfunc_{\text{cvx}}(\pvi{}) = 
+          \textcolor{mLightBrown}{\rfunc_{\text{cvx}}}(\pvi{}) = 
           \begin{cases}
-            \textcolor{mLightBrown}{\rslope}\abs{\pvi{}} &\text{if } \abs{\pvi{}} \leq \textcolor{mLightBrown}{\rlimit} \\
+            \rslope\abs{\pvi{}} &\text{if } \abs{\pvi{}} \leq \rlimit \\
             \pfunc(\pvi{}) + \reg &\text{otherwise}
           \end{cases}
         \end{equation*}
-        where $(\textcolor{mLightBrown}{\rslope},\textcolor{mLightBrown}{\rlimit})$ are some ``easy-to-compute'' quantities.};
+        where $(\rslope,\rlimit)$ are some ``easy-to-compute'' quantities.};
       }
       %
       %
@@ -93,8 +93,8 @@
             \draw[ultra thick,->] (0,-0.2) -- (0,1.5);
             \node[above left] at (0,0.5) {$\reg$};
             %
-            \draw[domain=-1.5:-0.1,smooth,variable=\x,LavenderBlush4,ultra thick] plot ({\x}, {0.5 + 0.5*\x*\x});
-            \draw[domain=0.1:1.5,smooth,variable=\x,LavenderBlush4,ultra thick] plot ({\x}, {0.5 + 0.5*\x*\x});
+            \draw[domain=-1.75:-0.1,smooth,variable=\x,LavenderBlush4,ultra thick] plot ({\x}, {0.5 + 0.5*\x*\x});
+            \draw[domain=0.1:1.75,smooth,variable=\x,LavenderBlush4,ultra thick] plot ({\x}, {0.5 + 0.5*\x*\x});
             \fill[LavenderBlush4] (0,0) circle (0.1);
             \draw[LavenderBlush4,ultra thick] (0,0.5) circle (0.1);
           } 
@@ -102,26 +102,29 @@
           %
           %
           \onslide<4-> {
-            \draw[very thick,dashed] (0,0) -- (1.75,1.675);
+            \draw[very thick,dashed] (0,0) -- (1,0.95);
+            \draw[very thick,dashed] (1,1) -- (1,0);
             \fill[LavenderBlush4] (0,0) circle (0.1);
+            \fill[mDarkTeal] (1,0.95) circle (0.1);
           }
           %
           %
           %
           \onslide<5-> {
-            \node[right,rotate=40,xshift=0] at (1.75,1.675) {$\rslope$};
-            \draw[very thick,dashed] (1,1) -- (1,0) node[below] {$\rlimit$};
+            \draw[very thick,dashed] (0.3,0.3) .. controls (0.45,0.2) .. (0.5,0) node[midway,right] {$\rslope$};
+            \node at (1,-0.25) {$\rlimit$};
           }
           %
           %
           %
           \onslide<6-> {
-            \draw[ultra thick,LavenderBlush4,dashed] (-1,0.95) -- (0,0);
-            \draw[ultra thick,LavenderBlush4,dashed] (0,0) -- (1,0.95);
-            \draw[domain=1:1.5,smooth,variable=\x,LavenderBlush4,dashed,ultra thick] plot ({\x}, {0.45 + 0.5*\x*\x});
-            \draw[domain=-1.5:-1,smooth,variable=\x,LavenderBlush4,dashed,ultra thick] plot ({\x}, {0.45 + 0.5*\x*\x});
+            \draw[ultra thick,mLightBrown,dashed] (-1,0.95) -- (0,0);
+            \draw[ultra thick,mLightBrown,dashed] (0,0) -- (1,0.95);
+            \draw[domain=1:1.75,smooth,variable=\x,mLightBrown,dashed,ultra thick] plot ({\x}, {0.45 + 0.5*\x*\x});
+            \draw[domain=-1.75:-1,smooth,variable=\x,mLightBrown,dashed,ultra thick] plot ({\x}, {0.45 + 0.5*\x*\x});
             \fill[LavenderBlush4] (0,0) circle (0.1);
-            \node[right,LavenderBlush4] at (-1.75,0.75) {$\rfunc_{\text{cvx}}$};
+            \fill[mDarkTeal] (1,0.95) circle (0.1);
+            \node[right,mLightBrown] at (-1.75,0.75) {$\rfunc_{\text{cvx}}$};
           }
         \end{scope}
       }
@@ -156,7 +159,7 @@
           \end{blockcolor}
         };
         %
-        \node[font=\small] at ($(problem)+(0,-1)$) {$\lfunc$ : Logistic / $\pfunc$ : $\ell_1$-norm};
+        \node[font=\small] at ($(problem)+(0,-1)$) {$\dic \in \kR^{100\times300}$ / $\lfunc$ : Logistic / $\pfunc$ : $\ell_1$-norm};
         %
         \node[text width=0.6\linewidth,align=left,font=\small] at (3,-0.75) {\textbf{MIP solvers} \\ \ref{plot:Scip} \textcolor{mDarkTeal!25}{Scip} \\ \ref{plot:Cplex} \textcolor{mDarkTeal!25}{Cplex} \\ \ref{plot:Mosek} Mosek \\ \textbf{BnB solvers} \\ \ref{plot:L0Bnb} \textcolor{mDarkTeal!25}{L0Bnb} \\ \ref{plot:SBnb} \textcolor{mDarkTeal!25}{SBnb}};
       }
@@ -170,8 +173,7 @@
       %
       %
       \onslide<3-> {
-        \node[text width=0.3\linewidth,align=center] (obs1) at (3.75,-1.25) {The only generic BnB solver};
-        \draw[ultra thick,->] (obs1.south) .. controls ($(obs1.south)+(0,-0.8)$) .. ($(obs1.south)+(-2.25,-0.8)$);
+        \node[text width=0.3\linewidth,align=center] (obs1) at (4,-1) {El0ps a \textbf{generic} BnB solver with \textbf{state-of-the-art} performance};
       }
     \end{scope}
     %
@@ -290,7 +292,7 @@
           \end{blockcolor}
         };
         %
-        \node[font=\small,anchor=west] (problem-text) at ($(problem)+(3,-0.15)$) {$\rfunc(\pv) = \reg\norm{\pv}{0} + \pfunc(\pv)$};
+        \node[font=\small,anchor=west] (problem-text) at ($(problem)+(2.75,-0.15)$) {$\rfunc(\pv) = \reg\norm{\pv}{0} + \pfunc(\pv)$};
         \draw[ultra thick,->] ($(problem-text.west)+(-0.3,0)$) -- ($(problem-text.west)+(0.05,0)$);
         %
         %
@@ -308,7 +310,7 @@
           \end{blockcolor}
         };
         %
-        \node[font=\small,anchor=west] (easy-text) at ($(restrict)+(3,-0.15)$) {lower bound on $\node{\pobj}$};
+        \node[font=\small,anchor=west] (easy-text) at ($(restrict)+(2.75,-0.15)$) {lower bound on $\node{\pobj}$};
         \draw[ultra thick,->] ($(easy-text.west)+(-0.3,0)$) -- ($(easy-text.west)+(0.05,0)$);
         %
         %
@@ -326,7 +328,7 @@
           \end{blockcolor}
         };
         %
-        \node[font=\small,anchor=west] (relax-text) at ($(relax)+(3,-0.15)$) {$\node{\pobj}_{\text{lb}} \leq \node{\pobj}$};
+        \node[font=\small,anchor=west] (relax-text) at ($(relax)+(2.75,-0.15)$) {no generic construction};
         \draw[ultra thick,->] ($(relax-text.west)+(-0.3,0)$) -- ($(relax-text.west)+(0.05,0)$);
       }
       %
