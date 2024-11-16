@@ -14,30 +14,30 @@
             %
             \onslide<2-> {
                 \node (loss) at (-4,0) {\textbf{1) Loss} $\lfunc(\dic\pv)$};
-                \node [text width=0.35\linewidth, align=center,font=\small,anchor=north] at ($(loss)+(0,-0.35)$) {Models the quantity to minimize in the \textcolor{mLightBrown}{application} at hand};
+                \node [text width=0.35\linewidth, align=center,font=\small,anchor=north] at ($(loss)+(0,-0.35)$) {Models the quantity to minimize in the \textcolor{TolLightOrange}{application} at hand};
             }
             %
             %
             %
             \onslide<3-> {
                 \node (norm) at (0,0) {\textbf{2) $\ell_0$-norm} $\norm{\pv}{0}$};
-                \node [text width=0.325\linewidth, align=center,font=\small,anchor=north] at ($(norm)+(0,-0.35)$) {Counts non-zeros in its input to promote \\ \textcolor{mLightBrown}{sparse} solutions};
+                \node [text width=0.325\linewidth, align=center,font=\small,anchor=north] at ($(norm)+(0,-0.35)$) {Counts non-zeros in its input to promote \\ \textcolor{TolLightOrange}{sparse} solutions};
             }
             %
             %
             %
             \onslide<4-> {
                 \node (penalty) at (4,0) {\textbf{3) Penalty} $\pfunc(\pv)$};
-                \node [text width=0.35\linewidth, align=center,font=\small,anchor=north] at ($(penalty)+(0,-0.35)$) {Linked to the \\ application / Used to enable solution methods};
+                \node [text width=0.35\linewidth, align=center,font=\small,anchor=north] at ($(penalty)+(0,-0.35)$) {Linked to the \\ \textcolor{TolLightOrange}{application} / Used to enable \textcolor{TolLightOrange}{solution methods}};
             }
             %
             %
             %
             \onslide<5-> {
                 \node (sol) at (0,-3.5) {Solutions};
-                \draw[->,ultra thick] (sol.west) .. controls ($(loss)+(0,-3.5)$) .. ($(loss)+(0,-2)$) node[midway,fill=mLightWhite,draw,ultra thick,font=\small] {small loss};
-                \draw[->,ultra thick] (sol.east) .. controls ($(penalty)+(0,-3.5)$) .. ($(penalty)+(0,-2)$) node[midway,fill=mLightWhite,draw,ultra thick,font=\small,inner sep=3pt] {small penalty};
-                \draw[->,ultra thick] (sol.north) -- ($(norm)+(0,-2)$) node[midway,fill=mLightWhite,draw,ultra thick,font=\small] {few non-zeros};
+                \draw[->,ultra thick] (sol.west) .. controls ($(loss)+(0,-3.5)$) .. ($(loss)+(0,-2)$) node[midway,fill=TolLightWhite,draw,ultra thick,font=\small] {small loss};
+                \draw[->,ultra thick] (sol.east) .. controls ($(penalty)+(0,-3.5)$) .. ($(penalty)+(0,-2)$) node[midway,fill=TolLightWhite,draw,ultra thick,font=\small,inner sep=3pt] {small penalty};
+                \draw[->,ultra thick] (sol.north) -- ($(norm)+(0,-2)$) node[midway,fill=TolLightWhite,draw,ultra thick,font=\small] {few non-zeros};
             }
             %
             %
@@ -54,13 +54,6 @@
     \begin{tikzpicture}[remember picture,overlay]
         \begin{scope}[xshift=0.5\textwidth]
             \onslide<1-> {
-                % \node[align=center,text width=0.45\textwidth] (problem) at (0,3.25) {
-                % \begin{blockcolor}{mDarkTeal}{Problem}
-                %     \centering
-                %     $\min_{\pv \in \kR^{\pdim}} \lfunc(\dic\pv) + \reg\norm{\pv}{0} + \pfunc(\pv)$
-                % \end{blockcolor}
-                % };
-                %
                 \begin{scope}[yshift=50,scale=0.725]
                     \path[
                         mindmap,
@@ -90,14 +83,14 @@
                         child { node[concept] {phase retrieval} }
                         child { node[concept] {DOA design} }
                     }  
-                    child[concept color=mLightBrown!40] {
+                    child[concept color=TolLightBrown!40] {
                         node[concept] {\small\textbf{operation research}}
                         [clockwise from=337.5]
                         child { node[concept] {portfolio optim.} }
                         child { node[concept] {network design} }
                         child { node[concept] {facility location} }
                     }
-                    child[concept color=mLightGreen!30] {
+                    child[concept color=TolLightGreen!40] {
                         node[concept] {\small\textbf{algebra}}
                         [clockwise from=-67.5]
                         child { node[concept] {sparse factor.} }
@@ -120,25 +113,25 @@
             %
             %
             \onslide<2> {
-                \node[draw,ultra thick,fill=mLightWhite,font=\small,text width=0.3\linewidth,align=center] at (-4,1.25) {Sparsity linked to \\ model explainability};
+                \node[draw,ultra thick,fill=TolLightWhite,font=\small,text width=0.3\linewidth,align=center] at (-4,1.25) {Sparsity linked to \\ model explainability};
             }
             %
             %
             %
             \onslide<3> {
-                \node[draw,ultra thick,fill=mLightWhite,font=\small,text width=0.3\linewidth,align=center] at (-2,-2.25) {Sparsity linked to \\ matrix rank};
+                \node[draw,ultra thick,fill=TolLightWhite,font=\small,text width=0.3\linewidth,align=center] at (-2,-2.25) {Sparsity linked to \\ matrix rank};
             }
             %
             %
             %
             \onslide<4> {
-                \node[draw,ultra thick,fill=mLightWhite,font=\small,text width=0.3\linewidth,align=center] at (2,-2.25) {Sparsity linked to \\ unit cost count};
+                \node[draw,ultra thick,fill=TolLightWhite,font=\small,text width=0.3\linewidth,align=center] at (2,-2.25) {Sparsity linked to \\ unit cost count};
             }
             %
             %
             %
             \onslide<5> {
-                \node[draw,ultra thick,fill=mLightWhite,font=\small,text width=0.3\linewidth,align=center] at (4,1.25) {Sparsity linked to \\ signal spikes};
+                \node[draw,ultra thick,fill=TolLightWhite,font=\small,text width=0.3\linewidth,align=center] at (4,1.25) {Sparsity linked to \\ signal spikes};
             }
         \end{scope}
     \end{tikzpicture}
@@ -155,7 +148,7 @@
                     \end{blockcolor}
                 };
                 %
-                \node[draw,ultra thick] (question) at (0,1.25) {How to design \textcolor{mLightBrown}{generic} and \textcolor{mLightBrown}{efficient} solution methods ?};
+                \node[draw,ultra thick] (question) at (0,1.25) {How to design \textcolor{TolLightOrange}{generic} and \textcolor{TolLightOrange}{efficient} solution methods ?};
                 \node at ($(question)+(0,0.5)$) {\textbf{Question}};
             }
             %
@@ -168,10 +161,10 @@
                 \node at ($(origin)+(-0.2,1.2)$) {$1$};
                 \draw[ultra thick,->] ($(origin)+(-2,0)$) -- ($(origin)+(2,0)$) node[right] {$\pvi{}$};
                 \draw[ultra thick,->] ($(origin)+(0,-0.2)$) -- ($(origin)+(0,2)$);
-                \draw[-,ultra thick,LavenderBlush4] ($(origin)+(-0.1,1)$) -- ($(origin)+(-1.8,1)$);
-                \draw[-,ultra thick,LavenderBlush4] ($(origin)+(0.1,1)$) -- ($(origin)+(1.8,1)$) node[above] {$\norm{\pvi{}}{0}$};
-                \draw[LavenderBlush4,ultra thick] ($(origin)+(0,1)$) circle (0.1);
-                \fill[LavenderBlush4] (origin) circle (0.1);
+                \draw[-,ultra thick,TolLightOrange] ($(origin)+(-0.1,1)$) -- ($(origin)+(-1.8,1)$);
+                \draw[-,ultra thick,TolLightOrange] ($(origin)+(0.1,1)$) -- ($(origin)+(1.8,1)$) node[above] {$\norm{\pvi{}}{0}$};
+                \draw[TolLightOrange,ultra thick] ($(origin)+(0,1)$) circle (0.1);
+                \fill[TolLightOrange] (origin) circle (0.1);
             }
             %
             %
@@ -186,14 +179,6 @@
                 \node[text width=0.4\linewidth,align=center] (hard) at (3,-3.25) {\textbf{Can be tackled using \\ generic MIP solvers} \\ D. Bertsimas \textit{et. al} (2016)};
                 \draw[ultra thick,->] ($(prop.south)+(0,-0.1)$) -- ($(hard.north)+(0,0.1)$);
             }
-            %
-            %
-            %
-            % \onslide<4-> {
-            %     \node[align=center,draw,ultra thick] (bnb) at ($(problem)+(0,-5.25)$) {Branch-and-Bound algorithms};
-            %     \node at ($(bnb)+(0,0.5)$) {\textbf{Standard approach}};
-            %     %\draw[ultra thick,->] ($(bnb.north)+(0,0.75)$) -- (bnb);
-            % }
         \end{scope}
     \end{tikzpicture}
 \end{frame}
@@ -215,7 +200,7 @@
             %
             %
             \onslide<3-> {
-            \node[text width=0.6\linewidth,align=left,font=\small] at (2.75,-1) {\textbf{MIP solvers} \\ \ref{plot:bnb-Scip} Scip \\ \ref{plot:bnb-Cplex} Cplex \\ \ref{plot:bnb-Mosek} Mosek};
+            \node[text width=0.6\linewidth,align=left,font=\small] at (2.75,-1) {\textbf{MIP solvers} \\ \ref{plot:mip-Scip} Scip \\ \ref{plot:mip-Cplex} Cplex \\ \ref{plot:mip-Mosek} Mosek};
             }
             %
             %
@@ -233,13 +218,10 @@
         \end{scope}
         \begin{scope}[xshift=0.075\linewidth,yshift=-65]
             %
-            \pgfplotscreateplotcyclelist{cycle_perfprofiles_bnb}{
-                RoyalBlue2, very thick, smooth\\    
-                SkyBlue2, very thick, smooth\\
-                PaleGreen4, very thick, smooth\\
-                DarkGoldenrod1, very thick, smooth\\    
-                OrangeRed1, very thick, smooth\\
-                Firebrick4, very thick, smooth\\
+            \pgfplotscreateplotcyclelist{cycle_perfprofiles_mip}{
+                TolDarkBlue, very thick, smooth\\    
+                TolLightBlue, very thick, smooth\\
+                TolLightGreen, very thick, smooth\\
             }
             %
             \onslide<2-> {
@@ -259,7 +241,7 @@
                         /tikz/every even column/.style = {column sep=5pt},
                         draw=none
                     },
-                    cycle list name=cycle_perfprofiles_bnb,
+                    cycle list name=cycle_perfprofiles_mip,
                     mbaseplot,
                     axis line style = ultra thick,
                     major tick style = {ultra thick,color=mDarkTeal},
@@ -294,7 +276,7 @@
                         /tikz/every even column/.style = {column sep=5pt},
                         draw=none
                     },
-                    cycle list name=cycle_perfprofiles_bnb,
+                    cycle list name=cycle_perfprofiles_mip,
                     mbaseplot,
                     axis line style = ultra thick,
                     major tick style = {ultra thick,color=mDarkTeal},
@@ -319,7 +301,7 @@
                             y expr=100*\thisrow{\solver},
                             col sep=comma
                         ] {data/perfprofiles_medium_Leastsquares_Bigm_3600.csv};
-                        \label{plot:bnb-\solver}
+                        \label{plot:mip-\solver}
                     }
                 \end{axis}
             }

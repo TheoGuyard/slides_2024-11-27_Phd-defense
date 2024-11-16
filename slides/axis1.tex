@@ -1,6 +1,6 @@
 \section{Axis 1 -- How to construct relaxations generically ?}
 
-\begin{frame}{Axis 1 -- Existing work}
+\begin{frame}{Axis 1 -- Generic relaxation construction}
   \begin{tikzpicture}[remember picture,overlay]
     \begin{scope}[xshift=0.5\linewidth]
       \onslide<1-> {
@@ -17,19 +17,17 @@
       %
       %
       \onslide<2-> {
-        \node[text width=0.45\linewidth, align=center] (relax) at (0,1.25) {
+        \node[text width=0.45\linewidth, align=center] (relax) at (0,0.75) {
           \begin{blockcolor}{mDarkTeal}{Relaxation for region $\nodeSymb$}
               \centering
-              $\node{\pobj}_{\text{lb}} = \min_{\pv \in \nodeSymb} \lfunc(\dic\pv) + \textcolor{mLightBrown}{\rfunc_{\text{lb}}}(\pv)$
+              $\node{\pobj}_{\text{lb}} = \min_{\pv \in \nodeSymb} \lfunc(\dic\pv) + \textcolor{TolLightOrange}{\rfunc_{\text{lb}}}(\pv)$
           \end{blockcolor}
         };
         %
-        \node[font=\small,text width=0.4\linewidth,align=left,anchor=west] at ($(relax)+(2.5,-0.1)$) {$\rfunc_{\text{lb}}$ convex \\ $\rfunc_{\text{lb}} \leq \rfunc$};
+        \node[font=\small,text width=0.4\linewidth,align=left,anchor=west] at ($(relax)+(2.5,-0.1)$) {$\rfunc_{\text{lb}} \leq \rfunc$ \\ $\rfunc_{\text{lb}}$ convex};
         %
-        \draw[ultra thick,->] ($(restrict)+(0,-0.75)$) -- ($(relax)+(0,0.5)$);
+        \draw[ultra thick,->] ($(restrict)+(0,-0.75)$) -- ($(relax)+(0,0.5)$) node[midway,fill=TolLightWhite,draw,ultra thick] {standard strategy};
         %
-        % \node[text width=0.6\linewidth,align=center] (task) at ($(relax)+(0,-1.5)$) {\textbf{Task}};
-        % \node[draw,ultra thick,text width=0.6\linewidth,align=center] (task-text) at ($(task.south)+(0,-0.25)$) {Construct the relaxation generically};
       }
       %
       %
@@ -38,7 +36,7 @@
         \node[text width=0.6\linewidth,align=center,font=\small] (l2norm) at ($(relax)+(-4,-2.5)$) {$\pfunc$ : $\ell_2$-norm \\ {M. Pilanci \textit{et al.} (2016)}};
         \draw[ultra thick,->] ($(relax)+(-1,-1)$) .. controls ($(relax)+(-3.5,-1.5)$) .. (l2norm);
         %
-        \node[text width=0.6\linewidth,align=center,font=\small] (bound) at ($(relax)+(0,-2.5)$) {$\pfunc$ : bound cstr. \\ {R. B. Mhenni \textit{et al.} (2020)}};
+        \node[text width=0.6\linewidth,align=center,font=\small] (bound) at ($(relax)+(0,-2.5)$) {$\pfunc$ : bound cstr. \\ {S. Bourguignon \textit{et al.} (2020)}};
         \draw[ultra thick,->] ($(relax)+(0,-1)$) .. controls ($(relax)+(0,-2)$) .. (bound);
         %
         \node[text width=0.6\linewidth,align=center,font=\small] (l2normbound) at ($(relax)+(4,-2.5)$) {$\pfunc$ : $\ell_2$-norm + bound cstr. \\ {H. Hazimeh \textit{et al.} (2021)}};
@@ -48,14 +46,14 @@
       %
       %
       \onslide<4-> {
-        \draw[ultra thick] (-6,-1.5) -- (-6,-1.75) -- (6,-1.75) -- (6,-1.5);
-        \node at (0,-2.25) {\textbf{Generalization by setting \textcolor{mLightBrown}{$\rfunc_{\text{lb}} = \rfunc_{\text{cvx}}$}}};
+        \draw[ultra thick] (-6,-2) -- (-6,-2.25) -- (6,-2.25) -- (6,-2);
+        \node at (0,-2.75) {\textbf{Generalization by setting \textcolor{TolLightOrange}{$\boldsymbol{\rfunc}_{\text{lb}} = \boldsymbol{\rfunc}_{\text{cvx}}$}}};
       }
       %
       %
       %
       \onslide<5-> {
-        \node[text width=0.7\linewidth,align=left] at (0.5,-3.25) {$\rightarrow$ $\pfunc$ proper, closed, convex, $\pfunc \geq \pfunc(\0) = 0$ \\ $\rightarrow$ $\pfunc$ separable \\ $\rightarrow$ $\pfunc$ even, supercoercive};
+        \node[text width=0.75\linewidth,align=left] at (0.75,-3.6) {$\rightarrow$ $\lfunc$ and $\pfunc$ proper, closed, convex \\ $\rightarrow$ $\pfunc$ separable, even, supercoercive, $\pfunc \geq \pfunc(\0) = 0$};
       }
     \end{scope}
   \end{tikzpicture}
@@ -65,8 +63,8 @@
   \begin{tikzpicture}[remember picture,overlay]
     \begin{scope}[xshift=0.5\linewidth]
       \onslide<1-> {
-        \node[mLightBrown] at (0,3.5) (result) {\textbf{Spotlight result}};
-        \node[draw,ultra thick,mLightBrown] at ($(result.south)+(0,-0.25)$) (result-text) {The convex envelope of $\rfunc(\pv) = \reg\norm{\pv}{0} + \pfunc(\pv)$ admits a closed-form expression.};
+        \node[TolLightOrange] at (0,3.5) (result) {\textbf{Spotlight result}};
+        \node[draw,ultra thick,TolLightOrange] at ($(result.south)+(0,-0.25)$) (result-text) {The convex envelope of $\rfunc(\pv) = \reg\norm{\pv}{0} + \pfunc(\pv)$ admits a closed-form expression.};
       }
       %
       %
@@ -74,7 +72,7 @@
       \onslide<2-> {
         \node[text width=\linewidth,align=left] (theorem) at (-0.3,0.75) {\textbf{Theorem (1d version) --} Let $\rfunc(\pvi{}) = \reg\norm{\pvi{}}{0} + \pfunc(\pvi{})$, one has
         \begin{equation*}
-          \textcolor{mLightBrown}{\rfunc_{\text{cvx}}}(\pvi{}) = 
+          \textcolor{TolLightOrange}{\rfunc_{\text{cvx}}}(\pvi{}) = 
           \begin{cases}
             \rslope\abs{\pvi{}} &\text{if } \abs{\pvi{}} \leq \rlimit \\
             \pfunc(\pvi{}) + \reg &\text{otherwise}
@@ -118,13 +116,13 @@
           %
           %
           \onslide<6-> {
-            \draw[ultra thick,mLightBrown,dashed] (-1,0.95) -- (0,0);
-            \draw[ultra thick,mLightBrown,dashed] (0,0) -- (1,0.95);
-            \draw[domain=1:1.75,smooth,variable=\x,mLightBrown,dashed,ultra thick] plot ({\x}, {0.45 + 0.5*\x*\x});
-            \draw[domain=-1.75:-1,smooth,variable=\x,mLightBrown,dashed,ultra thick] plot ({\x}, {0.45 + 0.5*\x*\x});
+            \draw[ultra thick,TolLightOrange,dashed] (-1,0.95) -- (0,0);
+            \draw[ultra thick,TolLightOrange,dashed] (0,0) -- (1,0.95);
+            \draw[domain=1:1.75,smooth,variable=\x,TolLightOrange,dashed,ultra thick] plot ({\x}, {0.45 + 0.5*\x*\x});
+            \draw[domain=-1.75:-1,smooth,variable=\x,TolLightOrange,dashed,ultra thick] plot ({\x}, {0.45 + 0.5*\x*\x});
             \fill[LavenderBlush4] (0,0) circle (0.1);
             \fill[mDarkTeal] (1,0.95) circle (0.1);
-            \node[right,mLightBrown] at (-1.75,0.75) {$\rfunc_{\text{cvx}}$};
+            \node[right,TolLightOrange] at (-1.75,0.75) {$\rfunc_{\text{cvx}}$};
           }
         \end{scope}
       }
@@ -161,19 +159,19 @@
         %
         \node[font=\small] at ($(problem)+(0,-1)$) {$\dic \in \kR^{100\times300}$ / $\lfunc$ : Logistic / $\pfunc$ : $\ell_1$-norm};
         %
-        \node[text width=0.6\linewidth,align=left,font=\small] at (3,-0.75) {\textbf{MIP solvers} \\ \ref{plot:Scip} \textcolor{mDarkTeal!25}{Scip} \\ \ref{plot:Cplex} \textcolor{mDarkTeal!25}{Cplex} \\ \ref{plot:Mosek} Mosek \\ \textbf{BnB solvers} \\ \ref{plot:L0Bnb} \textcolor{mDarkTeal!25}{L0Bnb} \\ \ref{plot:SBnb} \textcolor{mDarkTeal!25}{SBnb}};
+        \node[text width=0.6\linewidth,align=left,font=\small] at (3,-0.75) {\textbf{MIP solvers} \\ \ref{plot:bnb-Scip} \textcolor{mDarkTeal!25}{Scip} \\ \ref{plot:bnb-Cplex} \textcolor{mDarkTeal!25}{Cplex} \\ \ref{plot:bnb-Mosek} Mosek \\ \textbf{BnB solvers} \\ \ref{plot:bnb-L0Bnb} \textcolor{mDarkTeal!25}{L0Bnb} \\ \ref{plot:bnb-SBnb} \textcolor{mDarkTeal!25}{SBnb}};
       }
       %
       %
       %
       \onslide<2-> {
-        \node[text width=0.6\linewidth,align=left,font=\small] at (3,-2.55) {\ref{plot:El0ps} El0ps};
+        \node[text width=0.6\linewidth,align=left,font=\small] at (3,-2.55) {\ref{plot:bnb-El0ps} El0ps};
       }
       %
       %
       %
       \onslide<3-> {
-        \node[text width=0.3\linewidth,align=center] (obs1) at (4,-1) {El0ps a \textbf{generic} BnB solver with \textbf{state-of-the-art} performance};
+        \node[text width=0.3\linewidth,align=center] (obs1) at (4,-1) {El0ps is a \textcolor{TolLightOrange}{generic} BnB solver with \textcolor{TolLightOrange}{state-of-the-art} performance};
       }
     \end{scope}
     %
@@ -182,8 +180,8 @@
     \onslide<1> {
       \begin{scope}[xshift=0.0725\linewidth,yshift=-0.25\textheight]
         \pgfplotscreateplotcyclelist{cycle_perfprofiles_synthetic_logistic}{
-          PaleGreen4, very thick, smooth\\
-          Firebrick4, very thick, smooth\\
+          TolLightGreen, very thick, smooth\\
+          TolDarkRed, very thick, smooth\\
         }
         \begin{axis}[
             width   = 0.5\textwidth,
@@ -218,7 +216,6 @@
                 y expr=100*\thisrow{\solver},
                 col sep=comma
             ] {data/perfprofiles_medium_Logistic_Bigm_3600.csv};
-            \label{plot:\solver}
           }
         \end{axis}
         %
@@ -231,8 +228,8 @@
     \onslide<2-> {
       \begin{scope}[xshift=0.0725\linewidth,yshift=-0.25\textheight]
         \pgfplotscreateplotcyclelist{cycle_perfprofiles_synthetic_logistic}{
-          PaleGreen4, very thick, smooth\\
-          Firebrick4, very thick, smooth\\
+          TolLightGreen, very thick, smooth\\
+          TolDarkRed, very thick, smooth\\
         }
         \begin{axis}[
             width   = 0.5\textwidth,
@@ -267,7 +264,7 @@
                 y expr=100*\thisrow{\solver},
                 col sep=comma
             ] {data/perfprofiles_medium_Logistic_Bigm_3600.csv};
-            \label{plot:\solver}
+            \label{plot:bnb-\solver}
           }
         \end{axis}
         %
@@ -283,61 +280,59 @@
       \onslide<1-> {
         \node at (-4.75,4) {\Large{\textbf{Let's recap}}};
         %
-        %
-        %
-        \node[text width=0.45\linewidth, align=center] (problem) at (0,3.5) {
+        \node[text width=0.45\linewidth, align=center] (problem) at (0,3.75) {
           \begin{blockcolor}{mDarkTeal}{Problem}
             \centering
             $\opt{\pobj} = \min_{\pv \in \kR^{\pdim}} \lfunc(\dic\pv) + \rfunc(\pv)$
           \end{blockcolor}
         };
         %
-        \node[font=\small,anchor=west] (problem-text) at ($(problem)+(2.75,-0.15)$) {$\rfunc(\pv) = \reg\norm{\pv}{0} + \pfunc(\pv)$};
-        \draw[ultra thick,->] ($(problem-text.west)+(-0.3,0)$) -- ($(problem-text.west)+(0.05,0)$);
+        \node[font=\small,anchor=west] (problem-text2) at ($(problem)+(2.75,0.15)$) {$\rfunc(\pv) = \reg\norm{\pv}{0} + \pfunc(\pv)$};
+        \draw[ultra thick,->] ($(problem-text2.west)+(-0.3,0)$) -- ($(problem-text2.west)+(0.05,0)$);
         %
-        %
+        \node[font=\small,anchor=west] (problem-text1) at ($(problem)+(2.75,-0.4)$) {many applications};
+        \draw[ultra thick,->] ($(problem-text1.west)+(-0.3,0)$) -- ($(problem-text1.west)+(0.05,0)$);
         %
         \node (bnb) at ($(problem.south)+(0,-0.3)$) {};
         \draw[ultra thick,->] ($(bnb)+(0,0.4)$) -- ($(bnb)+(0,-0.4)$);
-        \node[draw,ultra thick,font=\small,text width=0.25\linewidth,align=center,fill=mLightWhite,inner sep=2pt] at (bnb)  {BnB algorithm};
-        %
-        %
+        \node[draw,ultra thick,font=\small,text width=0.25\linewidth,align=center,fill=TolLightWhite,inner sep=2pt] at (bnb)  {BnB algorithm};
         %
         \node[text width=0.45\linewidth, align=center] (restrict) at ($(bnb)+(0,-0.9)$) {
           \begin{blockcolor}{mDarkTeal}{Restriction to region $\nodeSymb$}
             \centering
-            $\node{\pobj} = \min_{\textcolor{mLightBrown}{\pv \in \nodeSymb}} \lfunc(\dic\pv) + \rfunc(\pv)$
+            $\node{\pobj} = \min_{\textcolor{TolLightOrange}{\pv \in \nodeSymb}} \lfunc(\dic\pv) + \rfunc(\pv)$
           \end{blockcolor}
         };
         %
-        \node[font=\small,anchor=west] (easy-text) at ($(restrict)+(2.75,-0.15)$) {lower bound on $\node{\pobj}$};
-        \draw[ultra thick,->] ($(easy-text.west)+(-0.3,0)$) -- ($(easy-text.west)+(0.05,0)$);
+        \node[font=\small,anchor=west] (easy-text1) at ($(restrict)+(2.75,0.15)$) {pruning test};
+        \draw[ultra thick,->] ($(easy-text1.west)+(-0.3,0)$) -- ($(easy-text1.west)+(0.05,0)$);
         %
-        %
+        \node[font=\small,anchor=west] (easy-text2) at ($(restrict)+(2.75,-0.4)$) {lower bound on $\node{\pobj}$};
+        \draw[ultra thick,->] ($(easy-text2.west)+(-0.3,0)$) -- ($(easy-text2.west)+(0.05,0)$);
         %
         \node (challenge) at ($(restrict.south)+(0,-0.3)$) {};
         \draw[ultra thick,->] ($(challenge)+(0,0.4)$) -- ($(challenge)+(0,-0.4)$);
-        \node[draw,ultra thick,font=\small,text width=0.25\linewidth,align=center,fill=mLightWhite,inner sep=2pt] at (challenge) {standard strategy};
+        \node[draw,ultra thick,font=\small,text width=0.25\linewidth,align=center,fill=TolLightWhite,inner sep=2pt] at (challenge) {standard strategy};
         %
         %
         %
         \node[text width=0.45\linewidth, align=center] (relax) at ($(challenge)+(0,-0.9)$) {
           \begin{blockcolor}{mDarkTeal}{Relaxation for region $\nodeSymb$}
             \centering
-            $\node{\pobj}_{\text{lb}} = \min_{\pv \in \nodeSymb} \lfunc(\dic\pv) + \textcolor{mLightBrown}{\rfunc_{\text{lb}}}(\pv)$
+            $\node{\pobj}_{\text{lb}} = \min_{\pv \in \nodeSymb} \lfunc(\dic\pv) + \textcolor{TolLightOrange}{\rfunc_{\text{lb}}}(\pv)$
           \end{blockcolor}
         };
         %
-        \node[font=\small,anchor=west] (relax-text) at ($(relax)+(2.75,-0.15)$) {no generic construction};
+        \node[font=\small,anchor=west,text width=0.3\linewidth,align=left] (relax-text) at ($(relax)+(2.75,-0.1)$) {instance-specific \\ construction of $\rfunc_{\text{lb}}$};
         \draw[ultra thick,->] ($(relax-text.west)+(-0.3,0)$) -- ($(relax-text.west)+(0.05,0)$);
       }
       %
       %
       %
       \onslide<1> {
-        \node[mLightBrown] at (-4,-1.75) (axis1) {\textbf{Axis 1}};
-        \node[text width=0.3\linewidth,align=center,mLightBrown,font=\small] at ($(axis1.south)+(0,-0.5)$) (axis1-text) {How to construct relaxations generically ?};
-        \draw[ultra thick,mLightBrown] ($(axis1-text.center)+(-1.7,0.5)$) rectangle ($(axis1-text.center)+(1.7,-0.5)$);
+        \node[TolLightOrange] at (-4,-1.5) (axis1) {\textbf{Axis 1}};
+        \node[text width=0.3\linewidth,align=center,TolLightOrange,font=\small] at ($(axis1.south)+(0,-0.5)$) (axis1-text) {How to construct relaxations generically ?};
+        \draw[ultra thick,TolLightOrange] ($(axis1-text.center)+(-1.7,0.5)$) rectangle ($(axis1-text.center)+(1.7,-0.5)$);
         %
         \node[text width=0.35\linewidth,align=left,anchor=north,font=\small] at ($(axis1)+(0.1,-1.25)$) {1) Set $\rfunc_{\text{lb}}$ $=$ $\rfunc_{\text{cvx}}$ \\ 2) Closed-form expression \\ 3) Generalize BnB method};
       }
@@ -346,9 +341,9 @@
       %
       \onslide<2-> {
         \begin{scope}[opacity=0.5]
-          \node[mLightBrown] at (-4,-1.75) (axis1) {\textbf{Axis 1}};
-          \node[text width=0.3\linewidth,align=center,mLightBrown,font=\small] at ($(axis1.south)+(0,-0.5)$) (axis1-text) {How to construct relaxations generically ?};
-          \draw[ultra thick,mLightBrown] ($(axis1-text.center)+(-1.7,0.5)$) rectangle ($(axis1-text.center)+(1.7,-0.5)$);
+          \node[TolLightOrange] at (-4,-1.5) (axis1) {\textbf{Axis 1}};
+          \node[text width=0.3\linewidth,align=center,TolLightOrange,font=\small] at ($(axis1.south)+(0,-0.5)$) (axis1-text) {How to construct relaxations generically ?};
+          \draw[ultra thick,TolLightOrange] ($(axis1-text.center)+(-1.7,0.5)$) rectangle ($(axis1-text.center)+(1.7,-0.5)$);
           %
           \node[text width=0.35\linewidth,align=left,anchor=north,font=\small] at ($(axis1)+(0.1,-1.25)$) {1) Set $\rfunc_{\text{lb}}$ $=$ $\rfunc_{\text{cvx}}$ \\ 2) Closed-form expression \\ 3) Generalize BnB method};
         \end{scope}
@@ -357,9 +352,9 @@
       %
       %
       \onslide<2-> {
-        \node[mLightBrown] at (0,-1.75) (axis2) {\textbf{Axis 2}};
-        \node[text width=0.3\linewidth,align=center,mLightBrown,font=\small] at ($(axis2.south)+(0,-0.5)$) (axis2-text) {How to solve relaxations efficiently ?};
-        \draw[ultra thick,mLightBrown] ($(axis2-text.center)+(-1.7,0.5)$) rectangle ($(axis2-text.center)+(1.7,-0.5)$);
+        \node[TolLightOrange] at (0,-1.5) (axis2) {\textbf{Axis 2}};
+        \node[text width=0.3\linewidth,align=center,TolLightOrange,font=\small] at ($(axis2.south)+(0,-0.5)$) (axis2-text) {How to solve relaxations efficiently ?};
+        \draw[ultra thick,TolLightOrange] ($(axis2-text.center)+(-1.7,0.5)$) rectangle ($(axis2-text.center)+(1.7,-0.5)$);
         %
         \node[text width=0.35\linewidth,align=center,anchor=north,font=\small] at ($(axis2)+(0,-1.25)$) {Manuscript -- Chap. 6};
         \node[text width=0.35\linewidth,align=left,anchor=north,font=\small] at ($(axis2)+(0.20,-1.75)$) {$\rightarrow$ ICASSP (2022) \\ $\rightarrow$ Journal paper (202x)};
