@@ -17,7 +17,7 @@
       %
       %
       \onslide<2-> {
-        \node[draw,ultra thick] (question) at (0,0.25) {How to design generic and efficient solution methods ?};
+        \node[draw,ultra thick] (question) at (0,0.25) {How to design \textcolor{TolLightOrange}{generic} and \textcolor{TolLightOrange}{efficient} solution methods ?};
         \node at ($(question)+(0,0.5)$) {\textbf{Question}};
       }
       %
@@ -48,19 +48,19 @@
 \begin{frame}{Perspectives}
   \begin{tikzpicture}[remember picture,overlay]
     \begin{scope}[xshift=0.5\linewidth]
-      \onslide<2-6> {
+      \onslide<2-4> {
         \node[align=center,text width=0.33\textwidth] (persp1) at (-4,3.25) {\textbf{Extension to other formulations}};
       }
       %
       %
       %
-      \onslide<3-6> {
+      \onslide<2-4> {
         \node[align=center,text width=0.35\textwidth,font=\small] (l0norm) at ($(persp1)+(0,-1.25)$) {Minimize loss $\lfunc(\dic\pv)$ \\ Force sparsity with $\norm{\pv}{0}$};
       }
       %
       %
       %
-      \onslide<4-6> {
+      \onslide<2-4> {
         \node[align=center,text width=0.33\textwidth,font=\small] (l0norm-reg) at ($(l0norm)+(0,-2.25)$) {\textbf{Regularized version} \\ $\min_{\pv \in \kR^{\pdim}} \lfunc(\dic\pv) + \textcolor{TolLightOrange}{\reg\norm{\pv}{0}}$};
         %
         \node[fill=TolLightWhite,draw,ultra thick,font=\small,text width=0.175\linewidth,align=center,font=\small] (contrib) at ($(l0norm)+(0,-1.125)$) {contributions};
@@ -70,7 +70,7 @@
       %
       %
       %
-      \onslide<5-6> {
+      \onslide<3-4> {
         \node[align=center,text width=0.345\textwidth,font=\small] (l0norm-cstr) at ($(l0norm-reg)+(0,-2.25)$) {\textbf{Constrained version} \\ $\min_{\pv \in \kR^{\pdim}} \lfunc(\dic\pv) \ \text{s.t.} \ \textcolor{TolLightOrange}{\norm{\pv}{0} \leq k}$};
         %
         \node[fill=TolLightWhite,draw,ultra thick,font=\small,text width=0.175\linewidth,align=center] (extend) at ($(l0norm-reg)+(0,-1.125)$) {connections};
@@ -80,13 +80,13 @@
       %
       %
       %
-      \onslide<6> {
+      \onslide<4> {
         \node[align=center,text width=0.345\textwidth,font=\small,anchor=north] at ($(l0norm-cstr)+(0,-0.5)$) {$\rightarrow$ non-separability of the $\ell_0$-norm constraint};
       }
       %
       %
       %
-      \onslide<7-> {
+      \onslide<5-> {
         \begin{scope}[opacity=0.5]
           \node[align=center,text width=0.33\textwidth] (persp1) at (-4,3.25) {\textbf{Extension to other formulations}};
           %
@@ -110,19 +110,19 @@
       %
       %
       %
-      \onslide<7-11> {
+      \onslide<5-7> {
         \node[align=center,text width=0.33\textwidth] (persp2) at (0,3.25) {\textbf{Towards stronger relaxations}};
       }
       %
       %
       %
-      \onslide<8-11> {
+      \onslide<5-7> {
         \node[align=center,text width=0.35\textwidth,font=\small] (restrict) at ($(persp2)+(0,-1.25)$) {\textbf{Restriction to region $\nodeSymb$} \\ $\min_{\pv \in \nodeSymb} \lfunc(\dic\pv) + \rfunc(\pv)$};
       }
       %
       %
       %
-      \onslide<9-11> {
+      \onslide<5-7> {
         \node[align=center,text width=0.33\textwidth,font=\small] (cvx-relax) at ($(restrict)+(0,-2.25)$) {\textbf{Convex relaxation} \\ $\min_{\pv \in \nodeSymb} \lfunc(\dic\pv) + \textcolor{TolLightOrange}{\rfunc_{\text{cvx}}}(\pv)$};
         %
         \node[fill=TolLightWhite,draw,ultra thick,font=\small,text width=0.175\linewidth,align=center] (lb) at ($(restrict)+(0,-1.125)$) {lower bound};
@@ -132,7 +132,7 @@
       %
       %
       %
-      \onslide<10-11> {
+      \onslide<6-7> {
         \node[align=center,text width=0.345\textwidth,font=\small] (ccv-relax) at ($(cvx-relax)+(0,-2.25)$) {\textbf{Non-cvx relaxation} \\ $\min_{\pv \in \nodeSymb} \lfunc(\dic\pv) + \textcolor{TolLightOrange}{\rfunc_{\text{non-cvx}}}(\pv)$};
         %
         \node[fill=TolLightWhite,draw,ultra thick,font=\small,text width=0.175\linewidth,align=center,inner sep=2.5pt] (stronger) at ($(cvx-relax)+(0,-1.125)$) {improve};
@@ -142,13 +142,13 @@
       %
       %
       %
-      \onslide<11> {
+      \onslide<7> {
         \node[align=center,text width=0.345\textwidth,font=\small,anchor=north] (ccv-relax-text) at ($(ccv-relax)+(0,-0.5)$) {$\rightarrow$ tune $\rfunc_{\text{non-cvx}}$ to preserve the overall convexity};
       }
       %
       %
       %
-      \onslide<12-> {
+      \onslide<8-> {
         \begin{scope}[opacity=0.5]
           \node[align=center,text width=0.33\textwidth] (persp2) at (0,3.25) {\textbf{Towards stronger relaxations}};
           %
@@ -172,19 +172,11 @@
       %
       %
       %
-      \onslide<12-> {
+      \onslide<8-> {
         \node[align=center,text width=0.33\textwidth] (persp3) at (4,3.25) {\textbf{Broader exploitation of smoothing tests}};
-      }
-      %
-      %
-      %
-      \onslide<13-> {
-        \node[align=center,text width=0.35\textwidth,font=\small] (cvx) at ($(persp3)+(0,-1.125)$) {\textbf{Convex problem} \\ $\min_{\pv \in \kR^{\pdim}} \lfunc(\dic\pv) + \relaxrfunc(\pv)$};
-      }
-      %
-      %
-      %
-      \onslide<14-> {
+        %
+        \node[align=center,text width=0.35\textwidth,font=\small] (cvx) at ($(persp3)+(0,-1.25)$) {\textbf{Convex problem} \\ $\min_{\pv \in \kR^{\pdim}} \lfunc(\dic\pv) + \relaxrfunc(\pv)$};
+        %
         \node[align=center,text width=0.33\textwidth,font=\small] (scrsmt) at ($(cvx)+(0,-2.25)$) {\textbf{Screen/smooth tests} \\ $\opt{\pvi{\idxentry}} = 0$ or $\opt{\pvi{\idxentry}} \neq 0$};
         %
         \draw[ultra thick,->] ($(cvx.south)+(0,0)$) -- ($(scrsmt.north)+(0,0)$) node[midway,fill=TolLightWhite,draw,ultra thick,font=\small,text width=0.175\linewidth,align=center] {accelerate};
@@ -192,23 +184,23 @@
       %
       %
       %
-      \onslide<15-> {
-        \node[align=center,text width=0.2\textwidth,font=\small] (action-zero) at ($(scrsmt)+(-1,-2)$) {Set $\pvi{\idxentry}=0$ \\ Strategy tailored to any instance};
-        \draw[ultra thick,->] ($(scrsmt.south)+(-1,-0.1)$) -- ($(scrsmt.south)+(-1,-0.5)$);
+      \onslide<9-> {
+        \node[align=center,text width=0.2\textwidth,font=\small] (action-zero) at ($(scrsmt)+(-1,-1.55)$) {Set $\pvi{\idxentry}=0$ \\ Tailored to any instance};
+        \draw[ultra thick,->] ($(scrsmt.south)+(-1,-0.1)$) -- ($(scrsmt.south)+(-1,-0.4)$);
       }
       %
       %
       %
-      \onslide<16-> {
-        \node[align=center,text width=0.2\textwidth,font=\small] (action-nonzero) at ($(scrsmt)+(1,-2)$) {Smooth $\separable{\relaxrfunc}{\idxentry}$ \\ Strategy depends on the instance};
-        \draw[ultra thick,->] ($(scrsmt.south)+(1,-0.1)$) -- ($(scrsmt.south)+(1,-0.5)$);
+      \onslide<10-> {
+        \node[align=center,text width=0.2\textwidth,font=\small] (action-nonzero) at ($(scrsmt)+(1,-1.55)$) {Smooth $\separable{\relaxrfunc}{\idxentry}$ \\ Depends on the instance};
+        \draw[ultra thick,->] ($(scrsmt.south)+(1,-0.1)$) -- ($(scrsmt.south)+(1,-0.4)$);
       }
       %
       %
       %
-      \onslide<17-> {
-        \node[align=center,text width=0.4\textwidth,font=\small] (action-nonzero) at ($(scrsmt)+(0,-3.55)$) {$\rightarrow$ generic strategy ?};
-        \draw[ultra thick,->] ($(scrsmt.south)+(1,-2.5)$) -- ($(scrsmt.south)+(0.75,-2.8)$);
+      \onslide<11-> {
+        \node[align=center,text width=0.4\textwidth,font=\small] (action-nonzero) at ($(scrsmt)+(0,-3)$) {$\rightarrow$ Newton accel. for proximal identification \\ G. Bareilles \textit{et al.} (2022)};
+        % \draw[ultra thick,->] ($(scrsmt.south)+(1,-2.5)$) -- ($(scrsmt.south)+(0.75,-2.8)$);
       }
     \end{scope}
   \end{tikzpicture}

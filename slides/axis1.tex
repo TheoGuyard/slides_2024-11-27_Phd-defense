@@ -53,7 +53,7 @@
       %
       %
       \onslide<5-> {
-        \node[text width=0.75\linewidth,align=left] at (0.75,-3.6) {$\rightarrow$ $\lfunc$ and $\pfunc$ proper, closed, convex \\ $\rightarrow$ $\pfunc$ separable, even, supercoercive, $\pfunc \geq \pfunc(\0) = 0$};
+        \node[text width=0.75\linewidth,align=left] at (0.75,-3.6) {$\rightarrow$ $\pfunc$ proper, closed, convex \\ $\rightarrow$ $\pfunc$ separable, even, supercoercive, $\pfunc \geq \pfunc(\0) = 0$};
       }
     \end{scope}
   \end{tikzpicture}
@@ -206,7 +206,7 @@
             xlabel=\textbf{\small{Time (seconds)}},
             ymax=110,
             xmax=7000,
-            ylabel=\textbf{\small{Solved}},
+            ylabel=\textbf{\small{Instances solved}},
             ytick={0,25,50,75,100},
         ]
 
@@ -215,7 +215,7 @@
                 x=times,
                 y expr=100*\thisrow{\solver},
                 col sep=comma
-            ] {data/perfprofiles_medium_Logistic_Bigm_3600.csv};
+            ] {data/perfprofiles_medium_Logistic_L1norm_3600.csv};
           }
         \end{axis}
         %
@@ -254,7 +254,7 @@
             xlabel=\textbf{\small{Time (seconds)}},
             ymax=110,
             xmax=7000,
-            ylabel=\textbf{\small{Solved}},
+            ylabel=\textbf{\small{Instances solved}},
             ytick={0,25,50,75,100},
         ]
 
@@ -263,7 +263,7 @@
                 x=times,
                 y expr=100*\thisrow{\solver},
                 col sep=comma
-            ] {data/perfprofiles_medium_Logistic_Bigm_3600.csv};
+            ] {data/perfprofiles_medium_Logistic_L1norm_3600.csv};
             \label{plot:bnb-\solver}
           }
         \end{axis}

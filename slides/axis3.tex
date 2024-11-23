@@ -159,7 +159,7 @@
       %
       %
       \onslide<2-> {
-        \node[draw,ultra thick] (complexity) at (0,-3.75) {number of nodes explored $\times$ node process time};
+        \node[draw,ultra thick] (complexity) at (0,-3.75) {number of nodes explored $\times$ pruning test time};
         \node at ($(complexity)+(0,0.5)$) {\textbf{Solving time}};
       }
       %
@@ -255,7 +255,11 @@
         };
         %
         \draw[ultra thick,->] ($(problem.east)+(0.1,-0.1)$) -- ($(problem.east)+(0.45,-0.1)$) node[right,font=\small] {$\rfunc(\pv) = \reg\norm{\pv}{0} + \pfunc(\pv)$};
-        %
+      }
+      %
+      %
+      %
+      \onslide<2-> {
         \node[align=center,text width=0.45\textwidth] (cvx-relaxation) at ($(problem)+(0,-1.75)$) {
           \begin{blockcolor}{mDarkTeal}{Relaxation for region $\nodeSymb$}
             \centering
@@ -267,12 +271,12 @@
         %
         \draw[ultra thick,->] ($(cvx-relaxation.east)+(0.1,-0.1)$) -- ($(cvx-relaxation.east)+(0.45,-0.1)$) node[right,font=\small] {$\node{\pobj}_{\text{lb}} \leq \node{\pobj}$};
         %
-        \draw[ultra thick,->] ($(problem.west)+(0,-0.25)$) .. controls ($(cvx-relaxation.west)+(-1.5,0.8)$) .. ($(cvx-relaxation.west)+(0,0.25)$) node[midway,fill=TolLightWhite,draw,ultra thick,font=\small,text width=0.2\linewidth,align=center] {standard strat.};
+        \draw[ultra thick,->] ($(problem.west)+(0,-0.25)$) .. controls ($(cvx-relaxation.west)+(-1.75,0.8)$) .. ($(cvx-relaxation.west)+(0,0.25)$) node[midway,fill=TolLightWhite,draw,ultra thick,font=\small,text width=0.2\linewidth,align=center] {standard strat.};
       }
       %
       %
       %
-      \onslide<2-> {
+      \onslide<3-> {
         \node[align=center,text width=0.45\textwidth] (dual-relaxation) at ($(cvx-relaxation)+(0,-1.75)$) {
           \begin{blockcolor}{mDarkTeal}{Dual relaxation for region $\nodeSymb$}
             \centering
@@ -282,18 +286,18 @@
         %
         \node at ($(cvx-relaxation)+(0,-1)$) {\rotatebox{90}{$\leq$}};
         %
-        \draw[ultra thick,->] ($(cvx-relaxation.west)+(0,-0.25)$) .. controls ($(dual-relaxation.west)+(-1.5,0.8)$) .. ($(dual-relaxation.west)+(0,0.25)$) node[midway,fill=TolLightWhite,draw,ultra thick,font=\small,text width=0.2\linewidth,align=center] {dual problem};
-      }
-      %
-      %
-      %
-      \onslide<3-> {
-        \draw[ultra thick,->] ($(dual-relaxation.east)+(0.1,-0.1)$) -- ($(dual-relaxation.east)+(0.45,-0.1)$) node[right,font=\small] {$\textcolor{TolLightOrange}{\node{\pobj}_{\text{dual}}} \leq \node{\pobj}_{\text{lb}} \leq \node{\pobj}$};
+        \draw[ultra thick,->] ($(cvx-relaxation.west)+(0,-0.25)$) .. controls ($(dual-relaxation.west)+(-1.75,0.8)$) .. ($(dual-relaxation.west)+(0,0.25)$) node[midway,fill=TolLightWhite,draw,ultra thick,font=\small,text width=0.2\linewidth,align=center,inner sep=2pt] {dual problem};
       }
       %
       %
       %
       \onslide<4-> {
+        \draw[ultra thick,->] ($(dual-relaxation.east)+(0.1,-0.1)$) -- ($(dual-relaxation.east)+(0.45,-0.1)$) node[right,font=\small] {$\textcolor{TolLightOrange}{\node{\pobj}_{\text{dual}}} \leq \node{\pobj}_{\text{lb}} \leq \node{\pobj}$};
+      }
+      %
+      %
+      %
+      \onslide<5-> {
         \node[text width=0.8\linewidth,align=center] at ($(dual-relaxation)+(0,-1.45)$) {\textbf{Any evaluation of $\node{\dfunc}$ gives a lower-bound on $\node{\pobj}$}};
       }
     \end{scope}
@@ -582,7 +586,7 @@
       %
       \onslide<11-> {
         \node[text width=0.5\linewidth,align=center] (std) at (2.5,-0.75) {\textbf{Tree expansion}};
-        \node at (2.5,-1.5) (node0) {};
+        \node at (3.5,-1.5) (node0) {};
         \draw[ultra thick,<-] ($(node0)+(0.275,0.275)$) -- ($(node0)+(0.5,0.5)$);
         \draw[
           ultra thick,
@@ -600,19 +604,37 @@
           very thick,
           top color = white,
           bottom color = gray!60,
-        ] (node1) circle (10pt) node {$\nodeSymb_{1}$};
+        ] (node1) circle (10pt) node {$\nodeSymb_{1,0}$};
         \draw[ultra thick,->] ($(node0)+(-0.35,-0.1)$) -- ($(node1)+(0.26,0.26)$) node[midway,fill=TolLightWhite,draw,font=\scriptsize,inner sep=2] {$\pvi{1} = 0$};
+        %
+        \node at ($(node0)+(1.75,-1)$) (node2) {};
+        \draw[
+          dashed,
+          very thick,
+          top color = white,
+          bottom color = TolLightRed,
+        ] (node2) circle (10pt) node {$\nodeSymb_{1,1}$};
+        \draw[ultra thick,->] ($(node0)+(0.35,-0.1)$) -- ($(node2)+(-0.26,0.26)$) node[midway,fill=TolLightWhite,draw,font=\scriptsize,inner sep=1.75] {$\pvi{1} \neq 0$};
       }
       %
       %
       %
       \onslide<13-> {
+        \node at ($(node1)+(-1.75,-1)$) (node3) {};
+        \draw[
+          dashed,
+          very thick,
+          top color = white,
+          bottom color = TolLightRed,
+        ] (node3) circle (10pt) node {$\nodeSymb_{2,0}$};
+        \draw[ultra thick,->] ($(node1)+(-0.35,-0.1)$) -- ($(node3)+(0.26,0.26)$) node[midway,fill=TolLightWhite,draw,font=\scriptsize,inner sep=2] {$\pvi{2} = 0$};
+        %
         \node at ($(node1)+(1.75,-1)$) (node4) {};
         \draw[
           ultra thick,
           top color = white,
           bottom color = gray!60,
-        ] (node4) circle (10pt) node {$\nodeSymb_{4}$};
+        ] (node4) circle (10pt) node {$\nodeSymb_{2,1}$};
         \draw[ultra thick,->] ($(node1)+(0.35,-0.1)$) -- ($(node4)+(-0.26,0.26)$) node[midway,fill=TolLightWhite,draw,font=\scriptsize,inner sep=1.75] {$\pvi{2} \neq 0$};
         \draw[ultra thick,->] ($(node4)+(0.26,-0.26)$) -- ($(node4)+(0.4,-0.5)$);
         \draw[ultra thick,->] ($(node4)+(-0.26,-0.26)$) -- ($(node4)+(-0.4,-0.5)$);
@@ -621,7 +643,13 @@
       %
       %
       \onslide<14-> {
-        \node[text width=0.3\linewidth,align=center,font=\small,anchor=north] at (4.5,-2.25) {Fast and economic tree expansion};
+        \draw[ultra thick,->] ($(node4)+(0.45,0)$) -- ($(node4)+(0.75,0)$) node[right,yshift=-1pt] {$\nodeSymb_4$};
+      }
+      %
+      %
+      %
+      \onslide<15-> {
+        \node[text width=0.3\linewidth,align=center,font=\small,anchor=north] at (0.75,-1.1) {Fast and economic tree expansion};
       }
     \end{scope}
   \end{tikzpicture}
