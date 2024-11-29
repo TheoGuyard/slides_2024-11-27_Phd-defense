@@ -1,6 +1,6 @@
 ## Aux and pdf files
-aux
-*.pdf
+aux/*
+!aux/*.pdf
 
 
 ## Core latex/pdflatex auxiliary files:
